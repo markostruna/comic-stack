@@ -15,6 +15,8 @@ import { HomeModule } from './home/home.module';
 import { ShellModule } from './shell/shell.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { SearchModule } from './search/search.module';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 @NgModule({
   imports: [
@@ -28,6 +30,8 @@ import { AppRoutingModule } from './app-routing.module';
     MaterialModule,
     SharedModule,
     ShellModule,
+    NgxMatSelectSearchModule,
+    SearchModule,
     HomeModule,
     AuthModule,
     AppRoutingModule, // must be imported as the last module as it contains the fallback route

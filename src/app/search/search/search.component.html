@@ -1,0 +1,77 @@
+<div class="container">
+  <mat-card>
+    <mat-card-content>
+      <div fxLayout="row wrap" fxLayout.lt-sm="column" [formGroup]="form" fxLayoutGap="1rem" fxLayoutGap.lt-sm="0">
+        <!-- TITLE -->
+        <div class="search-field" fxLayout="column">
+          <mat-label class="label">Comic title</mat-label>
+          <mat-form-field class="form-field-wrapper" [ngClass.lt-sm]="'full-width'" appearance="outline">
+            <input matInput placeholder="Title" formControlName="title" autocomplete="off" />
+          </mat-form-field>
+        </div>
+
+        <!-- HERO -->
+        <div class="search-field" fxLayout="column">
+          <mat-label class="label">Hero</mat-label>
+          <mat-form-field class="form-field-wrapper" [ngClass.lt-sm]="'full-width'" appearance="outline">
+            <mat-select [formControl]="heroCtrl" disableOptionCentering>
+              <mat-option>
+                <ngx-mat-select-search
+                  [formControl]="heroFilterCtrl"
+                  [preventHomeEndKeyPropagation]="true"
+                  [placeholderLabel]="'Search hero'"
+                  [noEntriesFoundLabel]="'No hero found!'"
+                >
+                </ngx-mat-select-search>
+              </mat-option>
+              <mat-option *ngFor="let hero of filteredHeroes | async" [value]="hero">
+                {{ hero }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- PUBLISHER -->
+        <div class="search-field" fxLayout="column">
+          <mat-label class="label">Publisher</mat-label>
+          <mat-form-field class="form-field-wrapper" [ngClass.lt-sm]="'full-width'" appearance="outline">
+            <mat-select formControlName="publisher" disableOptionCentering>
+              <mat-option *ngFor="let publisher of publishers" [value]="publisher">
+                {{ publisher }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- COLLECTION -->
+        <div class="search-field" fxLayout="column">
+          <mat-label class="label">Collection</mat-label>
+          <mat-form-field class="form-field-wrapper" [ngClass.lt-sm]="'full-width'" appearance="outline">
+            <mat-select formControlName="collection" disableOptionCentering>
+              <mat-option *ngFor="let collection of collections" [value]="collection">
+                {{ collection }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- AVAILABILITY -->
+        <div class="search-field" fxLayout="column">
+          <mat-label class="label">Availability</mat-label>
+          <mat-form-field class="form-field-wrapper" [ngClass.lt-sm]="'full-width'" appearance="outline">
+            <mat-select formControlName="availability" disableOptionCentering>
+              <mat-option value="All"> All </mat-option>
+              <mat-option value="Available"> Available </mat-option>
+              <mat-option value="Missing"> Missing </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- SEARCH BUTTON -->
+      <div class="search-field" fxLayout="column">
+        <button mat-flat-button color="warn" (click)="searchComics()">Search</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

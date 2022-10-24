@@ -1,0 +1,38 @@
+.search-form {
+  min-width: 150px;
+  max-width: 900px;
+  width: 100%;
+  margin-top: 20px;
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.search-label {
+  margin-left: 15px;
+}
+
+.search-field {
+  font-size: 12px;
+  color: black;
+}
+
+.container {
+  padding: 1em;
+}
+
+::ng-deep .mat-select-search-inner {
+  position: absolute;
+  top: 25px !important;
+  width: 198px !important;
+  padding-left: 16px;
+}
+
+::ng-deep .mat-select-search-input {
+  padding: 0 !important;
+}
+
+::ng-deep .mat-select-search-inside-mat-option .mat-select-search-clear {
+  top: 0 !important;
+  right: 0 !important;
+  scale: 0.8;
+}
