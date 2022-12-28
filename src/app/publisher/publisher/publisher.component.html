@@ -1,0 +1,17 @@
+<div class="page">
+  <div
+    style="
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: flex-start;
+      align-content: flex-start;
+      align-items: flex-start;
+    "
+  >
+    <div class="rootlink" *ngFor="let item of publishers" (click)="openFolder(item.path, item.name)">
+      {{ item.name }}
+    </div>
+  </div>
+</div>

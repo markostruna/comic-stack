@@ -1,3 +1,14 @@
+// {
+//   "/proxy": {
+//     "target": "http://localhost/",
+//     "secure": false,
+//     "changeOrigin": true,
+//     "pathRewrite": {
+//       "^/proxy": ""
+//     }
+//   }
+// }
+
 const HttpsProxyAgent = require('https-proxy-agent');
 
 /*
@@ -7,6 +18,13 @@ const HttpsProxyAgent = require('https-proxy-agent');
  * For more details and options, see https://angular.io/guide/build#using-corporate-proxy
  */
 const proxyConfig = [
+  {
+    context: '/proxy',
+    pathRewrite: { '^/proxy': '' },
+    target: 'http://localhost/',
+    changeOrigin: true,
+    secure: false,
+  },
   {
     context: '/api',
     pathRewrite: { '^/api': '' },

@@ -1,0 +1,56 @@
+<div class="page no-padding">
+  <cdk-virtual-scroll-viewport itemSize="308px" class="example-viewport" style="width: 100%; height: 100%">
+    <div *cdkVirtualFor="let item of displayedComics" style="width: 100%; max-width: 150px">
+      <div style="width: 150px; height: 230px; background-color: black; position: relative" *ngIf="!item.fakeEntry">
+        <img
+          [id]="item.id"
+          [ngClass]="item.class"
+          [src]="item.thumbnailPath"
+          (click)="openDialog(item)"
+          loading="lazy"
+        />
+        <div
+          class="comic-publisher"
+          *ngIf="this.displayPublisher"
+          style="position: absolute; left: 0; bottom: 0px; right: 0"
+        >
+          {{ item.publisher }}
+        </div>
+
+        <div class="comic-collection" *ngIf="item.collection" style="position: absolute; left: 0; top: 0px; right: 0">
+          {{ item.collection }}
+        </div>
+      </div>
+
+      <div class="comicinfo" style="position: relative" *ngIf="!item.fakeEntry">
+        <div fxLayout="row" style="margin-bottom: 3px" fxLayoutGap="5px;">
+          <div class="number-circle2" *ngIf="item.number">
+            <span class="number">
+              {{ item.number }}
+            </span>
+          </div>
+          <div class="number-circle" *ngIf="item.seqNumber">
+            <span class="number">
+              {{ item.seqNumber }}
+            </span>
+          </div>
+        </div>
+        <div class="hero">{{ item.hero }}</div>
+        <div class="title">{{ item.title }}</div>
+        <div class="hero" *ngIf="item.hero2">{{ item.hero2 }}</div>
+        <div class="title" *ngIf="item.title2">{{ item.title2 }}</div>
+        <a
+          href="{{ environment.serverUrl + item.path }}"
+          style="float: right; color: white; position: absolute; bottom: 0; right: 0"
+          *ngIf="!item.missing"
+        >
+          <mat-icon class="icon"> download </mat-icon>
+        </a>
+      </div>
+
+      <div style="height: 60px" *ngIf="item.fakeEntry">
+        <button mat-flat-button color="warn" (click)="loadMore()" style="margin-top: auto">Load more</button>
+      </div>
+    </div>
+  </cdk-virtual-scroll-viewport>
+</div>

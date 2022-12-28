@@ -33,6 +33,10 @@
             <span translate>Home</span>
           </a>
           <mat-divider></mat-divider>
+          <a mat-list-item routerLink="/publisher" routerLinkActive="active" (click)="isMobile && sidenav.close()">
+            <span translate>Comics</span>
+          </a>
+          <mat-divider></mat-divider>
           <a mat-list-item routerLink="/search" routerLinkActive="active" (click)="isMobile && sidenav.close()">
             <span translate>Search</span>
           </a>

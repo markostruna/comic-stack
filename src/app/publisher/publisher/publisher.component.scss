@@ -1,0 +1,41 @@
+.rootlink {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  float: left;
+  width: 130px;
+  height: 130px;
+  // margin: 15px;
+  padding: 5px;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.35);
+  border: 2px solid transparent;
+  transition: all 1s ease-in-out;
+  background-size: contain;
+  background-position-x: 0;
+  background-position-y: -20px;
+  background-repeat: no-repeat;
+}
+
+.rootlink:hover {
+  background-color: black;
+  box-shadow: 0 0 32px rgba(0, 0, 0, 0.35);
+  border: 2px solid yellow;
+  transition: border 0.2s ease, background-color 0.5s ease, all 0.3s ease;
+  background-position-y: 0px;
+}
+
+.rootlink:focus {
+  outline: 0;
+  color: #cc7b19;
+}

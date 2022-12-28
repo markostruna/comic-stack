@@ -17,6 +17,8 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { SearchModule } from './search/search.module';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { PublisherModule } from './publisher/publisher.module';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
   imports: [
@@ -34,6 +36,8 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
     SearchModule,
     HomeModule,
     AuthModule,
+    PublisherModule,
+    ScrollingModule,
     AppRoutingModule, // must be imported as the last module as it contains the fallback route
   ],
   declarations: [AppComponent],
