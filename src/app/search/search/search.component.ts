@@ -43,7 +43,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.heroes = this.allHeroes;
 
-    this.heroCtrl.setValue(this.allHeroes[10]);
+    this.heroCtrl.setValue(this.allHeroes[3]);
     this.filteredHeroes.next(this.allHeroes.slice());
 
     this.heroFilterCtrl.valueChanges.pipe(takeUntil(this._onDestroy)).subscribe(() => {
@@ -62,7 +62,9 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected setInitialValue() {
     this.filteredHeroes.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
-      this.singleSelect.compareWith = (a: string, b: string) => a > b;
+      if (this.singleSelect != null) {
+        this.singleSelect.compareWith = (a: string, b: string) => a > b;
+      }
     });
   }
 

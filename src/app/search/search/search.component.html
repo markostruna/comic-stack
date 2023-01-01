@@ -14,7 +14,7 @@
         <div class="search-field" fxLayout="column">
           <mat-label class="label">Hero</mat-label>
           <mat-form-field class="form-field-wrapper" [ngClass.lt-sm]="'full-width'" appearance="outline">
-            <mat-select [formControl]="heroCtrl" disableOptionCentering>
+            <mat-select [formControl]="heroCtrl" disableOptionCentering #singleSelect>
               <mat-option>
                 <ngx-mat-select-search
                   [formControl]="heroFilterCtrl"
@@ -70,7 +70,7 @@
 
       <!-- SEARCH BUTTON -->
       <div class="search-field" fxLayout="column">
-        <button mat-flat-button color="warn" (click)="searchComics()">Search</button>
+        <button class="width-80" mat-flat-button color="warn" (click)="searchComics()">Search</button>
       </div>
     </mat-card-content>
   </mat-card>

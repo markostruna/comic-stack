@@ -3,6 +3,10 @@
  * Framework overrides and customization goes here.
  */
 
+/****************************************************************************
+  1. General
+ *****************************************************************************/
+
 // stylelint-disable-next-line selector-max-universal
 * {
   box-sizing: border-box;
@@ -32,6 +36,10 @@ body {
   padding: 1rem;
   width: 100%;
   height: calc(100% - 2.5rem);
+}
+
+.width-80 {
+  width: 5rem;
 }
 
 .no-padding {
@@ -80,6 +88,7 @@ body {
 .mat-select-panel {
   margin-top: 1.5rem;
   border: 1px solid gray;
+  min-width: 100% !important;
 }
 
 .mat-drawer-side {
@@ -91,11 +100,6 @@ body {
   // margin-left: 10px;
   // margin-right: 10px;
   color: black;
-}
-
-button {
-  width: 80px;
-  max-width: 80px;
 }
 
 .title {
@@ -126,6 +130,12 @@ button {
 
 .cdk-overlay-container {
   z-index: 9999 !important;
+}
+
+.cdk-overlay-pane {
+  width: 200px !important;
+  min-width: 200px !important;
+  transform: translateX(-17px) !important;
 }
 
 .cdk-virtual-scroll-content-wrapper {
