@@ -33,9 +33,26 @@
   border: 2px solid yellow;
   transition: border 0.2s ease, background-color 0.5s ease, all 0.3s ease;
   background-position-y: 0px;
+  cursor: pointer;
 }
 
 .rootlink:focus {
   outline: 0;
   color: #cc7b19;
+}
+
+.veseli-cetvrtak {
+  background-image: url(/assets/veseli-cetvrtak.jpg);
+}
+
+.lunov-magnus-strip {
+  background-image: url(/assets/lunov-magnus-strip.jpg);
+}
+
+.slobodna-dalmacija {
+  background-image: url(/assets/slobodna-dalmacija.jpg);
+}
+
+.zlatna-serija {
+  background-image: url(/assets/zlatna-serija.jpg);
 }

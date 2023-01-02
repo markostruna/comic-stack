@@ -91,7 +91,7 @@ export class ConfigurationService {
 
   constructor(private browsingService: BrowsingService, private helperService: HelperService) {}
 
-  getPublishers(path: string): Observable<Publisher[]> {
+  getPublishers(path: string): Observable<PublisherResolved[]> {
     console.log('getPublishers initiated. Path: (', path, ')');
 
     return this.browsingService.getPublishers(path).pipe(

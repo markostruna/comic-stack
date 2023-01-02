@@ -17,7 +17,7 @@ export const environment = {
   jokeServerUrl: 'api/',
   defaultLanguage: 'en-US',
   supportedLanguages: ['en-US'],
-  assetPath: '../../../assets/',
+  assetPath: 'assets/',
 };
 
 /*

@@ -36,7 +36,7 @@
 
 .comicinfo {
   /* margin:2px; */
-  width: 146px;
+  // width: 146px;
   /* height:110px; */
   padding: 2px;
   background-color: rgba(255, 255, 255, 0.1);
@@ -97,7 +97,7 @@
   color: black;
   border-radius: 5px;
   width: 28px;
-  height: 10px;
+  // height: 10px;
   text-align: center;
   margin-top: 5px;
   margin-right: 5px;
@@ -110,12 +110,77 @@
   color: black;
   border-radius: 5px;
   width: 28px;
-  height: 10px;
+  // height: 10px;
   text-align: center;
   margin-top: 5px;
   margin-right: 5px;
   line-height: 8px;
   padding: 1px;
+}
+
+.heroimage {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0.2;
+  background-size: contain;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+}
+
+.zagor {
+  background-image: url("/assets/zagor.png");
+}
+
+.dilandog {
+  background-image: url("/assets/dylandog.png");
+}
+
+.dampir {
+  background-image: url("/assets/dampyr.png");
+}
+
+.misterno {
+  background-image: url("/assets/misterno.png");
+}
+
+.martimisterija {
+  background-image: url("/assets/martimisterija.png");
+}
+
+.teksviler {
+  background-image: url("/assets/teks.png");
+}
+
+.bradbarron {
+  background-image: url("/assets/bradbarron.png");
+}
+
+.timidasti {
+  background-image: url("/assets/timidasti.png");
+}
+
+.kitteler {
+  background-image: url("/assets/kitteler.png");
+}
+
+.velikiblek {
+  background-image: url("/assets/blek.png");
+}
+
+.kenparker {
+  background-image: url("/assets/kenparker.png");
+}
+
+.kapetanmiki {
+  background-image: url("/assets/kapetanmiki.png");
+}
+
+.komandantmark {
+  background-image: url("/assets/komandantmark.png");
 }
 
 .number {

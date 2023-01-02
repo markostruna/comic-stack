@@ -118,7 +118,7 @@ export class PublisherService {
     );
   }
 
-  private resolvePublishers(data: Publisher[]): PublisherResolved[] {
+  private resolvePublishers(data: PublisherResolved[]): PublisherResolved[] {
     if (data?.length <= 0) {
       return [];
     }
@@ -127,7 +127,7 @@ export class PublisherService {
       return {
         name: publisher.name,
         path: publisher.path,
-        backgroundImageUrl: '',
+        backgroundImageUrl: publisher.backgroundImageUrl,
       };
     });
   }

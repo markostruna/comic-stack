@@ -10,7 +10,12 @@
       align-items: flex-start;
     "
   >
-    <div class="rootlink" *ngFor="let item of publishers" (click)="openFolder(item.path, item.name)">
+    <div
+      class="rootlink"
+      *ngFor="let item of publishers"
+      (click)="openFolder(item.path, item.name)"
+      [ngClass]="getPublisherClass(item)"
+    >
       {{ item.name }}
     </div>
   </div>
