@@ -3,7 +3,7 @@ import { environment } from '@env/environment';
 import { catchError, map, Observable, of } from 'rxjs';
 import { BrowsingService } from './browsing.service';
 import { HelperService } from './helper.service';
-import { Comic, ComicResolved, Publisher, PublisherResolved } from './models/all-models';
+import { Comic, ComicResolved, Publisher, PublisherResolved } from './models';
 
 export interface fieldTypes {
   number: number;

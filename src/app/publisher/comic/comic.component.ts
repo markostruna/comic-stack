@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { ComicResolved } from '@app/@shared/models/all-models';
+import { ComicResolved } from '@app/@shared/models';
 import { environment } from '@env/environment';
 import { PublisherService } from '../publisher.service';
 

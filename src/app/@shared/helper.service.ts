@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '@env/environment';
-import { Publisher, Comic, ComicResolved } from './models/all-models';
+import { Publisher, Comic, ComicResolved } from './models';
 
 @Injectable({
   providedIn: 'root',

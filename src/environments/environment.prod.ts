@@ -9,8 +9,8 @@ import { env } from './.env';
 export const environment = {
   production: true,
   version: env['npm_package_version'],
-  serverUrl: 'http://192.168.1.100/',
-  jokeServerUrl: 'api/',
+  serverUrl: 'http://tusvob.ddns.net/',
+  jokeServerUrl: 'https://api.chucknorris.io/',
   defaultLanguage: 'en-US',
   supportedLanguages: ['en-US'],
   assetPath: './assets/',

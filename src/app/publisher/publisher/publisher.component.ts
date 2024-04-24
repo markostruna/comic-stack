@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HelperService } from '@app/@shared/helper.service';
-import { PublisherResolved } from '@app/@shared/models/all-models';
+import { PublisherResolved } from '@app/@shared/models';
 import { PublisherService } from '../publisher.service';
 
 @Component({

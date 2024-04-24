@@ -5,6 +5,7 @@
   "scripts": {
     "ng": "ng",
     "build": "npm run write:env -s && ng build",
+    "build:production": "npm run write:env -s && ng build --configuration=production  --base-href=/comic-3/",
     "start": "npm run write:env -s && ng serve --proxy-config proxy.conf.js",
     "serve:sw": "npm run build -s && npx http-server ./dist -p 4200",
     "lint": "ng lint && stylelint \"src/**/*.scss\"",

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ConfigurationService } from '@app/@shared/configuration.service';
-import { Comic, ComicResolved, Publisher, PublisherResolved } from '@app/@shared/models/all-models';
+import { Comic, ComicResolved, Publisher, PublisherResolved } from '@app/@shared/models';
 import { environment } from '@env/environment';
 import { catchError, map, Observable, of } from 'rxjs';
 
