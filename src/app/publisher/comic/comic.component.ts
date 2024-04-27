@@ -85,6 +85,54 @@ export class ComicComponent implements OnInit {
     this.numPreloadedComics += this.pageSize;
   }
 
+  classHeroExists(item: ComicResolved | undefined) {
+    const supportedHeros: string[] = [
+      'zagor',
+      'dilandog',
+      'dampir',
+      'misterno',
+      'martimisterija',
+      'teksviler',
+      'bradbarron',
+      'timidasti',
+      'kitteler',
+      'velikiblek',
+      'kenparker',
+      'kapetanmiki',
+      'komandantmark',
+    ];
+
+    if (item?.hero && supportedHeros.includes(item.hero?.toLowerCase().replace(/ /g, ''))) {
+      return true;
+    }
+
+    return false;
+  }
+
+  classHero2Exists(item: ComicResolved | undefined) {
+    const supportedHeros: string[] = [
+      'zagor',
+      'dilandog',
+      'dampir',
+      'misterno',
+      'martimisterija',
+      'teksviler',
+      'bradbarron',
+      'timidasti',
+      'kitteler',
+      'velikiblek',
+      'kenparker',
+      'kapetanmiki',
+      'komandantmark',
+    ];
+
+    if (item?.hero2 && supportedHeros.includes(item.hero2?.toLowerCase().replace(/ /g, ''))) {
+      return true;
+    }
+
+    return false;
+  }
+
   calculateClass(item: ComicResolved | undefined) {
     let ret = '';
 

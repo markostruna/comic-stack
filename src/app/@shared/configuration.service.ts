@@ -206,6 +206,9 @@ export class ConfigurationService {
           index++;
         });
 
+        resolved.heroImageUrl = this.helperService.getComicHeroImageUrl(resolved);
+        resolved.hero2ImageUrl = this.helperService.getComicHero2ImageUrl(resolved);
+
         return resolved;
       }
     }

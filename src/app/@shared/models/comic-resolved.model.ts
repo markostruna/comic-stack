@@ -15,5 +15,7 @@ export interface ComicResolved extends Comic {
   class: string;
   loaded: boolean;
   fakeEntry: boolean;
+  heroImageUrl?: string;
+  hero2ImageUrl?: string;
   [key: string]: any;
 }

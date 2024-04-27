@@ -20,10 +20,35 @@
         <div class="comic-collection" *ngIf="item.collection" style="position: absolute; left: 0; top: 0px; right: 0">
           {{ item.collection }}
         </div>
+
+        <div
+          [matTooltip]="item?.hero"
+          matTooltipPosition="after"
+          class="hero-circle"
+          [style.background-image]="item.heroImageUrl"
+        >
+          {{ classHeroExists(item) ? '' : '?' }}
+        </div>
+
+        <div
+          [matTooltip]="item?.hero2"
+          matTooltipPosition="after"
+          class="hero-circle-2"
+          [style.background-image]="item.hero2ImageUrl"
+          *ngIf="item?.hero2?.length > 0"
+        >
+          {{ classHero2Exists(item) ? '' : '?' }}
+        </div>
+
+        <div class="download-circle" *ngIf="!item.missing">
+          <a href="{{ environment.serverUrl + item.path }}" style="color: white">
+            <mat-icon class="icon"> download </mat-icon>
+          </a>
+        </div>
       </div>
 
       <div class="comicinfo" style="position: relative" *ngIf="!item.fakeEntry">
-        <div class="heroimage" [ngClass]="calculateClass(item)"></div>
+        <!-- <div class="heroimage" [ngClass]="calculateClass(item)"></div> -->
 
         <div fxLayout="row" style="margin-bottom: 3px" fxLayoutGap="5px;">
           <div class="number-circle2" *ngIf="item.number">
@@ -37,17 +62,17 @@
             </span>
           </div>
         </div>
-        <div class="hero">{{ item.hero }}</div>
+        <!-- <div class="hero">{{ item.hero }}</div> -->
         <div class="title">{{ item.title }}</div>
-        <div class="hero" *ngIf="item.hero2">{{ item.hero2 }}</div>
+        <!-- <div class="hero" *ngIf="item.hero2">{{ item.hero2 }}</div> -->
         <div class="title" *ngIf="item.title2">{{ item.title2 }}</div>
-        <a
+        <!-- <a
           href="{{ environment.serverUrl + item.path }}"
           style="float: right; color: white; position: absolute; bottom: 0; right: 0"
           *ngIf="!item.missing"
         >
           <mat-icon class="icon"> download </mat-icon>
-        </a>
+        </a> -->
       </div>
 
       <div style="height: 60px" *ngIf="item.fakeEntry">

@@ -8,6 +8,7 @@ import { ComicComponent } from './comic/comic.component';
 
 const routes: Routes = [
   Shell.childRoutes([
+    { path: '', redirectTo: '/publisher', pathMatch: 'full' },
     { path: 'publisher', component: PublisherComponent, data: { title: marker('Publishers') } },
     { path: 'publisher/:publisher', component: ComicComponent, data: { title: marker('Comics') } },
   ]),
