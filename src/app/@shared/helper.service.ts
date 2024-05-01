@@ -113,66 +113,17 @@ export class HelperService {
     return url;
   }
 
-  getComicHeroImageUrl(item: ComicResolved): string {
-    let url = '';
-
-    if (item?.hero == null) {
-      return url;
+  getComicHeroImageUrl(hero: string | undefined): string {
+    if (hero == null) {
+      return '';
     }
 
-    const hero = item.hero?.toLowerCase().replace(/ /g, '');
-    const supportedHeros: string[] = [
-      'zagor',
-      'dilandog',
-      'dampir',
-      'misterno',
-      'martimisterija',
-      'teksviler',
-      'bradbarron',
-      'timidasti',
-      'kitteler',
-      'velikiblek',
-      'kenparker',
-      'kapetanmiki',
-      'komandantmark',
-    ];
-
-    if (supportedHeros.includes(hero)) {
-      url = 'url("' + environment.assetPath + hero + '.png")';
+    const heroLower = hero.toLowerCase().replace(/ /g, '-');
+    if (this.isHeroSupported(heroLower)) {
+      return 'url("' + environment.assetPath + heroLower + '.png")';
     }
 
-    return url;
-  }
-
-  getComicHero2ImageUrl(item: ComicResolved): string {
-    let url = '';
-
-    if (item?.hero2 == null) {
-      return url;
-    }
-
-    const hero = item.hero2?.toLowerCase().replace(/ /g, '');
-    const supportedHeros: string[] = [
-      'zagor',
-      'dilandog',
-      'dampir',
-      'misterno',
-      'martimisterija',
-      'teksviler',
-      'bradbarron',
-      'timidasti',
-      'kitteler',
-      'velikiblek',
-      'kenparker',
-      'kapetanmiki',
-      'komandantmark',
-    ];
-
-    if (supportedHeros.includes(hero)) {
-      url = 'url("' + environment.assetPath + hero + '.png")';
-    }
-
-    return url;
+    return '';
   }
 
   calculateClass(item: ComicResolved | undefined) {
@@ -183,5 +134,25 @@ export class HelperService {
     }
 
     return ret;
+  }
+
+  isHeroSupported(hero: string): boolean {
+    const supportedHeros: string[] = [
+      'zagor',
+      'dilan-dog',
+      'dampir',
+      'mister-no',
+      'marti-misterija',
+      'teks-viler',
+      'brad-barron',
+      'tim-i-dasti',
+      'kit-teler',
+      'veliki-blek',
+      'ken-parker',
+      'kapetan-miki',
+      'komandant-mark',
+    ];
+
+    return supportedHeros.includes(hero);
   }
 }

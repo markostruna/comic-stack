@@ -8,6 +8,8 @@
           [src]="item.thumbnailPath"
           (click)="openDialog(item)"
           loading="lazy"
+          [matTooltip]="decodeURIComponent(item?.path)"
+          matTooltipShowDelay="500"
         />
         <div
           class="comic-publisher"
@@ -26,6 +28,7 @@
           matTooltipPosition="after"
           class="hero-circle"
           [style.background-image]="item.heroImageUrl"
+          matTooltipShowDelay="500"
         >
           {{ classHeroExists(item) ? '' : '?' }}
         </div>
@@ -36,6 +39,7 @@
           class="hero-circle-2"
           [style.background-image]="item.hero2ImageUrl"
           *ngIf="item?.hero2?.length > 0"
+          matTooltipShowDelay="500"
         >
           {{ classHero2Exists(item) ? '' : '?' }}
         </div>

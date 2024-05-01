@@ -142,4 +142,8 @@ export class ComicComponent implements OnInit {
 
     return ret;
   }
+
+  decodeURIComponent(url: string) {
+    return decodeURIComponent(url);
+  }
 }
