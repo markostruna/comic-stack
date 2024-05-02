@@ -3,6 +3,10 @@
 This project was generated with [ngX-Rocket](https://github.com/ngx-rocket/generator-ngx-rocket/)
 version 11.0.0
 
+# Live demo
+
+https://tusvob.ddns.net/comic-3
+
 # Getting started
 
 1. Go to project folder and install dependencies:

@@ -165,6 +165,8 @@ export class ConfigurationService {
       number: undefined,
       seqNumber: undefined,
       title: '',
+      titles: [],
+      titlesResolved: '',
       collection: ' ',
       hero: 'MISSING',
       fakeEntry: false,
@@ -208,6 +210,18 @@ export class ConfigurationService {
 
         resolved.heroImageUrl = this.helperService.getComicHeroImageUrl(resolved.hero);
         resolved.hero2ImageUrl = this.helperService.getComicHeroImageUrl(resolved.hero2);
+
+        resolved.titles = [];
+
+        if (resolved.title) {
+          const titles = resolved.title.split(';');
+          resolved.titles.push(...titles);
+        }
+
+        if (resolved.title2) {
+          const titles = resolved.title2.split(';');
+          resolved.titles.push(...titles);
+        }
 
         return resolved;
       }

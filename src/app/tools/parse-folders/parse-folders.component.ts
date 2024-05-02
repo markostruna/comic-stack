@@ -25,7 +25,7 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
     'number',
     'seqNumber',
     'hero',
-    'title',
+    'titlesResolved',
     'hero2',
     'title2',
     'collection',

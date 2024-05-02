@@ -158,6 +158,8 @@ export class PublisherService {
       collection: ' ',
       hero: 'MISSING',
       fakeEntry: false,
+      titles: [],
+      titlesResolved: '',
     };
 
     for (const config of this.filenameMatchConfigurations) {
@@ -195,6 +197,20 @@ export class PublisherService {
           resolved[fieldInfo.name] = fieldInfo.type === this.fieldTypes.number ? +curToken : curToken;
           index++;
         });
+
+        resolved.titles = [];
+
+        if (resolved.title) {
+          const titles = resolved.title.split(';');
+          resolved.titles.push(...titles);
+        }
+
+        if (resolved.title2) {
+          const titles = resolved.title2.split(';');
+          resolved.titles.push(...titles);
+        }
+
+        resolved.titlesResolved = resolved.titles.join(' / ');
 
         return resolved;
       }

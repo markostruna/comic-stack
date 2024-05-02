@@ -3,6 +3,8 @@ import { Comic } from './comic.model';
 export interface ComicResolved extends Comic {
   number?: number;
   seqNumber?: number;
+  titles: string[];
+  titlesResolved: string;
   title: string;
   hero: string;
   title2?: string;
