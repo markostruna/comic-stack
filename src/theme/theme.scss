@@ -133,8 +133,8 @@ body {
 }
 
 .cdk-overlay-pane {
-  // width: 200px !important;
-  // min-width: 200px !important;
+  width: 200px !important;
+  min-width: 200px !important;
   // transform: translateX(-17px) !important;
 }
 
@@ -158,3 +158,63 @@ app-search-comic {
   width: 100%;
   height: calc(100% - 240px);
 }
+
+.my-table {
+  .mat-header-row {
+    height: 36px;
+  }
+
+  .mat-row {
+    height: 36px;
+  }
+
+  .mat-header-cell {
+    text-transform: uppercase;
+    font-size: 12px;
+    padding-left: 5px;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    max-width: 300px;
+    overflow: hidden;
+    min-width: 100px;
+  }
+
+  .mat-cell {
+    font-size: 12px;
+    padding-left: 5px;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    max-width: 300px;
+    overflow: hidden;
+    min-width: 100px;
+  }
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  // max-width: 1000px;
+}
+
+.table-paginator {
+  width: 100%;
+  overflow: none;
+  // max-width: 1000px;
+}
+
+// tr.mat-header-row {
+//   height: 36px;
+// }
+
+// .mat-header-cell {
+//   text-transform: uppercase;
+//   font-size: 12px;
+//   padding-left: 5px !important;
+// }
+
+// .mat-cell {
+//   font-size: 12px;
+//   padding-left: 5px !important;
+// }
