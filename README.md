@@ -5,7 +5,7 @@ version 11.0.0
 
 # Live demo
 
-https://tusvob.ddns.net/comic-3
+http://tusvob.ddns.net/comic-3
 
 # Getting started
 
