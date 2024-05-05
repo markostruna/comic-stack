@@ -194,29 +194,18 @@
   font-size: 12px;
 }
 
-.hero-circle {
-  color: black;
-  background-color: white;
+.hero-container {
   position: absolute;
   left: -5px;
   bottom: -5px;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  background-color: white;
-  border: 1px solid black;
-  background-size: contain;
-  font-size: 32px;
-  padding-left: 8px;
-  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
 }
 
-.hero-circle-2 {
+.hero-circle {
   color: black;
   background-color: white;
-  position: absolute;
-  left: 33px;
-  bottom: -5px;
   border-radius: 50%;
   width: 36px;
   height: 36px;
@@ -229,18 +218,14 @@
 }
 
 .title {
-  /* font-weight: bold; */
   color: darkorange;
   font-size: 12px;
-  /* margin-top: 5px; */
-  // font-family: "Roboto";
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
   text-align: left;
   text-transform: none;
   line-height: 1.4;
   color: #fff;
-  /* margin: 15px; */
 }
 
 .pager {
@@ -260,10 +245,6 @@
 .example-viewport1 {
   height: 700px;
   width: 900px;
-  /* border: 1px solid black;
-  flex: content;
-  flex-direction: row;
-  flex-wrap: wrap; */
 }
 
 .download-circle {
@@ -283,5 +264,5 @@
 }
 
 ::ng-deep .mat-tooltip.mat-tooltip {
-  background-color: black; /* Replace with your desired color */
+  background-color: black;
 }

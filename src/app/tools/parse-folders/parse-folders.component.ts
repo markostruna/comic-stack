@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ConfigurationService } from '@app/@shared/configuration.service';
 import { ComicResolved, PublisherResolved } from '@app/@shared/models';
 import { PublisherService } from '@app/publisher/publisher.service';
 import { forEach } from 'lodash';
@@ -21,35 +22,19 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
   comics: ComicResolved[] = [];
 
   displayedColumns: string[] = [
-    'publisher',
-    'number',
-    'seqNumber',
-    'hero',
+    'publisherResolved',
+    'numberResolved',
+    'heroesResolved',
     'titlesResolved',
-    'hero2',
-    'title2',
-    'collection',
-    // 'thumbnailPath',
-    // 'currentBackgroundImage',
-    // 'coverPath',
-    // 'backgroundImageUrl',
-    // 'class',
-    // 'loaded',
-    // 'fakeEntry',
-    // 'heroImageUrl',
-    // 'hero2ImageUrl',
     'filename',
-    //    'originalFilename',
-    'extension',
     'missing',
-    //    'path',
   ];
 
   dataSource: MatTableDataSource<ComicResolved> = new MatTableDataSource();
 
   pageSizes = [5, 10, 25, 50, 100];
 
-  constructor(private publisherService: PublisherService) {}
+  constructor(private publisherService: PublisherService, private configurationService: ConfigurationService) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -79,12 +64,18 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
     });
 
     forkJoin(requests).subscribe((data) => {
+      const comics: ComicResolved[] = [];
+
       forEach(data, (resolvedComics) => {
-        this.comics.push(...resolvedComics);
-        this.dataSource = new MatTableDataSource(this.comics);
-        this.dataSource.sort = this.empTbSort;
-        this.dataSource.paginator = this.paginator;
+        comics.push(...resolvedComics);
       });
+
+      this.comics = comics;
+      this.dataSource = new MatTableDataSource(this.comics);
+      this.dataSource.sort = this.empTbSort;
+      this.dataSource.paginator = this.paginator;
+
+      this.configurationService.writeFile(this.publishers, this.comics);
     });
   }
 }

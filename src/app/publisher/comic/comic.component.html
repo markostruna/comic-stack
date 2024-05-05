@@ -23,25 +23,17 @@
           {{ item.collection }}
         </div>
 
-        <div
-          [matTooltip]="item?.hero"
-          matTooltipPosition="after"
-          class="hero-circle"
-          [style.background-image]="item.heroImageUrl"
-          matTooltipShowDelay="500"
-        >
-          {{ classHeroExists(item) ? '' : '?' }}
-        </div>
-
-        <div
-          [matTooltip]="item?.hero2"
-          matTooltipPosition="after"
-          class="hero-circle-2"
-          [style.background-image]="item.hero2ImageUrl"
-          *ngIf="item?.hero2?.length > 0"
-          matTooltipShowDelay="500"
-        >
-          {{ classHero2Exists(item) ? '' : '?' }}
+        <div class="hero-container">
+          <div
+            [matTooltip]="hero.name"
+            matTooltipPosition="after"
+            class="hero-circle"
+            [style.background-image]="hero.imagePath"
+            matTooltipShowDelay="500"
+            *ngFor="let hero of item?.heroes"
+          >
+            {{ classHeroExists(hero) ? '' : '?' }}
+          </div>
         </div>
 
         <div class="download-circle" *ngIf="!item.missing">
@@ -68,24 +60,12 @@
         </div>
 
         <ng-container *ngIf="item.titles?.length > 1">
-          <div class="title" *ngFor="let item of item.titles">&#183; {{ item }}</div>
+          <div class="title" *ngFor="let item of item.titles">&#x25cf; {{ item }}</div>
         </ng-container>
 
         <ng-container *ngIf="item.titles?.length === 1">
           <div class="title">{{ item.titles[0] }}</div>
         </ng-container>
-
-        <!-- <div class="hero">{{ item.hero }}</div> -->
-        <!-- <div class="title">{{ item.title }}</div> -->
-        <!-- <div class="hero" *ngIf="item.hero2">{{ item.hero2 }}</div> -->
-        <!-- <div class="title" *ngIf="item.title2">{{ item.title2 }}</div> -->
-        <!-- <a
-          href="{{ environment.serverUrl + item.path }}"
-          style="float: right; color: white; position: absolute; bottom: 0; right: 0"
-          *ngIf="!item.missing"
-        >
-          <mat-icon class="icon"> download </mat-icon>
-        </a> -->
       </div>
 
       <div style="height: 60px" *ngIf="item.fakeEntry">

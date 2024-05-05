@@ -1,14 +1,18 @@
 import { Comic } from './comic.model';
 
+export interface Hero {
+  name: string;
+  imagePath: string;
+}
+
 export interface ComicResolved extends Comic {
   number?: number;
   seqNumber?: number;
+  numberResolved: string;
   titles: string[];
   titlesResolved: string;
-  title: string;
-  hero: string;
-  title2?: string;
-  hero2?: string;
+  heroes: Hero[];
+  heroesResolved: string;
   collection?: string;
   thumbnailPath: string;
   currentBackgroundImage: string;
@@ -17,7 +21,6 @@ export interface ComicResolved extends Comic {
   class: string;
   loaded: boolean;
   fakeEntry: boolean;
-  heroImageUrl?: string;
-  hero2ImageUrl?: string;
+  publisherResolved: string;
   [key: string]: any;
 }

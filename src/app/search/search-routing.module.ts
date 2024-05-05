@@ -6,7 +6,10 @@ import { Shell } from '@app/shell/shell.service';
 import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [
-  Shell.childRoutes([{ path: 'search', component: SearchComponent, data: { title: marker('Search') } }]),
+  Shell.childRoutes([
+    { path: '', redirectTo: '/publisher', pathMatch: 'full' },
+    { path: 'search', component: SearchComponent, data: { title: marker('Search') } },
+  ]),
 ];
 
 @NgModule({

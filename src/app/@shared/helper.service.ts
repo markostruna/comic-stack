@@ -126,16 +126,6 @@ export class HelperService {
     return '';
   }
 
-  calculateClass(item: ComicResolved | undefined) {
-    let ret = '';
-
-    if (item?.hero) {
-      ret = item.hero.toLowerCase().replace(/ /g, '');
-    }
-
-    return ret;
-  }
-
   isHeroSupported(hero: string): boolean {
     const supportedHeros: string[] = [
       'zagor',

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { ComicResolved } from '@app/@shared/models';
+import { ComicResolved, Hero } from '@app/@shared/models';
 import { environment } from '@env/environment';
 import { PublisherService } from '../publisher.service';
 
@@ -85,7 +85,7 @@ export class ComicComponent implements OnInit {
     this.numPreloadedComics += this.pageSize;
   }
 
-  classHeroExists(item: ComicResolved | undefined) {
+  classHeroExists(hero: Hero | undefined) {
     const supportedHeros: string[] = [
       'zagor',
       'dilandog',
@@ -102,45 +102,11 @@ export class ComicComponent implements OnInit {
       'komandantmark',
     ];
 
-    if (item?.hero && supportedHeros.includes(item.hero?.toLowerCase().replace(/ /g, ''))) {
+    if (hero?.name && supportedHeros.includes(hero?.name?.toLowerCase().replace(/ /g, ''))) {
       return true;
     }
 
     return false;
-  }
-
-  classHero2Exists(item: ComicResolved | undefined) {
-    const supportedHeros: string[] = [
-      'zagor',
-      'dilandog',
-      'dampir',
-      'misterno',
-      'martimisterija',
-      'teksviler',
-      'bradbarron',
-      'timidasti',
-      'kitteler',
-      'velikiblek',
-      'kenparker',
-      'kapetanmiki',
-      'komandantmark',
-    ];
-
-    if (item?.hero2 && supportedHeros.includes(item.hero2?.toLowerCase().replace(/ /g, ''))) {
-      return true;
-    }
-
-    return false;
-  }
-
-  calculateClass(item: ComicResolved | undefined) {
-    let ret = '';
-
-    if (item?.hero) {
-      ret = item.hero.toLowerCase().replace(/ /g, '');
-    }
-
-    return ret;
   }
 
   decodeURIComponent(url: string) {

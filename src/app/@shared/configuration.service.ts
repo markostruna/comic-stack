@@ -4,6 +4,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { BrowsingService } from './browsing.service';
 import { HelperService } from './helper.service';
 import { Comic, ComicResolved, Publisher, PublisherResolved } from './models';
+import { HttpClient } from '@angular/common/http';
 
 export interface fieldTypes {
   number: number;
@@ -89,7 +90,11 @@ export class ConfigurationService {
     { fields: ['hero', 'seqNumber', 'title'] },
   ];
 
-  constructor(private browsingService: BrowsingService, private helperService: HelperService) {}
+  constructor(
+    private browsingService: BrowsingService,
+    private helperService: HelperService,
+    private http: HttpClient
+  ) {}
 
   getPublishers(path: string): Observable<PublisherResolved[]> {
     console.log('getPublishers initiated. Path: (', path, ')');
@@ -164,12 +169,15 @@ export class ConfigurationService {
       loaded: false,
       number: undefined,
       seqNumber: undefined,
-      title: '',
       titles: [],
       titlesResolved: '',
-      collection: ' ',
-      hero: 'MISSING',
+      collection: '',
+      heroes: [],
+      heroesResolved: '',
       fakeEntry: false,
+      publisherResolved: '',
+      numberResolved: '',
+      heroImages: [],
     };
 
     for (const config of this.filenameMatchConfigurations) {
@@ -204,31 +212,69 @@ export class ConfigurationService {
             return;
           }
 
-          resolved[fieldInfo.name] = fieldInfo.type === this.fieldTypes.number ? +curToken : curToken;
+          switch (fieldInfo.name) {
+            case 'title':
+            case 'title2':
+              resolved['titles'].push(curToken);
+              break;
+            case 'hero':
+            case 'hero2':
+              resolved['heroes'].push({ name: curToken, imagePath: this.helperService.getComicHeroImageUrl(curToken) });
+              break;
+            default:
+              resolved[fieldInfo.name] = fieldInfo.type === this.fieldTypes.number ? +curToken : curToken;
+          }
           index++;
         });
 
-        resolved.heroImageUrl = this.helperService.getComicHeroImageUrl(resolved.hero);
-        resolved.hero2ImageUrl = this.helperService.getComicHeroImageUrl(resolved.hero2);
+        resolved.titlesResolved = resolved.titles.join(' / ');
+        resolved.heroesResolved = resolved.heroes?.map((hero) => hero?.name)?.join(', ');
+        resolved.publisherResolved = resolved.publisher;
 
-        resolved.titles = [];
-
-        if (resolved.title) {
-          const titles = resolved.title.split(';');
-          resolved.titles.push(...titles);
+        if (resolved.collection) {
+          resolved.publisherResolved += ' / ' + resolved.collection;
         }
 
-        if (resolved.title2) {
-          const titles = resolved.title2.split(';');
-          resolved.titles.push(...titles);
+        resolved.numberResolved = resolved?.number?.toString() ?? '';
+
+        if (resolved.seqNumber) {
+          resolved.numberResolved +=
+            (resolved.numberResolved.length > 0 ? '-' : '') + resolved.seqNumber?.toString() ?? '';
         }
 
         return resolved;
       }
     }
 
-    resolved.title = comic.path;
+    if (resolved.titles?.length === 0) {
+      resolved.titles.push(comic.path);
+    }
 
     return resolved;
+  }
+
+  readFile() {
+    this.http.get(environment.assetPath + 'config.json', { responseType: 'text' }).subscribe((data: string) => {
+      console.log(data);
+    });
+  }
+
+  writeFile(publishers: PublisherResolved[], comics: ComicResolved[]) {
+    const myText = 'Hi!\r\n';
+    //fs.writeFileSync('./config.json', myText);
+
+    // const json = {
+    //   publishers: publishers,
+    //   comics: comics,
+    // };
+
+    // // const fileContent = JSON.stringify(json, null, 2);
+    // const fileContent = 'Hello world';
+    // const filepath = '/assets/config.json';
+
+    // this.http.post(filepath, fileContent, { responseType: 'text' })
+    //   .subscribe(() => {
+    //     console.log('File written');
+    //   });
   }
 }

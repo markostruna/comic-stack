@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ConfigurationService } from '@app/@shared/configuration.service';
+import { HelperService } from '@app/@shared/helper.service';
 import { Comic, ComicResolved, Publisher, PublisherResolved } from '@app/@shared/models';
 import { environment } from '@env/environment';
 import { catchError, map, Observable, of } from 'rxjs';
@@ -88,7 +89,7 @@ export class PublisherService {
     { fields: ['hero', 'seqNumber', 'title'] },
   ];
 
-  constructor(private configurationService: ConfigurationService) {}
+  constructor(private configurationService: ConfigurationService, private helperService: HelperService) {}
 
   getPublishers(path: string, useCache: boolean = true): Observable<PublisherResolved[]> {
     console.log('getPublishers initiated. Path: (', path);
@@ -154,12 +155,14 @@ export class PublisherService {
       loaded: false,
       number: undefined,
       seqNumber: undefined,
-      title: '',
-      collection: ' ',
-      hero: 'MISSING',
-      fakeEntry: false,
+      heroes: [],
+      heroesResolved: '',
       titles: [],
       titlesResolved: '',
+      collection: '',
+      fakeEntry: false,
+      publisherResolved: '',
+      numberResolved: '',
     };
 
     for (const config of this.filenameMatchConfigurations) {
@@ -194,29 +197,43 @@ export class PublisherService {
             return;
           }
 
-          resolved[fieldInfo.name] = fieldInfo.type === this.fieldTypes.number ? +curToken : curToken;
+          switch (fieldInfo.name) {
+            case 'title':
+            case 'title2':
+              resolved['titles'].push(curToken);
+              break;
+            case 'hero':
+            case 'hero2':
+              resolved['heroes'].push({ name: curToken, imagePath: this.helperService.getComicHeroImageUrl(curToken) });
+              break;
+            default:
+              resolved[fieldInfo.name] = fieldInfo.type === this.fieldTypes.number ? +curToken : curToken;
+          }
           index++;
         });
 
-        resolved.titles = [];
-
-        if (resolved.title) {
-          const titles = resolved.title.split(';');
-          resolved.titles.push(...titles);
-        }
-
-        if (resolved.title2) {
-          const titles = resolved.title2.split(';');
-          resolved.titles.push(...titles);
-        }
-
         resolved.titlesResolved = resolved.titles.join(' / ');
+        resolved.heroesResolved = resolved.heroes?.map((hero) => hero?.name)?.join(', ');
+        resolved.publisherResolved = resolved.publisher;
+
+        if (resolved.collection) {
+          resolved.publisherResolved += ' / ' + resolved.collection;
+        }
+
+        resolved.numberResolved = resolved?.number?.toString() ?? '';
+
+        if (resolved.seqNumber) {
+          resolved.numberResolved +=
+            (resolved.numberResolved.length > 0 ? '-' : '') + resolved.seqNumber?.toString() ?? '';
+        }
 
         return resolved;
       }
     }
 
-    resolved.title = comic.path;
+    if (resolved.titles?.length === 0) {
+      resolved.titles.push(comic.path);
+    }
 
     return resolved;
   }
