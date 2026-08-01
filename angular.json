@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "comic-3": {
+    "comic-stack": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -79,10 +79,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "comic-3:build:production"
+              "browserTarget": "comic-stack:build:production"
             },
             "development": {
-              "browserTarget": "comic-3:build:development"
+              "browserTarget": "comic-stack:build:development"
             },
             "ci": {
               "progress": false
@@ -93,7 +93,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "comic-3:build"
+            "browserTarget": "comic-stack:build"
           }
         },
         "test": {
@@ -129,11 +129,11 @@
         "cypress-run": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "devServerTarget": "comic-3:serve"
+            "devServerTarget": "comic-stack:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "comic-3:serve:production"
+              "devServerTarget": "comic-stack:serve:production"
             }
           }
         },
@@ -147,16 +147,19 @@
         "e2e": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "devServerTarget": "comic-3:serve"
+            "devServerTarget": "comic-stack:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "comic-3:serve:production"
+              "devServerTarget": "comic-stack:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy"
         }
       }
     }
   },
-  "defaultProject": "comic-3"
+  "defaultProject": "comic-stack"
 }
