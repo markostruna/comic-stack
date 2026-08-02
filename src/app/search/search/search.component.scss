@@ -19,7 +19,7 @@
   min-width: 200px;
   flex: 0 0 200px;
   font-size: 0.95rem;
-  color: #ffffff;
+  color: #fff;
   margin: 0;
 }
 
@@ -48,8 +48,8 @@
 ::ng-deep .search-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined,
 ::ng-deep .search-field .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex {
   padding: 0 !important;
-  background-color: #ffffff !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  background-color: #fff !important;
+  border: 1px solid rgb(0 0 0 / 12%) !important;
   border-radius: 5px !important;
   min-height: 39.5px !important;
   height: 39.5px !important;
@@ -80,8 +80,8 @@
   line-height: 13.5px !important;
   padding: 0 !important;
   margin: 0 !important;
-  color: rgba(0, 0, 0, 0.87) !important;
-  -webkit-text-fill-color: rgba(0, 0, 0, 0.87) !important;
+  color: rgb(0 0 0 / 87%) !important;
+  -webkit-text-fill-color: rgb(0 0 0 / 87%) !important;
   background: transparent !important;
   box-shadow: none !important;
   text-shadow: none !important;
@@ -110,10 +110,10 @@
 
 .search-form mat-card {
   width: 100%;
-  background: rgb(86, 120, 173) !important;
+  background: rgb(86 120 173) !important;
   border: none !important;
   border-radius: 4px !important;
-  box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%) !important;
   padding: 16px 16px 12px !important;
 }
 
@@ -131,7 +131,7 @@
 
 .search-field .mat-mdc-form-field-infix,
 .search-field .mat-form-field-infix {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border: none !important;
   padding: 8px 10px !important;
   min-height: 39.5px !important;
@@ -161,9 +161,9 @@
   line-height: 13.5px !important;
   margin: 0 !important;
   padding: 0 !important;
-  color: #111111 !important;
-  -webkit-text-fill-color: #111111 !important;
-  background-color: #ffffff !important;
+  color: #111 !important;
+  -webkit-text-fill-color: #111 !important;
+  background-color: #fff !important;
 }
 
 .search-field {
@@ -210,7 +210,7 @@
 //   padding: 1em;
 // }
 
-/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version.*/
+/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
 ::ng-deep .mat-select-search-inner {
   position: absolute;
   top: 25px !important;
@@ -218,7 +218,7 @@
   padding-left: 16px;
 }
 
-/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version.*/
+/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
 ::ng-deep .mat-select-search-input {
   padding: 0 !important;
 }

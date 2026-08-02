@@ -1,5 +1,5 @@
 .rootlink {
-  display: -ms-flexbox;
+  display: flexbox;
   display: flex;
   -ms-flex-align: center;
   align-items: center;
@@ -17,8 +17,8 @@
   text-transform: uppercase;
   line-height: 1.4;
   color: #fff;
-  background-color: rgba(0, 0, 0, 0.45);
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.35);
+  background-color: rgb(0 0 0 / 45%);
+  box-shadow: 0 0 2px rgb(0 0 0 / 35%);
   border: 2px solid transparent;
   transition: all 1s ease-in-out;
   background-size: contain;
@@ -29,10 +29,10 @@
 
 .rootlink:hover {
   background-color: black;
-  box-shadow: 0 0 32px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 32px rgb(0 0 0 / 35%);
   border: 2px solid yellow;
   transition: border 0.2s ease, background-color 0.5s ease, all 0.3s ease;
-  background-position-y: 0px;
+  background-position-y: 0;
   cursor: pointer;
 }
 
@@ -42,17 +42,17 @@
 }
 
 .veseli-cetvrtak {
-  background-image: url(/assets/veseli-cetvrtak.jpg);
+  background-image: url("/assets/veseli-cetvrtak.jpg");
 }
 
 .lunov-magnus-strip {
-  background-image: url(/assets/lunov-magnus-strip.jpg);
+  background-image: url("/assets/lunov-magnus-strip.jpg");
 }
 
 .slobodna-dalmacija {
-  background-image: url(/assets/slobodna-dalmacija.jpg);
+  background-image: url("/assets/slobodna-dalmacija.jpg");
 }
 
 .zlatna-serija {
-  background-image: url(/assets/zlatna-serija.jpg);
+  background-image: url("/assets/zlatna-serija.jpg");
 }

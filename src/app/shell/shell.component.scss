@@ -60,8 +60,6 @@
   justify-content: center;
 }
 
-.shell-toolbar button.mat-mdc-icon-button,
-.shell-toolbar button.mdc-icon-button,
 .shell-toolbar .mat-mdc-icon-button,
 .shell-toolbar .mdc-icon-button {
   width: 40px !important;
@@ -72,8 +70,7 @@
   box-sizing: border-box !important;
 }
 
-.shell-sidenav mat-toolbar.mat-primary,
-.shell-sidenav mat-toolbar {
+.shell-sidenav .mat-toolbar {
   background: #2196f3 !important;
   color: white !important;
 }
@@ -90,11 +87,10 @@
   padding: 0;
 }
 
-.shell-sidenav a.mat-list-item,
 .shell-sidenav .mat-mdc-list-item {
   display: block;
   width: 100%;
-  color: rgb(255, 255, 255) !important;
+  color: rgb(255 255 255) !important;
   font-family: Roboto, "Helvetica Neue", sans-serif !important;
   font-size: 16px !important;
   font-weight: 700 !important;
@@ -107,17 +103,13 @@
   transition: background-color 160ms ease, color 160ms ease;
 }
 
-.shell-sidenav a.mat-list-item .mat-line,
 .shell-sidenav .mat-mdc-list-item .mat-line,
-.shell-sidenav a.mat-list-item span,
 .shell-sidenav .mat-mdc-list-item span,
-.shell-sidenav a.mat-list-item .mat-list-item-content,
 .shell-sidenav .mat-mdc-list-item .mat-list-item-content,
-.shell-sidenav a.mat-list-item .mat-list-text,
 .shell-sidenav .mat-mdc-list-item .mat-list-text,
 .shell-sidenav .mat-mdc-list-item .mat-mdc-list-item-unscoped-content,
 .shell-sidenav .mat-mdc-list-item .mdc-list-item__primary-text {
-  color: rgb(255, 255, 255) !important;
+  color: rgb(255 255 255) !important;
   font-family: inherit !important;
   font-size: 16px !important;
   font-weight: 700 !important;
@@ -125,24 +117,20 @@
   letter-spacing: normal !important;
 }
 
-.shell-sidenav a.mat-list-item:hover,
-.shell-sidenav a.mat-list-item:focus,
 .shell-sidenav .mat-mdc-list-item:hover,
 .shell-sidenav .mat-mdc-list-item:focus {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgb(255 255 255 / 8%) !important;
 }
 
-.shell-sidenav a.mat-list-item.active,
 .shell-sidenav .mat-mdc-list-item.active {
   background: #2196f3 !important;
   color: white !important;
 }
 
-.shell-sidenav a.mat-list-item.active .mat-line,
-.shell-sidenav a.mat-list-item.active span,
 .shell-sidenav .mat-mdc-list-item.active .mat-line,
-.shell-sidenav .mat-mdc-list-item.active span {
-  color: white !important;
+.shell-sidenav .mat-mdc-list-item.active span,
+.shell-sidenav .mat-mdc-list-item.active .mdc-list-item__primary-text {
+  color: white;
   font-weight: 700;
 }
 

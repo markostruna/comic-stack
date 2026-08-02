@@ -45,6 +45,7 @@ app-shell {
   width: 100%;
   height: 100%;
   padding: 1rem;
+  --mat-sidenav-content-background-color: transparent !important;
 }
 
 .width-80 {
@@ -56,48 +57,50 @@ app-shell {
 }
 
 .mat-mdc-card {
-  background-color: rgba(83, 110, 164, 0.24) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background-color: rgb(83 110 164 / 24%) !important;
+  border: 1px solid rgb(255 255 255 / 14%) !important;
 }
 
-.page mat-card[appearance="outlined"] {
-  background-color: rgba(56, 90, 146, 0.96) !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
+.page .mat-mdc-card[appearance="outlined"] {
+  background-color: rgb(56 90 146 / 96%) !important;
+  border-color: rgb(255 255 255 / 14%) !important;
 }
 
 .mat-drawer {
-  background-color: black;
+  --mat-sidenav-container-background-color: black;
+  //  background-color: black;
   color: white;
 }
 
 .mat-drawer-container {
   background-color: unset;
+  --mat-sidenav-content-background-color: transparent;
 }
 
 /*
  TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.
  */
-.mat-form-field-appearance-outline .mat-form-field-outline {
+.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
   background-color: white;
   border-radius: 5px;
-  border: 1px solid rgba(0, 0, 0, 0.18);
+  border: 1px solid rgb(0 0 0 / 18%);
 }
 
 /*
  TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.
  */
-.mat-form-field-appearance-outline .mat-form-field-infix {
+.mat-mdc-form-field-appearance-outline .mat-mdc-form-field-infix {
   padding: 0.75rem 0.9rem;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgb(255 255 255 / 95%);
   border-radius: 8px;
 }
 
-.mat-form-field-appearance-outline .mat-mdc-floating-label {
-  color: rgba(0, 0, 0, 0.6);
+.mat-mdc-form-field-appearance-outline .mat-mdc-floating-label {
+  color: rgb(0 0 0 / 60%);
   font-size: 0.95rem;
 }
 
-.mat-mdc-form-field-appearance-outline.mat-mdc-focused .mat-form-field-outline {
+.mat-mdc-form-field-appearance-outline.mat-mdc-focused .mat-mdc-form-field-outline {
   border-color: mat-color($app-primary, 500);
 }
 
@@ -109,9 +112,9 @@ app-shell {
 .mat-mdc-select-panel,
 .mat-mdc-menu-panel {
   background-color: #fff;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgb(0 0 0 / 87%);
   border-radius: 12px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 15%);
 }
 
 .mat-mdc-select-panel .mat-mdc-option,
@@ -126,17 +129,17 @@ app-shell {
 .mat-mdc-select-panel .mat-mdc-option.mat-selected,
 .mat-mdc-menu-panel .mat-mdc-option.mat-selected {
   background-color: rgba(mat-color($app-primary, 500), 0.12);
-  color: rgba(0, 0, 0, 0.95);
+  color: rgb(0 0 0 / 95%);
 }
 
 .mat-mdc-select-panel .mat-mdc-option:hover,
 .mat-mdc-menu-panel .mat-mdc-option:hover {
-  background-color: rgba(0, 0, 0, 0.04);
+  background-color: rgb(0 0 0 / 4%);
 }
 
 .mat-mdc-select-panel .mat-mdc-option-text,
 .mat-mdc-menu-panel .mat-mdc-option-text {
-  color: rgba(0, 0, 0, 0.87);
+  color: rgb(0 0 0 / 87%);
 }
 
 .mat-mdc-select-panel .mat-mdc-option .mat-mdc-selection-indicator,
@@ -146,7 +149,7 @@ app-shell {
 
 .mat-mdc-select-panel .mat-mdc-option.mat-mdc-active .mat-mdc-option-text,
 .mat-mdc-menu-panel .mat-mdc-option.mat-mdc-active .mat-mdc-option-text {
-  color: rgba(0, 0, 0, 0.95);
+  color: rgb(0 0 0 / 95%);
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-wrapper {
@@ -164,11 +167,11 @@ app-shell {
 }
 
 .mat-mdc-form-field-label {
-  color: rgba(0, 0, 0, 0.72);
+  color: rgb(0 0 0 / 72%);
 }
 
 .mat-mdc-select-value-text {
-  color: rgba(0, 0, 0, 0.9);
+  color: rgb(0 0 0 / 90%);
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-end,
@@ -177,7 +180,7 @@ app-shell {
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-gap {
-  border-top-color: rgba(0, 0, 0, 0.18);
+  border-top-color: rgb(0 0 0 / 18%);
 }
 
 .mat-mdc-form-field-appearance-outline.mat-mdc-focused .mat-mdc-form-field-outline-gap {
@@ -186,7 +189,7 @@ app-shell {
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-leading,
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-trailing {
-  border-color: rgba(0, 0, 0, 0.18);
+  border-color: rgb(0 0 0 / 18%);
 }
 
 .mat-mdc-form-field-appearance-outline.mat-mdc-focused .mat-mdc-form-field-outline-leading,
@@ -207,7 +210,7 @@ app-shell {
 }
 
 .mat-mdc-menu-panel .mat-mdc-menu-item:hover {
-  background-color: rgba(0, 0, 0, 0.06);
+  background-color: rgb(0 0 0 / 6%);
 }
 
 .mat-mdc-menu-panel .mat-mdc-menu-item.mat-mdc-menu-item-highlighted {
@@ -233,7 +236,7 @@ app-shell {
 
 .mat-mdc-select-value-text,
 .mat-mdc-input-element {
-  color: rgba(0, 0, 0, 0.92);
+  color: rgb(0 0 0 / 92%);
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
@@ -242,11 +245,11 @@ app-shell {
 
 .mat-mdc-select-panel,
 .mat-mdc-menu-panel {
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgb(0 0 0 / 8%);
 }
 
 .mat-select-search-input {
-  color: rgba(0, 0, 0, 0.95) !important;
+  color: rgb(0 0 0 / 95%) !important;
 }
 
 .mat-select-search-inner {
@@ -258,11 +261,11 @@ app-shell {
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-infix:hover {
-  background-color: rgba(255, 255, 255, 1);
+  background-color: rgb(255 255 255 / 100%);
 }
 
 .mat-mdc-select-panel .mat-mdc-option.mat-mdc-selected .mat-mdc-option-text {
-  color: rgba(0, 0, 0, 0.95);
+  color: rgb(0 0 0 / 95%);
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-wrapper {
@@ -309,12 +312,12 @@ app-shell {
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-gap {
-  border-top-color: rgba(0, 0, 0, 0.18);
+  border-top-color: rgb(0 0 0 / 18%);
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-leading,
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-trailing {
-  border-color: rgba(0, 0, 0, 0.18);
+  border-color: rgb(0 0 0 / 18%);
 }
 
 .mat-mdc-input-element,
@@ -329,11 +332,11 @@ app-shell {
 }
 
 .mat-mdc-menu-panel .mat-mdc-menu-item {
-  color: rgba(0, 0, 0, 0.87);
+  color: rgb(0 0 0 / 87%);
 }
 
 .mat-mdc-menu-panel .mat-mdc-menu-item:hover {
-  background-color: rgba(0, 0, 0, 0.06);
+  background-color: rgb(0 0 0 / 6%);
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-floating-label {
@@ -358,7 +361,7 @@ app-shell {
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline:not(.mat-mdc-form-field-outline-gap) {
-  border-color: rgba(0, 0, 0, 0.18);
+  border-color: rgb(0 0 0 / 18%);
 }
 
 .mat-mdc-form-field-appearance-outline.mat-mdc-focused
@@ -366,23 +369,23 @@ app-shell {
   border-color: mat-color($app-primary, 500);
 }
 
-.mat-mdc-input-element::-webkit-input-placeholder,
-.mat-mdc-text-field-input::-webkit-input-placeholder {
-  color: rgba(0, 0, 0, 0.54);
+.mat-mdc-input-element::placeholder,
+.mat-mdc-text-field-input::placeholder {
+  color: rgb(0 0 0 / 54%);
 }
 
 .mat-mdc-input-element::placeholder,
 .mat-mdc-text-field-input::placeholder {
-  color: rgba(0, 0, 0, 0.54);
+  color: rgb(0 0 0 / 54%);
 }
 
 .mat-mdc-select-panel,
 .mat-mdc-menu-panel {
-  background-color: rgba(250, 250, 250, 0.96) !important;
-  color: rgba(0, 0, 0, 0.87) !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  background-color: rgb(250 250 250 / 96%) !important;
+  color: rgb(0 0 0 / 87%) !important;
+  border: 1px solid rgb(0 0 0 / 12%) !important;
   border-radius: 14px !important;
-  box-shadow: 0 12px 45px rgba(0, 0, 0, 0.18) !important;
+  box-shadow: 0 12px 45px rgb(0 0 0 / 18%) !important;
   min-width: 240px !important;
 }
 
@@ -393,7 +396,7 @@ app-shell {
   padding: 0.75rem 1rem !important;
   font-size: 0.97rem !important;
   font-family: Roboto, "Helvetica Neue", sans-serif !important;
-  color: rgba(0, 0, 0, 0.87) !important;
+  color: rgb(0 0 0 / 87%) !important;
 }
 
 .mat-mdc-select-panel .mat-mdc-option.mat-mdc-active,
@@ -406,23 +409,23 @@ app-shell {
 .mat-mdc-select-panel .mat-mdc-option:hover,
 .mat-mdc-menu-panel .mat-mdc-option:hover,
 .mat-mdc-menu-panel .mat-mdc-menu-item:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  background-color: rgb(0 0 0 / 5%) !important;
 }
 
 .mat-mdc-select-panel .mat-mdc-option-text,
 .mat-mdc-menu-panel .mat-mdc-option-text {
-  color: rgba(0, 0, 0, 0.92) !important;
+  color: rgb(0 0 0 / 92%) !important;
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-infix {
-  background-color: rgba(246, 248, 252, 0.9) !important;
+  background-color: rgb(246 248 252 / 90%) !important;
   border-radius: 12px !important;
   padding: 0.9rem 1rem !important;
   min-height: 48px !important;
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-floating-label {
-  color: rgba(0, 0, 0, 0.64);
+  color: rgb(0 0 0 / 64%);
   font-size: 0.95rem;
 }
 
@@ -432,7 +435,7 @@ app-shell {
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-leading,
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-trailing {
-  border-color: rgba(0, 0, 0, 0.18);
+  border-color: rgb(0 0 0 / 18%);
 }
 
 .mat-mdc-form-field-appearance-outline.mat-mdc-focused .mat-mdc-form-field-outline-leading,
@@ -445,12 +448,12 @@ app-shell {
 .mat-mdc-select-value-text {
   font-size: 0.97rem;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  color: rgba(0, 0, 0, 0.92);
+  color: rgb(0 0 0 / 92%);
 }
 
 .mat-mdc-select-panel .mat-mdc-option.mat-mdc-active .mat-mdc-option-text,
 .mat-mdc-menu-panel .mat-mdc-option.mat-mdc-active .mat-mdc-option-text {
-  color: rgba(0, 0, 0, 0.95);
+  color: rgb(0 0 0 / 95%);
   font-weight: 600;
 }
 
@@ -468,7 +471,7 @@ app-shell {
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-gap {
-  border-top-color: rgba(0, 0, 0, 0.18);
+  border-top-color: rgb(0 0 0 / 18%);
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-wrapper {
@@ -484,7 +487,7 @@ app-shell {
 }
 
 .mat-select-search-input {
-  color: rgba(0, 0, 0, 0.95) !important;
+  color: rgb(0 0 0 / 95%) !important;
 }
 
 .mat-select-search-inner {
@@ -501,18 +504,18 @@ app-shell {
 
 .mat-mdc-select-panel,
 .mat-mdc-menu-panel {
-  background-color: #ffffff !important;
-  color: rgba(0, 0, 0, 0.87) !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  background-color: #fff !important;
+  color: rgb(0 0 0 / 87%) !important;
+  border: 1px solid rgb(0 0 0 / 12%) !important;
   border-radius: 14px !important;
-  box-shadow: 0 14px 48px rgba(0, 0, 0, 0.16) !important;
+  box-shadow: 0 14px 48px rgb(0 0 0 / 16%) !important;
   min-width: 220px !important;
 }
 
 .mat-mdc-select-panel .mat-mdc-option,
 .mat-mdc-menu-panel .mat-mdc-option,
 .mat-mdc-menu-panel .mat-mdc-menu-item {
-  color: rgba(0, 0, 0, 0.87) !important;
+  color: rgb(0 0 0 / 87%) !important;
   background-color: transparent !important;
   min-height: 44px !important;
   padding: 0.75rem 1rem !important;
@@ -522,7 +525,7 @@ app-shell {
 .mat-mdc-select-panel .mat-mdc-option .mat-mdc-option-text,
 .mat-mdc-menu-panel .mat-mdc-option .mat-mdc-option-text,
 .mat-mdc-menu-panel .mat-mdc-menu-item {
-  color: rgba(0, 0, 0, 0.92) !important;
+  color: rgb(0 0 0 / 92%) !important;
 }
 
 .mat-mdc-select-panel .mat-mdc-option.mat-mdc-active,
@@ -536,11 +539,11 @@ app-shell {
 .mat-mdc-select-panel .mat-mdc-option:hover,
 .mat-mdc-menu-panel .mat-mdc-option:hover,
 .mat-mdc-menu-panel .mat-mdc-menu-item:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  background-color: rgb(0 0 0 / 5%) !important;
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-infix {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-radius: 10px !important;
   padding: 0.75rem 1rem !important;
   min-height: 44px !important;
@@ -549,7 +552,7 @@ app-shell {
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-leading,
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-trailing,
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-gap {
-  border-color: rgba(0, 0, 0, 0.18) !important;
+  border-color: rgb(0 0 0 / 18%) !important;
 }
 
 .mat-mdc-form-field-appearance-outline.mat-mdc-focused .mat-mdc-form-field-outline-leading,
@@ -568,21 +571,21 @@ app-shell {
 .mat-mdc-select-value-text {
   font-size: 0.96rem !important;
   font-family: Roboto, "Helvetica Neue", sans-serif !important;
-  color: rgba(0, 0, 0, 0.92) !important;
+  color: rgb(0 0 0 / 92%) !important;
   min-height: 28px !important;
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-floating-label,
 .mat-mdc-form-field-label {
-  color: rgba(0, 0, 0, 0.65) !important;
+  color: rgb(0 0 0 / 65%) !important;
   font-size: 0.94rem !important;
 }
 
-.mat-mdc-input-element::-webkit-input-placeholder,
+.matinput-element::-webkit-input-placeholder,
 .mat-mdc-text-field-input::-webkit-input-placeholder,
 .mat-mdc-input-element::placeholder,
 .mat-mdc-text-field-input::placeholder {
-  color: rgba(0, 0, 0, 0.54) !important;
+  color: rgb(0 0 0 / 54%) !important;
 }
 
 .form-field-wrapper {
@@ -628,21 +631,21 @@ app-shell {
 .cdk-overlay-pane .mat-mdc-menu-panel {
   width: auto !important;
   min-width: 220px !important;
-  background-color: rgba(255, 255, 255, 0.96) !important;
+  background-color: rgb(255 255 255 / 96%) !important;
 }
 
 .cdk-overlay-pane .mat-mdc-select-panel .mat-mdc-option,
 .cdk-overlay-pane .mat-mdc-menu-panel .mat-mdc-option,
 .cdk-overlay-pane .mat-mdc-menu-panel .mat-mdc-menu-item,
 .cdk-overlay-pane button.mat-mdc-menu-item {
-  color: rgba(0, 0, 0, 0.92) !important;
+  color: rgb(0 0 0 / 92%) !important;
 }
 
 .cdk-overlay-pane .mat-mdc-select-panel .mat-mdc-option:hover,
 .cdk-overlay-pane .mat-mdc-menu-panel .mat-mdc-option:hover,
 .cdk-overlay-pane .mat-mdc-menu-panel .mat-mdc-menu-item:hover,
 .cdk-overlay-pane button.mat-mdc-menu-item:hover {
-  background-color: rgba(47, 78, 137, 0.12) !important;
+  background-color: rgb(47 78 137 / 12%) !important;
 }
 
 .cdk-overlay-pane .mat-mdc-select-panel .mat-mdc-option.mat-mdc-active,
@@ -651,7 +654,7 @@ app-shell {
 .cdk-overlay-pane .mat-mdc-menu-panel .mat-mdc-option.mat-selected,
 .cdk-overlay-pane .mat-mdc-menu-panel .mat-mdc-menu-item.mat-mdc-menu-item-highlighted,
 .cdk-overlay-pane button.mat-mdc-menu-item.mat-mdc-menu-item-highlighted {
-  background-color: rgba(47, 78, 137, 0.16) !important;
+  background-color: rgb(47 78 137 / 16%) !important;
 }
 
 .cdk-virtual-scroll-content-wrapper {
@@ -675,6 +678,40 @@ app-search-comic {
   height: calc(100% - 240px);
 }
 
+/* Keep the primary page and menu surfaces visible across legacy and MDC Material hosts. */
+.page mat-card[appearance="outlined"],
+.page .mat-card[appearance="outlined"],
+.page .mat-mdc-card[appearance="outlined"] {
+  background-color: rgb(56 90 146 / 96%) !important;
+  border: 1px solid rgb(255 255 255 / 14%) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 24px rgb(0 0 0 / 18%) !important;
+}
+
+.mat-card,
+.mat-mdc-card {
+  background-color: rgb(83 110 164 / 24%) !important;
+  border: 1px solid rgb(255 255 255 / 14%) !important;
+}
+
+.mat-menu-panel,
+.mat-mdc-menu-panel,
+.mat-select-panel,
+.mat-mdc-select-panel {
+  background-color: #fff !important;
+  color: rgb(0 0 0 / 87%) !important;
+  border: 1px solid rgb(0 0 0 / 12%) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 14px 50px rgb(0 0 0 / 16%) !important;
+}
+
+.shell-sidenav mat-toolbar,
+.shell-sidenav mat-toolbar.mat-primary,
+.shell-sidenav .mat-toolbar {
+  background: #2196f3 !important;
+  color: white !important;
+}
+
 /* Strong final style overrides for the search layout and MDC controls */
 .shell-toolbar {
   background: transparent !important;
@@ -687,14 +724,14 @@ app-search-comic {
   color: white !important;
 }
 
-.page mat-card[appearance="outlined"] {
-  background-color: rgba(56, 90, 146, 0.96) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+.page .mat-mdc-card[appearance="outlined"] {
+  background-color: rgb(56 90 146 / 96%) !important;
+  border: 1px solid rgb(255 255 255 / 14%) !important;
   border-radius: 16px !important;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18) !important;
+  box-shadow: 0 12px 24px rgb(0 0 0 / 18%) !important;
 }
 
-.page mat-card[appearance="outlined"] .mat-card-content {
+.page .mat-mdc-card[appearance="outlined"] .mat-card-content {
   padding: 1rem 1.25rem !important;
 }
 
@@ -702,16 +739,16 @@ app-search-comic {
 .mat-form-field-appearance-outline .mat-form-field-infix,
 .mat-form-field-appearance-outline .mat-mdc-form-field-infix,
 .mat-mdc-form-field-appearance-outline .mat-form-field-infix {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-radius: 12px !important;
   padding: 0.55rem 0.9rem !important;
   min-height: 34px !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgb(0 0 0 / 8%) !important;
 }
 
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline,
 .mat-form-field-appearance-outline .mat-form-field-outline {
-  border-color: rgba(0, 0, 0, 0.14) !important;
+  border-color: rgb(0 0 0 / 14%) !important;
 }
 
 .mat-mdc-input-element,
@@ -725,16 +762,16 @@ app-search-comic {
 
 .mat-mdc-select-panel,
 .mat-mdc-menu-panel {
-  background-color: #ffffff !important;
-  color: rgba(0, 0, 0, 0.92) !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
-  box-shadow: 0 14px 50px rgba(0, 0, 0, 0.16) !important;
+  background-color: #fff !important;
+  color: rgb(0 0 0 / 92%) !important;
+  border: 1px solid rgb(0 0 0 / 12%) !important;
+  box-shadow: 0 14px 50px rgb(0 0 0 / 16%) !important;
 }
 
 .mat-mdc-menu-panel .mat-mdc-menu-item,
 .mat-mdc-select-panel .mat-mdc-option,
 .mat-mdc-menu-panel button.mat-mdc-menu-item {
-  color: rgba(0, 0, 0, 0.92) !important;
+  color: rgb(0 0 0 / 92%) !important;
 }
 
 .mat-mdc-menu-panel .mat-mdc-menu-item:hover,
@@ -743,16 +780,16 @@ app-search-comic {
 /* Final override block for Material MDC fields and panels */
 .mat-mdc-select-panel,
 .mat-mdc-menu-panel {
-  background-color: #ffffff !important;
-  color: rgba(0, 0, 0, 0.92) !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18) !important;
+  background-color: #fff !important;
+  color: rgb(0 0 0 / 92%) !important;
+  border: 1px solid rgb(0 0 0 / 12%) !important;
+  box-shadow: 0 16px 40px rgb(0 0 0 / 18%) !important;
 }
 
 .mat-mdc-menu-panel .mat-mdc-menu-item,
 .mat-mdc-menu-panel button.mat-mdc-menu-item,
 .mat-mdc-select-panel .mat-mdc-option {
-  color: rgba(0, 0, 0, 0.92) !important;
+  color: rgb(0 0 0 / 92%) !important;
   background-color: transparent !important;
 }
 
@@ -761,12 +798,12 @@ app-search-comic {
 .mat-mdc-select-panel .mat-mdc-option:hover,
 .mat-mdc-select-panel .mat-mdc-option.mat-mdc-active,
 .mat-mdc-select-panel .mat-mdc-option.mat-selected {
-  background-color: rgba(47, 78, 137, 0.1) !important;
+  background-color: rgb(47 78 137 / 10%) !important;
 }
 
 .mat-form-field-appearance-outline .mat-form-field-infix,
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-infix {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   border-radius: 10px !important;
   padding: 0.7rem 0.95rem !important;
   min-height: 42px !important;
@@ -774,7 +811,7 @@ app-search-comic {
 
 .mat-form-field-appearance-outline .mat-form-field-outline,
 .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
-  border-color: rgba(0, 0, 0, 0.14) !important;
+  border-color: rgb(0 0 0 / 14%) !important;
 }
 
 .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline .mat-form-field-outline-gap,
