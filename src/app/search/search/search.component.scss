@@ -20,6 +20,7 @@
 //   padding: 1em;
 // }
 
+/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version.*/
 ::ng-deep .mat-select-search-inner {
   position: absolute;
   top: 25px !important;
@@ -27,6 +28,7 @@
   padding-left: 16px;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version.*/
 ::ng-deep .mat-select-search-input {
   padding: 0 !important;
 }

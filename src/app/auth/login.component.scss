@@ -1,4 +1,4 @@
-@import "src/theme/theme-variables";
+@import "../../theme/theme-variables";
 
 :host {
   display: flex;
@@ -15,7 +15,7 @@
 }
 
 .login-container,
-.mat-form-field {
+.mat-mdc-form-field {
   width: 100%;
 }
 

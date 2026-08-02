@@ -5,7 +5,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ConfigurationService } from '@app/@shared/configuration.service';
 import { ComicResolved, PublisherResolved } from '@app/@shared/models';
 import { PublisherService } from '@app/publisher/publisher.service';
-import { forEach } from 'lodash';
 import { Observable, Subscription, forkJoin } from 'rxjs';
 
 @Component({
@@ -58,7 +57,7 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
     const requests: Observable<ComicResolved[]>[] = [];
     this.comics = [];
 
-    forEach(this.publishers, (publisher) => {
+    this.publishers.forEach((publisher) => {
       const comicsPath = this.publishersFolder + publisher.name + '/';
       requests.push(this.publisherService.getComics(comicsPath, publisher.name));
     });
@@ -66,7 +65,7 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
     forkJoin(requests).subscribe((data) => {
       const comics: ComicResolved[] = [];
 
-      forEach(data, (resolvedComics) => {
+      data.forEach((resolvedComics) => {
         comics.push(...resolvedComics);
       });
 
