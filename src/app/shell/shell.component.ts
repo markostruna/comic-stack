@@ -11,6 +11,8 @@ import { AuthenticationService, CredentialsService } from '@app/auth';
   styleUrls: ['./shell.component.scss'],
 })
 export class ShellComponent implements OnInit {
+  isMobile = false;
+
   constructor(
     private router: Router,
     private titleService: Title,
@@ -19,7 +21,11 @@ export class ShellComponent implements OnInit {
     private breakpoint: BreakpointObserver
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.breakpoint.observe([Breakpoints.Small, Breakpoints.XSmall]).subscribe((state) => {
+      this.isMobile = state.matches;
+    });
+  }
 
   logout() {
     this.authenticationService.logout().subscribe(() => this.router.navigate(['/login'], { replaceUrl: true }));
@@ -28,10 +34,6 @@ export class ShellComponent implements OnInit {
   get username(): string | null {
     const credentials = this.credentialsService.credentials;
     return credentials ? credentials.username : null;
-  }
-
-  get isMobile(): boolean {
-    return this.breakpoint.isMatched(Breakpoints.Small) || this.breakpoint.isMatched(Breakpoints.XSmall);
   }
 
   get title(): string {

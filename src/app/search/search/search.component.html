@@ -1,77 +1,79 @@
 <div class="page">
-  <mat-card appearance="outlined">
-    <mat-card-content>
-      <div class="search-form-grid" [formGroup]="form">
-        <!-- TITLE -->
-        <div class="search-field">
-          <mat-label class="label">Comic title</mat-label>
-          <mat-form-field class="form-field-wrapper" appearance="outline">
-            <input matInput placeholder="Title" formControlName="title" autocomplete="off" />
-          </mat-form-field>
+  <div class="search-form">
+    <mat-card>
+      <mat-card-content>
+        <div class="search-form-grid" [formGroup]="form">
+          <!-- TITLE -->
+          <div class="search-field">
+            <mat-label class="label">Comic title</mat-label>
+            <mat-form-field class="form-field-wrapper" appearance="outline">
+              <input matInput placeholder="Title" formControlName="title" autocomplete="off" />
+            </mat-form-field>
+          </div>
+
+          <!-- HERO -->
+          <div class="search-field">
+            <mat-label class="label">Hero</mat-label>
+            <mat-form-field class="form-field-wrapper" appearance="outline">
+              <mat-select [formControl]="heroCtrl" disableOptionCentering #singleSelect>
+                <mat-option>
+                  <ngx-mat-select-search
+                    [formControl]="heroFilterCtrl"
+                    [preventHomeEndKeyPropagation]="true"
+                    [placeholderLabel]="'Search hero'"
+                    [noEntriesFoundLabel]="'No hero found!'"
+                  >
+                  </ngx-mat-select-search>
+                </mat-option>
+                <mat-option *ngFor="let hero of filteredHeroes | async" [value]="hero">
+                  {{ hero }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- PUBLISHER -->
+          <div class="search-field">
+            <mat-label class="label">Publisher</mat-label>
+            <mat-form-field class="form-field-wrapper" appearance="outline">
+              <mat-select formControlName="publisher" disableOptionCentering>
+                <mat-option *ngFor="let publisher of publishers" [value]="publisher">
+                  {{ publisher }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- COLLECTION -->
+          <div class="search-field">
+            <mat-label class="label">Collection</mat-label>
+            <mat-form-field class="form-field-wrapper" appearance="outline">
+              <mat-select formControlName="collection" disableOptionCentering>
+                <mat-option *ngFor="let collection of collections" [value]="collection">
+                  {{ collection }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- AVAILABILITY -->
+          <div class="search-field availability">
+            <mat-label class="label">Availability</mat-label>
+            <mat-form-field class="form-field-wrapper" appearance="outline">
+              <mat-select formControlName="availability" disableOptionCentering>
+                <mat-option value="All"> All </mat-option>
+                <mat-option value="Available"> Available </mat-option>
+                <mat-option value="Missing"> Missing </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
         </div>
 
-        <!-- HERO -->
-        <div class="search-field">
-          <mat-label class="label">Hero</mat-label>
-          <mat-form-field class="form-field-wrapper" appearance="outline">
-            <mat-select [formControl]="heroCtrl" disableOptionCentering #singleSelect>
-              <mat-option>
-                <ngx-mat-select-search
-                  [formControl]="heroFilterCtrl"
-                  [preventHomeEndKeyPropagation]="true"
-                  [placeholderLabel]="'Search hero'"
-                  [noEntriesFoundLabel]="'No hero found!'"
-                >
-                </ngx-mat-select-search>
-              </mat-option>
-              <mat-option *ngFor="let hero of filteredHeroes | async" [value]="hero">
-                {{ hero }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+        <!-- SEARCH BUTTON -->
+        <div class="search-actions">
+          <button class="width-80" mat-flat-button color="warn" (click)="searchComics()">Search</button>
         </div>
-
-        <!-- PUBLISHER -->
-        <div class="search-field">
-          <mat-label class="label">Publisher</mat-label>
-          <mat-form-field class="form-field-wrapper" appearance="outline">
-            <mat-select formControlName="publisher" disableOptionCentering>
-              <mat-option *ngFor="let publisher of publishers" [value]="publisher">
-                {{ publisher }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-
-        <!-- COLLECTION -->
-        <div class="search-field">
-          <mat-label class="label">Collection</mat-label>
-          <mat-form-field class="form-field-wrapper" appearance="outline">
-            <mat-select formControlName="collection" disableOptionCentering>
-              <mat-option *ngFor="let collection of collections" [value]="collection">
-                {{ collection }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-
-        <!-- AVAILABILITY -->
-        <div class="search-field">
-          <mat-label class="label">Availability</mat-label>
-          <mat-form-field class="form-field-wrapper" appearance="outline">
-            <mat-select formControlName="availability" disableOptionCentering>
-              <mat-option value="All"> All </mat-option>
-              <mat-option value="Available"> Available </mat-option>
-              <mat-option value="Missing"> Missing </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-      </div>
-
-      <!-- SEARCH BUTTON -->
-      <div class="search-actions">
-        <button class="width-80" mat-flat-button color="warn" (click)="searchComics()">Search</button>
-      </div>
-    </mat-card-content>
-  </mat-card>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </div>
