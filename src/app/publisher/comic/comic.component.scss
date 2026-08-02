@@ -93,6 +93,11 @@
   text-align: center;
 }
 
+.comic-number-row {
+  display: flex;
+  gap: 5px;
+}
+
 .number-circle {
   background-color: steelblue;
   color: black;

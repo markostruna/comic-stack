@@ -3,7 +3,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { SharedModule } from '@shared';
 import { MaterialModule } from '@app/material.module';
@@ -21,7 +20,6 @@ describe('LoginComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         BrowserAnimationsModule,
-        FlexLayoutModule,
         MaterialModule,
         SharedModule,
         RouterTestingModule,

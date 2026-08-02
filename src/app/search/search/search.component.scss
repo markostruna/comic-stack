@@ -11,9 +11,34 @@
   margin-left: 15px;
 }
 
+.search-form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 .search-field {
+  display: flex;
+  flex: 1 1 220px;
+  flex-direction: column;
   font-size: 12px;
   color: black;
+}
+
+.search-actions {
+  display: flex;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .search-form-grid {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .search-field {
+    flex-basis: 100%;
+  }
 }
 
 // .container {
