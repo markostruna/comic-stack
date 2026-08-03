@@ -1,4 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { of } from 'rxjs';
+import { ConfigurationService } from '@app/@shared/configuration.service';
+import { PublisherService } from '@app/publisher/publisher.service';
 
 import { ParseFoldersComponent } from './parse-folders.component';
 
@@ -9,6 +16,22 @@ describe('ParseFoldersComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ParseFoldersComponent],
+      imports: [NoopAnimationsModule, MatTableModule, MatSortModule, MatPaginatorModule],
+      providers: [
+        {
+          provide: PublisherService,
+          useValue: {
+            getPublishers: () => of([]),
+            getComics: () => of([]),
+          },
+        },
+        {
+          provide: ConfigurationService,
+          useValue: {
+            writeFile: () => undefined,
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ParseFoldersComponent);
