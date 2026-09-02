@@ -5,6 +5,17 @@
   padding-top: 20px;
 }
 
+.comic-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.comic-item {
+  width: 150px;
+}
+
 .thumb {
   width: 150px;
   height: 230px;

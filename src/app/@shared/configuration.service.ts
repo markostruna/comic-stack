@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '@env/environment';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, map, Observable, switchMap } from 'rxjs';
 import { BrowsingService } from './browsing.service';
 import { HelperService } from './helper.service';
 import { Comic, ComicResolved, Publisher, PublisherResolved } from './models';
@@ -112,14 +112,13 @@ export class ConfigurationService {
     );
   }
 
-  getComics(path: string, publisher: string): Observable<Comic[]> {
+  getComics(path: string, publisher: string): Observable<ComicResolved[]> {
     console.log('getComics initiated. Path: (', path, '), Publisher: ', publisher, ')');
 
     return this.browsingService.getComics(path).pipe(
-      map((data) => {
+      switchMap((data) => {
         const comics = this.helperService.parseComics(data, path, publisher);
-        // this.storageService.saveComicData(publisher, comics);
-        return this.resolveComics(comics, path);
+        return this.resolveComicsChunked(comics, path);
       }),
       catchError((err) => {
         console.log('getComics error.');
@@ -158,6 +157,41 @@ export class ConfigurationService {
     return resolved;
   }
 
+  private resolveComicsChunked(comics: Comic[], parentPath: string): Observable<ComicResolved[]> {
+    const chunkSize = 150;
+
+    return new Observable<ComicResolved[]>((observer) => {
+      const resolved: ComicResolved[] = [];
+      let index = 0;
+      let cancelled = false;
+
+      const processChunk = () => {
+        if (cancelled) {
+          return;
+        }
+
+        const end = Math.min(index + chunkSize, comics.length);
+        for (; index < end; index++) {
+          resolved.push(this.resolveComic(comics[index], parentPath));
+        }
+
+        if (index < comics.length) {
+          setTimeout(processChunk, 0);
+          return;
+        }
+
+        observer.next(resolved);
+        observer.complete();
+      };
+
+      processChunk();
+
+      return () => {
+        cancelled = true;
+      };
+    });
+  }
+
   resolveComic(comic: Comic, parentPath: string): ComicResolved {
     const resolved: ComicResolved = {
       ...comic,
@@ -179,6 +213,11 @@ export class ConfigurationService {
       numberResolved: '',
       heroImages: [],
     };
+
+    // Fast path for common filename format: tokenized by " - ".
+    if (this.tryResolveComicFromParts(comic.filename.split(' - '), resolved)) {
+      return resolved;
+    }
 
     for (const config of this.filenameMatchConfigurations) {
       if (config.regExp === undefined) {
@@ -239,7 +278,7 @@ export class ConfigurationService {
 
         if (resolved.seqNumber) {
           resolved.numberResolved +=
-            (resolved.numberResolved.length > 0 ? '-' : '') + resolved.seqNumber?.toString() ?? '';
+            (resolved.numberResolved.length > 0 ? '-' : '') + (resolved.seqNumber?.toString() ?? '');
         }
 
         return resolved;
@@ -251,6 +290,96 @@ export class ConfigurationService {
     }
 
     return resolved;
+  }
+
+  private tryResolveComicFromParts(parts: string[], resolved: ComicResolved): boolean {
+    if (parts.length < 3 || parts.length > 5) {
+      return false;
+    }
+
+    const candidates = this.filenameMatchConfigurations.filter((config) => config.fields.length === parts.length);
+
+    for (const candidate of candidates) {
+      let numberValue: number | undefined;
+      let seqNumberValue: number | undefined;
+      let collectionValue = '';
+      const titles: string[] = [];
+      const heroes: ComicResolved['heroes'] = [];
+      let valid = true;
+
+      for (let i = 0; i < candidate.fields.length; i++) {
+        const fieldName = candidate.fields[i];
+        const value = parts[i];
+
+        if (value == null || value.length === 0) {
+          valid = false;
+          break;
+        }
+
+        switch (fieldName) {
+          case 'number':
+            if (!/^\d+$/.test(value)) {
+              valid = false;
+              break;
+            }
+            numberValue = +value;
+            break;
+          case 'seqNumber':
+            if (!/^\d+$/.test(value)) {
+              valid = false;
+              break;
+            }
+            seqNumberValue = +value;
+            break;
+          case 'collection':
+            collectionValue = value;
+            break;
+          case 'title':
+          case 'title2':
+            titles.push(value);
+            break;
+          case 'hero':
+          case 'hero2':
+            heroes.push({ name: value, imagePath: this.helperService.getComicHeroImageUrl(value) });
+            break;
+          default:
+            valid = false;
+            break;
+        }
+
+        if (!valid) {
+          break;
+        }
+      }
+
+      if (!valid) {
+        continue;
+      }
+
+      resolved.number = numberValue;
+      resolved.seqNumber = seqNumberValue;
+      resolved.collection = collectionValue;
+      resolved.titles = titles;
+      resolved.heroes = heroes;
+      resolved.titlesResolved = titles.join(' / ');
+      resolved.heroesResolved = heroes.map((hero) => hero?.name).join(', ');
+      resolved.publisherResolved = resolved.publisher;
+
+      if (resolved.collection) {
+        resolved.publisherResolved += ' / ' + resolved.collection;
+      }
+
+      resolved.numberResolved = resolved.number?.toString() ?? '';
+
+      if (resolved.seqNumber !== undefined) {
+        resolved.numberResolved +=
+          (resolved.numberResolved.length > 0 ? '-' : '') + (resolved.seqNumber?.toString() ?? '');
+      }
+
+      return true;
+    }
+
+    return false;
   }
 
   readFile() {

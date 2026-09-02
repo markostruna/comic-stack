@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { ComicResolved, Hero } from '@app/@shared/models';
@@ -9,107 +9,143 @@ import { PublisherService } from '../publisher.service';
   selector: 'app-comic',
   templateUrl: './comic.component.html',
   styleUrls: ['./comic.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ComicComponent implements OnInit {
+export class ComicComponent implements OnInit, OnDestroy {
   @Input() comicsInput: ComicResolved[] = [];
   @Input() displayPublisher: boolean = false;
 
   environment = environment;
 
-  comics: ComicResolved[] = [];
   displayedComics: ComicResolved[] = [];
+  comics: ComicResolved[] = [];
+  private renderToken = 0;
+  private renderTimeout: ReturnType<typeof setTimeout> | undefined;
+
+  private readonly supportedHeroes = new Set<string>([
+    'zagor',
+    'dilandog',
+    'dampir',
+    'misterno',
+    'martimisterija',
+    'teksviler',
+    'bradbarron',
+    'timidasti',
+    'kitteler',
+    'velikiblek',
+    'kenparker',
+    'kapetanmiki',
+    'komandantmark',
+  ]);
 
   comicsPath = '';
   publisher = '';
 
-  pageSize = 100;
-  numPreloadedComics = this.pageSize;
-
-  constructor(private route: ActivatedRoute, private publisherService: PublisherService, public dialog: MatDialog) {}
+  constructor(
+    private route: ActivatedRoute,
+    private publisherService: PublisherService,
+    public dialog: MatDialog,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.publisher = this.route.snapshot?.params['publisher'];
     this.comicsPath = 'Publishers/' + this.route.snapshot?.params['publisher'] + '/';
 
     if (this.comicsInput?.length > 0) {
-      this.comics = this.comicsInput;
-      this.displayedComics = this.comics.slice(0, this.numPreloadedComics);
-
-      this.displayedComics.push({
-        ...this.comics[0],
-        fakeEntry: true,
-      });
+      this.renderComicsInChunks(this.comicsInput);
     } else if (this.publisher != null) {
       this.loadData();
     }
   }
 
+  ngOnDestroy(): void {
+    this.renderToken++;
+    if (this.renderTimeout) {
+      clearTimeout(this.renderTimeout);
+    }
+  }
+
   loadData(): void {
     this.publisherService.getComics(this.comicsPath, this.publisher).subscribe((data) => {
-      this.comics = data;
-      this.displayedComics = this.comics.slice(0, this.numPreloadedComics);
-
-      if (this.displayedComics?.length < this.comics?.length) {
-        this.displayedComics.push({
-          ...this.comics[0],
-          fakeEntry: true,
-        });
-      }
+      this.renderComicsInChunks(data);
     });
   }
 
   openDialog(item: any) {}
 
-  loadMore() {
-    if (this.displayedComics[this.displayedComics.length - 1].fakeEntry) {
-      this.displayedComics.pop();
-    }
+  trackByComic(_index: number, item: ComicResolved): string {
+    return item.path;
+  }
 
-    if (this.numPreloadedComics + this.pageSize > this.comics.length) {
-      this.numPreloadedComics = this.comics.length;
-      this.displayedComics = this.comics;
-      return;
-    }
+  trackByHero(_index: number, hero: Hero): string {
+    return hero.name;
+  }
 
-    this.displayedComics = this.displayedComics.concat(
-      this.comics.slice(this.numPreloadedComics, this.numPreloadedComics + this.pageSize)
-    );
-
-    if (this.displayedComics?.length < this.comics?.length) {
-      this.displayedComics.push({
-        ...this.comics[0],
-        fakeEntry: true,
-      });
-    }
-
-    this.numPreloadedComics += this.pageSize;
+  trackByTitle(_index: number, title: string): string {
+    return title;
   }
 
   classHeroExists(hero: Hero | undefined) {
-    const supportedHeros: string[] = [
-      'zagor',
-      'dilandog',
-      'dampir',
-      'misterno',
-      'martimisterija',
-      'teksviler',
-      'bradbarron',
-      'timidasti',
-      'kitteler',
-      'velikiblek',
-      'kenparker',
-      'kapetanmiki',
-      'komandantmark',
-    ];
-
-    if (hero?.name && supportedHeros.includes(hero?.name?.toLowerCase().replace(/ /g, ''))) {
-      return true;
+    if (!hero?.name) {
+      return false;
     }
 
-    return false;
+    return this.supportedHeroes.has(hero.name.toLowerCase().replace(/ /g, ''));
   }
 
   decodeURIComponent(url: string) {
     return decodeURIComponent(url);
+  }
+
+  private renderComicsInChunks(source: ComicResolved[]): void {
+    const token = ++this.renderToken;
+    const chunkSize = 24;
+
+    this.comics = [];
+    this.displayedComics = [];
+
+    let index = 0;
+    let chunkCounter = 0;
+
+    const processChunk = () => {
+      if (token !== this.renderToken) {
+        return;
+      }
+
+      const end = Math.min(index + chunkSize, source.length);
+
+      for (; index < end; index++) {
+        const item = this.toViewModel(source[index]);
+        this.comics.push(item);
+        this.displayedComics.push(item);
+      }
+
+      chunkCounter++;
+
+      // Render every second chunk to reduce change-detection overhead on huge lists.
+      if (chunkCounter % 2 === 0 || index >= source.length) {
+        this.cdr.detectChanges();
+      }
+
+      if (index < source.length) {
+        this.renderTimeout = setTimeout(processChunk, 8);
+      } else {
+        this.renderTimeout = undefined;
+      }
+    };
+
+    processChunk();
+  }
+
+  private toViewModel(comic: ComicResolved): ComicResolved {
+    return {
+      ...comic,
+      decodedPath: decodeURIComponent(comic.path),
+      heroDisplay: comic.heroes?.map((hero) => ({
+        ...hero,
+        exists: this.classHeroExists(hero),
+      })),
+    };
   }
 }

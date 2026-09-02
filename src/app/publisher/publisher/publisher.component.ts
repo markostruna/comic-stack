@@ -1,22 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HelperService } from '@app/@shared/helper.service';
 import { PublisherResolved } from '@app/@shared/models';
 import { PublisherService } from '../publisher.service';
 
+type PublisherViewModel = PublisherResolved & {
+  cssClass: string;
+};
+
 @Component({
   selector: 'app-publisher',
   templateUrl: './publisher.component.html',
   styleUrls: ['./publisher.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PublisherComponent implements OnInit {
   publishersFolder = 'Publishers/';
-  publishers: PublisherResolved[] = [];
+  publishers: PublisherViewModel[] = [];
 
   constructor(
     private router: Router,
     private publisherService: PublisherService,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -26,7 +32,11 @@ export class PublisherComponent implements OnInit {
   loadData() {
     this.publisherService.getPublishers(this.publishersFolder).subscribe({
       next: (publishers) => {
-        this.publishers = publishers;
+        this.publishers = publishers.map((publisher) => ({
+          ...publisher,
+          cssClass: this.helperService.transformTitleToFilename(publisher.name),
+        }));
+        this.cdr.markForCheck();
       },
     });
   }
@@ -36,13 +46,7 @@ export class PublisherComponent implements OnInit {
     this.router.navigate(['/publisher/' + name]);
   }
 
-  getPublisherClass(item: PublisherResolved) {
-    let ret = '';
-
-    if (item) {
-      ret = this.helperService.transformTitleToFilename(item.name);
-    }
-
-    return ret;
+  trackByPublisher(_index: number, item: PublisherViewModel): string {
+    return item.path;
   }
 }

@@ -1,67 +1,51 @@
 <div class="shell-shell">
-  <mat-sidenav-container class="shell-sidenav-container">
-    <mat-sidenav
-      #sidenav
-      [mode]="isMobile ? 'over' : 'side'"
-      [opened]="!isMobile"
-      [disableClose]="!isMobile"
-      class="shell-sidenav"
-    >
-      <mat-toolbar color="primary">
-        <span translate>APP_NAME</span>
-        <div class="shell-spacer"></div>
-      </mat-toolbar>
-      <nav>
-        <mat-list>
-          <mat-divider></mat-divider>
-          <a mat-list-item routerLink="/home" routerLinkActive="active" (click)="isMobile && sidenav.close()">
-            <span translate>Home</span>
-          </a>
-          <mat-divider></mat-divider>
-          <a mat-list-item routerLink="/publisher" routerLinkActive="active" (click)="isMobile && sidenav.close()">
-            <span translate>Comics</span>
-          </a>
-          <mat-divider></mat-divider>
-          <a mat-list-item routerLink="/search" routerLinkActive="active" (click)="isMobile && sidenav.close()">
-            <span translate>Search</span>
-          </a>
-          <mat-divider></mat-divider>
-          <a mat-list-item routerLink="/tools" routerLinkActive="active" (click)="isMobile && sidenav.close()">
-            <span translate>Tools</span>
-          </a>
-          <mat-divider></mat-divider>
-          <a mat-list-item routerLink="/about" routerLinkActive="active" (click)="isMobile && sidenav.close()">
-            <span translate>About</span>
-          </a>
-          <mat-divider></mat-divider>
-        </mat-list>
-      </nav>
-    </mat-sidenav>
-    <mat-sidenav-content>
-      <div class="shell-toolbar">
-        <button *ngIf="isMobile" class="menu-button" mat-icon-button (click)="sidenav.toggle()">
-          <mat-icon style="color: white">menu</mat-icon>
+  <aside class="shell-sidenav" [class.closed]="isMobile && !menuOpen">
+    <mat-toolbar color="primary">
+      <span translate>APP_NAME</span>
+      <div class="shell-spacer"></div>
+    </mat-toolbar>
+    <nav>
+      <mat-nav-list>
+        <mat-divider></mat-divider>
+        <a mat-list-item routerLink="/home" routerLinkActive="active" (click)="closeMenuOnMobile()">
+          <span translate>Home</span>
+        </a>
+        <mat-divider></mat-divider>
+        <a mat-list-item routerLink="/publisher" routerLinkActive="active" (click)="closeMenuOnMobile()">
+          <span translate>Comics</span>
+        </a>
+        <mat-divider></mat-divider>
+        <a mat-list-item routerLink="/search" routerLinkActive="active" (click)="closeMenuOnMobile()">
+          <span translate>Search</span>
+        </a>
+        <mat-divider></mat-divider>
+        <a mat-list-item routerLink="/tools" routerLinkActive="active" (click)="closeMenuOnMobile()">
+          <span translate>Tools</span>
+        </a>
+        <mat-divider></mat-divider>
+        <a mat-list-item routerLink="/about" routerLinkActive="active" (click)="closeMenuOnMobile()">
+          <span translate>About</span>
+        </a>
+        <mat-divider></mat-divider>
+      </mat-nav-list>
+    </nav>
+  </aside>
+
+  <section class="shell-main">
+    <div class="shell-toolbar">
+      <button *ngIf="isMobile" class="menu-button" mat-icon-button (click)="toggleMenu()">
+        <mat-icon style="color: white">menu</mat-icon>
+      </button>
+      <div class="shell-spacer"></div>
+      <div style="color: white">
+        <button mat-icon-button>
+          <mat-icon>person</mat-icon>
         </button>
-        <div class="shell-spacer"></div>
-        <div style="color: white">
-          <button mat-icon-button [matMenuTriggerFor]="userMenu">
-            <mat-icon>person</mat-icon>
-          </button>
-          <mat-menu #userMenu="matMenu">
-            <mat-list>
-              <mat-list-item class="info-item">
-                <span translate>Logged in as</span>&nbsp;<b>{{ username }}</b>
-              </mat-list-item>
-              <mat-divider></mat-divider>
-            </mat-list>
-            <button mat-menu-item (click)="logout()" translate>Logout</button>
-          </mat-menu>
-        </div>
-        <app-language-selector [icon]="true" style="color: white"></app-language-selector>
       </div>
-      <div class="shell-content">
-        <router-outlet></router-outlet>
-      </div>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
+      <app-language-selector [icon]="true" style="color: white"></app-language-selector>
+    </div>
+    <div class="shell-content">
+      <router-outlet></router-outlet>
+    </div>
+  </section>
 </div>

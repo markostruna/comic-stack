@@ -109,9 +109,6 @@ export class PublisherService {
     console.log('getComics initiated. Path: (', path, '), Publisher: ', publisher, ')');
 
     return this.configurationService.getComics(path, publisher).pipe(
-      map((data) => {
-        return this.resolveComics(data, path);
-      }),
       catchError((err) => {
         console.log('getComics error.');
         throw err;
@@ -223,8 +220,7 @@ export class PublisherService {
         resolved.numberResolved = resolved?.number?.toString() ?? '';
 
         if (resolved.seqNumber) {
-          resolved.numberResolved +=
-            (resolved.numberResolved.length > 0 ? '-' : '') + resolved.seqNumber?.toString() ?? '';
+          resolved.numberResolved += (resolved.numberResolved.length > 0 ? '-' : '') + resolved.seqNumber.toString();
         }
 
         return resolved;

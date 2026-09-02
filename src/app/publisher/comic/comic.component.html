@@ -1,15 +1,14 @@
 <div class="page no-padding">
-  <cdk-virtual-scroll-viewport itemSize="308px" class="example-viewport" style="width: 100%; height: 100%">
-    <div *cdkVirtualFor="let item of displayedComics" style="width: 100%; max-width: 150px">
-      <div style="width: 150px; height: 230px; background-color: black; position: relative" *ngIf="!item.fakeEntry">
+  <div class="comic-grid">
+    <div class="comic-item" *ngFor="let item of displayedComics; trackBy: trackByComic">
+      <div style="width: 150px; height: 230px; background-color: black; position: relative">
         <img
-          [id]="item.id"
+          [id]="item['id']"
           [ngClass]="item.class"
           [src]="item.thumbnailPath"
           (click)="openDialog(item)"
           loading="lazy"
-          [matTooltip]="decodeURIComponent(item?.path)"
-          matTooltipShowDelay="500"
+          [attr.title]="item['decodedPath']"
         />
         <div
           class="comic-publisher"
@@ -25,14 +24,12 @@
 
         <div class="hero-container">
           <div
-            [matTooltip]="hero.name"
-            matTooltipPosition="after"
+            [attr.title]="hero.name"
             class="hero-circle"
             [style.background-image]="hero.imagePath"
-            matTooltipShowDelay="500"
-            *ngFor="let hero of item?.heroes"
+            *ngFor="let hero of item['heroDisplay']; trackBy: trackByHero"
           >
-            {{ classHeroExists(hero) ? '' : '?' }}
+            {{ hero.exists ? '' : '?' }}
           </div>
         </div>
 
@@ -43,7 +40,7 @@
         </div>
       </div>
 
-      <div class="comicinfo" style="position: relative" *ngIf="!item.fakeEntry">
+      <div class="comicinfo" style="position: relative">
         <!-- <div class="heroimage" [ngClass]="calculateClass(item)"></div> -->
 
         <div class="comic-number-row" style="margin-bottom: 3px">
@@ -59,18 +56,14 @@
           </div>
         </div>
 
-        <ng-container *ngIf="item.titles?.length > 1">
-          <div class="title" *ngFor="let item of item.titles">&#x25cf; {{ item }}</div>
+        <ng-container *ngIf="(item.titles?.length ?? 0) > 1">
+          <div class="title" *ngFor="let title of item.titles; trackBy: trackByTitle">&#x25cf; {{ title }}</div>
         </ng-container>
 
         <ng-container *ngIf="item.titles?.length === 1">
           <div class="title">{{ item.titles[0] }}</div>
         </ng-container>
       </div>
-
-      <div style="height: 60px" *ngIf="item.fakeEntry">
-        <button mat-flat-button color="warn" (click)="loadMore()" style="margin-top: auto">Load more</button>
-      </div>
     </div>
-  </cdk-virtual-scroll-viewport>
+  </div>
 </div>
