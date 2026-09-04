@@ -6,7 +6,7 @@ import { AuthenticationService, CredentialsService } from '@app/auth';
 import { UntilDestroy, untilDestroyed } from '@shared';
 import { MatToolbar } from '@angular/material/toolbar';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatNavList, MatListItem } from '@angular/material/list';
+import { MatNavList } from '@angular/material/list';
 import { MatDivider } from '@angular/material/divider';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -24,7 +24,6 @@ import { LanguageSelectorComponent } from '../i18n/language-selector.component';
     TranslateModule,
     MatNavList,
     MatDivider,
-    MatListItem,
     RouterLink,
     RouterLinkActive,
     MatIconButton,

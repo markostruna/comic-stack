@@ -23,12 +23,16 @@ const proxyConfig = {
     target: 'http://localhost/',
     changeOrigin: true,
     secure: false,
+    timeout: 10000,
+    proxyTimeout: 10000,
   },
   '/api': {
     pathRewrite: { '^/api': '' },
     target: 'https://api.chucknorris.io',
     changeOrigin: true,
     secure: false,
+    timeout: 10000,
+    proxyTimeout: 10000,
   },
 };
 
