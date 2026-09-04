@@ -11,7 +11,7 @@ describe('ComicComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ComicComponent],
+      imports: [ComicComponent],
       providers: [
         {
           provide: ActivatedRoute,

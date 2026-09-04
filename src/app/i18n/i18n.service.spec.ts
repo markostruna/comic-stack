@@ -3,6 +3,7 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
 import { I18nService } from './i18n.service';
+import { vi } from 'vitest';
 
 const defaultLanguage = 'en-US';
 const supportedLanguages = ['eo', 'en-US', 'fr-FR'];
@@ -29,7 +30,7 @@ class MockTranslateService {
 describe('I18nService', () => {
   let i18nService: I18nService;
   let translateService: TranslateService;
-  let onLangChangeSpy: jasmine.Spy;
+  let onLangChangeSpy: ReturnType<typeof vi.fn<(language: string) => void>>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -40,11 +41,11 @@ describe('I18nService', () => {
     translateService = TestBed.inject(TranslateService);
 
     // Create spies
-    onLangChangeSpy = jasmine.createSpy('onLangChangeSpy');
+    onLangChangeSpy = vi.fn<(language: string) => void>();
     translateService.onLangChange.subscribe((event: LangChangeEvent) => {
       onLangChangeSpy(event.lang);
     });
-    spyOn(translateService, 'use').and.callThrough();
+    vi.spyOn(translateService, 'use');
   });
 
   afterEach(() => {

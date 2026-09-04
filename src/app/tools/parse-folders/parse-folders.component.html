@@ -1,10 +1,12 @@
 <div class="page">
   <div class="table-wrapper">
-    <table mat-table [dataSource]="dataSource" class="my-table mat-elevation-z8" matSort #empTbSort="matSort">
-      <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns">
+    <table mat-table [dataSource]="dataSource()" class="my-table mat-elevation-z8" matSort #empTbSort="matSort">
+      @for (column of displayedColumns; track column) {
+      <ng-container [matColumnDef]="column">
         <th mat-header-cell *matHeaderCellDef mat-sort-header="{{ column }}">{{ column }}</th>
         <td mat-cell *matCellDef="let emp">{{ emp[column] }}</td>
       </ng-container>
+      }
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let emprow; columns: displayedColumns"></tr>

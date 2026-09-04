@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 import { Logger } from '@shared';
@@ -10,7 +10,8 @@ const log = new Logger('AuthenticationGuard');
   providedIn: 'root',
 })
 export class AuthenticationGuard {
-  constructor(private router: Router, private credentialsService: CredentialsService) {}
+  private router = inject(Router);
+  private credentialsService = inject(CredentialsService);
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     if (this.credentialsService.isAuthenticated()) {

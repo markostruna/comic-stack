@@ -26,7 +26,7 @@ npm start
 ```
 dist/                        web app production build
 docs/                        project docs and coding guides
-cypress/                     end-to-end tests (Cypress)
+playwright/                  end-to-end tests (Playwright)
 src/                         project source code
 |- app/                      app components
 |  |- core/                  core module (singleton services and single-use components)
@@ -57,9 +57,9 @@ Task automation is based on [NPM scripts](https://docs.npmjs.com/misc/scripts).
 | `npm start`                                     | Run development server on `http://localhost:4200/`                                                               |
 | `npm run serve:sw`                              | Run test server on `http://localhost:4200/` with service worker enabled                                          |
 | `npm run build [-- --configuration=production]` | Lint code and build web app for production (with [AOT](https://angular.io/guide/aot-compiler)) in `dist/` folder |
-| `npm test`                                      | Run unit tests via [Karma](https://karma-runner.github.io) in watch mode                                         |
+| `npm test`                                      | Run unit tests via Angular's Vitest-backed test builder in watch mode                                            |
 | `npm run test:ci`                               | Lint code and run unit tests once for continuous integration                                                     |
-| `npm run e2e`                                   | Run e2e tests using [Cypress](https://www.cypress.io/)                                                           |
+| `npm run e2e`                                   | Run e2e tests using [Playwright](https://playwright.dev/)                                                        |
 | `npm run lint`                                  | Lint code                                                                                                        |
 | `npm run translations:extract`                  | Extract strings from code and templates to `src/app/translations/template.json`                                  |
 | `npm run docs`                                  | Display project documentation and coding guides                                                                  |
@@ -114,8 +114,8 @@ Development, build and quality processes are based on [angular-cli](https://gith
 - Cross-browser CSS with [autoprefixer](https://github.com/postcss/autoprefixer) and
   [browserslist](https://github.com/ai/browserslist)
 - Asset revisioning for [better cache management](https://webpack.github.io/docs/long-term-caching.html)
-- Unit tests using [Jasmine](http://jasmine.github.io) and [Karma](https://karma-runner.github.io)
-- End-to-end tests using [Cypress](https://www.cypress.io/)
+- Unit tests using [Vitest](https://vitest.dev/) through Angular's unit-test builder
+- End-to-end tests using [Playwright](https://playwright.dev/)
 - Static code analysis: [TSLint](https://github.com/palantir/tslint), [Codelyzer](https://github.com/mgechev/codelyzer),
   [Stylelint](http://stylelint.io) and [HTMLHint](http://htmlhint.com/)
 - Local knowledgebase server using [Hads](https://github.com/sinedied/hads)

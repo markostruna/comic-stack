@@ -1,4 +1,5 @@
 import { Logger, LogLevel, LogOutput } from './logger.service';
+import { vi } from 'vitest';
 
 const logMethods = ['log', 'info', 'warn', 'error'];
 const consoleRef = console as unknown as Record<string, (...args: unknown[]) => void>;
@@ -36,7 +37,7 @@ describe('Logger', () => {
 
   it('should add a new LogOutput and receives log entries', () => {
     // Arrange
-    const outputSpy = jasmine.createSpy('outputSpy');
+    const outputSpy = vi.fn();
     const log = new Logger('test');
 
     // Act
@@ -49,7 +50,7 @@ describe('Logger', () => {
 
     // Assert
     expect(outputSpy).toHaveBeenCalled();
-    expect(outputSpy.calls.count()).toBe(4);
+    expect(outputSpy).toHaveBeenCalledTimes(4);
     expect(outputSpy).toHaveBeenCalledWith('test', LogLevel.Debug, 'd');
     expect(outputSpy).toHaveBeenCalledWith('test', LogLevel.Info, 'i');
     expect(outputSpy).toHaveBeenCalledWith('test', LogLevel.Warning, 'w');
@@ -58,7 +59,7 @@ describe('Logger', () => {
 
   it('should add a new LogOutput and receives only production log entries', () => {
     // Arrange
-    const outputSpy = jasmine.createSpy('outputSpy');
+    const outputSpy = vi.fn();
     const log = new Logger('test');
 
     // Act
@@ -72,7 +73,7 @@ describe('Logger', () => {
 
     // Assert
     expect(outputSpy).toHaveBeenCalled();
-    expect(outputSpy.calls.count()).toBe(2);
+    expect(outputSpy).toHaveBeenCalledTimes(2);
     expect(outputSpy).toHaveBeenCalledWith('test', LogLevel.Warning, 'w');
     expect(outputSpy).toHaveBeenCalledWith('test', LogLevel.Error, 'e', { error: true });
   });

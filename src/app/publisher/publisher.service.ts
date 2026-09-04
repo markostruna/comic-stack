@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ConfigurationService } from '@app/@shared/configuration.service';
 import { HelperService } from '@app/@shared/helper.service';
 import { Comic, ComicResolved, Publisher, PublisherResolved } from '@app/@shared/models';
@@ -35,6 +35,9 @@ export interface filenameMatchConfig {
   providedIn: 'root',
 })
 export class PublisherService {
+  private configurationService = inject(ConfigurationService);
+  private helperService = inject(HelperService);
+
   fieldTypes: fieldTypes = {
     number: 0,
     string: 1,
@@ -88,8 +91,6 @@ export class PublisherService {
     { fields: ['hero', 'collection', 'seqNumber'] },
     { fields: ['hero', 'seqNumber', 'title'] },
   ];
-
-  constructor(private configurationService: ConfigurationService, private helperService: HelperService) {}
 
   getPublishers(path: string, useCache: boolean = true): Observable<PublisherResolved[]> {
     console.log('getPublishers initiated. Path: (', path);

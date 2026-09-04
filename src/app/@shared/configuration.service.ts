@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment } from '@env/environment';
 import { catchError, map, Observable, switchMap } from 'rxjs';
 import { BrowsingService } from './browsing.service';
@@ -36,6 +36,10 @@ export interface filenameMatchConfig {
   providedIn: 'root',
 })
 export class ConfigurationService {
+  private browsingService = inject(BrowsingService);
+  private helperService = inject(HelperService);
+  private http = inject(HttpClient);
+
   fieldTypes: fieldTypes = {
     number: 0,
     string: 1,
@@ -89,12 +93,6 @@ export class ConfigurationService {
     { fields: ['hero', 'collection', 'seqNumber'] },
     { fields: ['hero', 'seqNumber', 'title'] },
   ];
-
-  constructor(
-    private browsingService: BrowsingService,
-    private helperService: HelperService,
-    private http: HttpClient
-  ) {}
 
   getPublishers(path: string): Observable<PublisherResolved[]> {
     console.log('getPublishers initiated. Path: (', path, ')');

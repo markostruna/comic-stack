@@ -1,30 +1,28 @@
-import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MaterialModule } from '@app/material.module';
 
 import { AuthenticationService, CredentialsService } from '@app/auth';
 import { MockAuthenticationService } from '@app/auth/authentication.service.mock';
 import { MockCredentialsService } from '@app/auth/credentials.service.mock';
 
-import { I18nModule } from '@app/i18n';
 import { ShellComponent } from './shell.component';
 
 describe('ShellComponent', () => {
   let component: ShellComponent;
   let fixture: ComponentFixture<ShellComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot(), I18nModule, BrowserAnimationsModule, MaterialModule, RouterTestingModule],
+      imports: [TranslateModule.forRoot(), BrowserAnimationsModule, ShellComponent],
       providers: [
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: CredentialsService, useClass: MockCredentialsService },
+        provideRouter([]),
       ],
-      declarations: [ShellComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ShellComponent);
@@ -33,6 +31,8 @@ describe('ShellComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    if (!component) {
+      throw new Error('ShellComponent was not created');
+    }
   });
 });

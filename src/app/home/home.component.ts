@@ -1,30 +1,35 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 
 import { QuoteService } from './quote.service';
+import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
+import { TranslateModule } from '@ngx-translate/core';
+import { LoaderComponent } from '../@shared/loader/loader.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
+  imports: [MatCard, MatCardContent, MatCardTitle, TranslateModule, MatCardSubtitle, LoaderComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit {
-  quote: string | undefined;
-  isLoading = false;
+  private readonly quoteService = inject(QuoteService);
 
-  constructor(private quoteService: QuoteService) {}
+  readonly quote = signal<string | undefined>(undefined);
+  readonly isLoading = signal(false);
 
   ngOnInit() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.quoteService
       .getRandomQuote({ category: 'dev' })
       .pipe(
         finalize(() => {
-          this.isLoading = false;
+          this.isLoading.set(false);
         })
       )
       .subscribe((quote: string) => {
-        this.quote = quote;
+        this.quote.set(quote);
       });
   }
 }

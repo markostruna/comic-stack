@@ -1,10 +1,10 @@
 import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { environment } from '@env/environment';
-import { ApiPrefixInterceptor } from './api-prefix.interceptor';
+import { apiPrefixInterceptor } from './api-prefix.interceptor';
 
 describe('ApiPrefixInterceptor', () => {
   let http: HttpClient;
@@ -13,15 +13,7 @@ describe('ApiPrefixInterceptor', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
-      providers: [
-        {
-          provide: HTTP_INTERCEPTORS,
-          useClass: ApiPrefixInterceptor,
-          multi: true,
-        },
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
+      providers: [provideHttpClient(withInterceptors([apiPrefixInterceptor])), provideHttpClientTesting()],
     });
 
     http = TestBed.inject(HttpClient);

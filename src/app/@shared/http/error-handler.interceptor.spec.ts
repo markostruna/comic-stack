@@ -1,32 +1,19 @@
 import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 
-import { ErrorHandlerInterceptor } from './error-handler.interceptor';
+import { errorHandlerInterceptor } from './error-handler.interceptor';
+import { vi } from 'vitest';
 
 describe('ErrorHandlerInterceptor', () => {
-  let errorHandlerInterceptor: ErrorHandlerInterceptor;
   let http: HttpClient;
   let httpMock: HttpTestingController;
-
-  function createInterceptor() {
-    errorHandlerInterceptor = new ErrorHandlerInterceptor();
-    return errorHandlerInterceptor;
-  }
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
-      providers: [
-        {
-          provide: HTTP_INTERCEPTORS,
-          useFactory: createInterceptor,
-          multi: true,
-        },
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
+      providers: [provideHttpClient(withInterceptors([errorHandlerInterceptor])), provideHttpClientTesting()],
     });
 
     http = TestBed.inject(HttpClient);
@@ -41,14 +28,16 @@ describe('ErrorHandlerInterceptor', () => {
     // Arrange
     // Note: here we spy on private method since target is customization here,
     // but you should replace it by actual behavior in your app
-    spyOn(ErrorHandlerInterceptor.prototype as any, 'errorHandler').and.callThrough();
+    const logError = vi.spyOn(console, 'error');
 
     // Act
     http.get('/toto').subscribe(
-      () => fail('should error'),
+      () => {
+        throw new Error('should error');
+      },
       () => {
         // Assert
-        expect((ErrorHandlerInterceptor.prototype as any).errorHandler).toHaveBeenCalled();
+        expect(logError).toHaveBeenCalled();
       }
     );
 

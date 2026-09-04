@@ -15,8 +15,7 @@ describe('ParseFoldersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ParseFoldersComponent],
-      imports: [NoopAnimationsModule, MatTableModule, MatSortModule, MatPaginatorModule],
+      imports: [NoopAnimationsModule, MatTableModule, MatSortModule, MatPaginatorModule, ParseFoldersComponent],
       providers: [
         {
           provide: PublisherService,

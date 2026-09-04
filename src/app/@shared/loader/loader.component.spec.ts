@@ -1,19 +1,17 @@
-import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { MaterialModule } from '@app/material.module';
 import { LoaderComponent } from './loader.component';
 
 describe('LoaderComponent', () => {
   let component: LoaderComponent;
   let fixture: ComponentFixture<LoaderComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [BrowserAnimationsModule, MaterialModule],
-      declarations: [LoaderComponent],
+      imports: [BrowserAnimationsModule, LoaderComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LoaderComponent);
@@ -36,7 +34,7 @@ describe('LoaderComponent', () => {
     const div = element.querySelectorAll('div')[0];
 
     // Act
-    fixture.componentInstance.isLoading = true;
+    fixture.componentRef.setInput('isLoading', true);
     fixture.detectChanges();
 
     // Assert
@@ -58,7 +56,7 @@ describe('LoaderComponent', () => {
     const span = element.querySelectorAll('span')[0];
 
     // Act
-    fixture.componentInstance.message = 'testing';
+    fixture.componentRef.setInput('message', 'testing');
     fixture.detectChanges();
 
     // Assert

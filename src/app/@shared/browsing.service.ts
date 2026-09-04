@@ -1,14 +1,14 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BrowsingService {
-  headers = new HttpHeaders().set('Content-Type', 'text/html;charset=UTF-8');
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  headers = new HttpHeaders().set('Content-Type', 'text/html;charset=UTF-8');
 
   getPublishers(url: string): Observable<any> {
     return this.http.get(url, { responseType: 'text' }).pipe(catchError(this.error));

@@ -10,13 +10,10 @@
       align-items: flex-start;
     "
   >
-    <div
-      class="rootlink"
-      *ngFor="let item of publishers; trackBy: trackByPublisher"
-      (click)="openFolder(item.path, item.name)"
-      [ngClass]="item.cssClass"
-    >
+    @for (item of publishers(); track trackByPublisher($index, item)) {
+    <div class="rootlink" (click)="openFolder(item.path, item.name)" [ngClass]="item.cssClass">
       {{ item.name }}
     </div>
+    }
   </div>
 </div>

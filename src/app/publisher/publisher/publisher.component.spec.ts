@@ -5,6 +5,7 @@ import { HelperService } from '@app/@shared/helper.service';
 import { PublisherService } from '../publisher.service';
 
 import { PublisherComponent } from './publisher.component';
+import { vi } from 'vitest';
 
 describe('PublisherComponent', () => {
   let component: PublisherComponent;
@@ -12,11 +13,11 @@ describe('PublisherComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PublisherComponent],
+      imports: [PublisherComponent],
       providers: [
         {
           provide: Router,
-          useValue: { navigate: jasmine.createSpy('navigate') },
+          useValue: { navigate: vi.fn() },
         },
         {
           provide: PublisherService,

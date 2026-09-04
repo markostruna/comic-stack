@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HelperService } from '@app/@shared/helper.service';
 import { PublisherResolved } from '@app/@shared/models';
 import { PublisherService } from '../publisher.service';
+import { NgClass } from '@angular/common';
 
 type PublisherViewModel = PublisherResolved & {
   cssClass: string;
@@ -13,17 +14,15 @@ type PublisherViewModel = PublisherResolved & {
   templateUrl: './publisher.component.html',
   styleUrls: ['./publisher.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgClass],
 })
 export class PublisherComponent implements OnInit {
-  publishersFolder = 'Publishers/';
-  publishers: PublisherViewModel[] = [];
+  private readonly router = inject(Router);
+  private readonly publisherService = inject(PublisherService);
+  private readonly helperService = inject(HelperService);
 
-  constructor(
-    private router: Router,
-    private publisherService: PublisherService,
-    private helperService: HelperService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  readonly publishersFolder = 'Publishers/';
+  readonly publishers = signal<PublisherViewModel[]>([]);
 
   ngOnInit(): void {
     this.loadData();
@@ -32,11 +31,12 @@ export class PublisherComponent implements OnInit {
   loadData() {
     this.publisherService.getPublishers(this.publishersFolder).subscribe({
       next: (publishers) => {
-        this.publishers = publishers.map((publisher) => ({
-          ...publisher,
-          cssClass: this.helperService.transformTitleToFilename(publisher.name),
-        }));
-        this.cdr.markForCheck();
+        this.publishers.set(
+          publishers.map((publisher) => ({
+            ...publisher,
+            cssClass: this.helperService.transformTitleToFilename(publisher.name),
+          }))
+        );
       },
     });
   }

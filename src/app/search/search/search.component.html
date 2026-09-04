@@ -25,9 +25,11 @@
                   >
                   </ngx-mat-select-search>
                 </mat-option>
-                <mat-option *ngFor="let hero of filteredHeroes | async" [value]="hero">
+                @for (hero of filteredHeroes(); track hero) {
+                <mat-option [value]="hero">
                   {{ hero }}
                 </mat-option>
+                }
               </mat-select>
             </mat-form-field>
           </div>
@@ -37,9 +39,11 @@
             <mat-label class="label">Publisher</mat-label>
             <mat-form-field class="form-field-wrapper" appearance="outline">
               <mat-select formControlName="publisher" disableOptionCentering>
-                <mat-option *ngFor="let publisher of publishers" [value]="publisher">
+                @for (publisher of publishers; track publisher) {
+                <mat-option [value]="publisher">
                   {{ publisher }}
                 </mat-option>
+                }
               </mat-select>
             </mat-form-field>
           </div>
@@ -49,9 +53,11 @@
             <mat-label class="label">Collection</mat-label>
             <mat-form-field class="form-field-wrapper" appearance="outline">
               <mat-select formControlName="collection" disableOptionCentering>
-                <mat-option *ngFor="let collection of collections" [value]="collection">
+                @for (collection of collections; track collection) {
+                <mat-option [value]="collection">
                   {{ collection }}
                 </mat-option>
+                }
               </mat-select>
             </mat-form-field>
           </div>

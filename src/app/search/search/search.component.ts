@@ -1,7 +1,22 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, UntypedFormControl } from '@angular/forms';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
+import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatSelect } from '@angular/material/select';
-import { ReplaySubject, Subject, take, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
+import { MatCard, MatCardContent } from '@angular/material/card';
+import { MatLabel, MatFormField } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatOption } from '@angular/material/autocomplete';
+import { MatSelectSearchComponent } from 'ngx-mat-select-search';
+import { MatButton } from '@angular/material/button';
 
 export interface FilterForm {
   title: FormControl<string | null>;
@@ -15,17 +30,32 @@ export interface FilterForm {
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
+  imports: [
+    MatCard,
+    MatCardContent,
+    ReactiveFormsModule,
+    MatLabel,
+    MatFormField,
+    MatInput,
+    MatSelect,
+    MatOption,
+    MatSelectSearchComponent,
+    MatButton,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('singleSelect', { static: true })
-  singleSelect!: MatSelect;
+  readonly singleSelect!: MatSelect;
 
-  publishers: string[] = ['All', 'Ludens', 'Veseli četvrtak', 'Zlatna Serija'];
-  allHeroes: string[] = ['All', 'Veliki Blek', 'Kapetan Miki', 'Teks Viler', 'Zagor'];
-  collections: string[] = ['All', 'Maxi', 'Giant', 'Specijalno Izdanje'];
-  heroes: string[] = [];
+  readonly publishers: string[] = ['All', 'Ludens', 'Veseli četvrtak', 'Zlatna Serija'];
+  readonly allHeroes: string[] = ['All', 'Veliki Blek', 'Kapetan Miki', 'Teks Viler', 'Zagor'];
+  readonly collections: string[] = ['All', 'Maxi', 'Giant', 'Specijalno Izdanje'];
+  readonly heroes = signal<string[]>([]);
 
-  form = this.fb.group<FilterForm>({
+  private readonly fb = inject(FormBuilder);
+
+  readonly form = this.fb.group<FilterForm>({
     hero: this.fb.control<string>('All'),
     title: this.fb.control<string>(''),
     publisher: this.fb.control<string>('All'),
@@ -33,18 +63,16 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
     availability: this.fb.control<string>('All'),
   });
 
-  public heroCtrl: UntypedFormControl = new UntypedFormControl();
-  public heroFilterCtrl: UntypedFormControl = new UntypedFormControl();
-  public filteredHeroes: ReplaySubject<string[]> = new ReplaySubject<string[]>(1);
-  protected _onDestroy = new Subject<void>();
-
-  constructor(private fb: FormBuilder) {}
+  readonly heroCtrl = new FormControl<string | null>(null);
+  readonly heroFilterCtrl = new FormControl<string | null>(null);
+  readonly filteredHeroes = signal<string[]>([]);
+  protected readonly _onDestroy = new Subject<void>();
 
   ngOnInit(): void {
-    this.heroes = this.allHeroes;
+    this.heroes.set(this.allHeroes);
 
     this.heroCtrl.setValue(this.allHeroes[3]);
-    this.filteredHeroes.next(this.allHeroes.slice());
+    this.filteredHeroes.set(this.allHeroes.slice());
 
     this.heroFilterCtrl.valueChanges.pipe(takeUntil(this._onDestroy)).subscribe(() => {
       this.filterHeroes();
@@ -61,11 +89,7 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   protected setInitialValue() {
-    this.filteredHeroes.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
-      if (this.singleSelect != null) {
-        this.singleSelect.compareWith = (a: string, b: string) => a > b;
-      }
-    });
+    this.singleSelect.compareWith = (a: string, b: string) => a > b;
   }
 
   protected filterHeroes() {
@@ -73,15 +97,12 @@ export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     // get the search keyword
-    let search = this.heroFilterCtrl.value;
+    const search = this.heroFilterCtrl.value;
     if (!search) {
-      this.filteredHeroes.next(this.allHeroes.slice());
+      this.filteredHeroes.set(this.allHeroes.slice());
       return;
-    } else {
-      search = search.toLowerCase();
     }
-    // filter the banks
-    this.filteredHeroes.next(this.allHeroes.filter((hero) => hero.toLowerCase().indexOf(search) > -1));
+    this.filteredHeroes.set(this.allHeroes.filter((hero) => hero.toLowerCase().indexOf(search.toLowerCase()) > -1));
   }
 
   searchComics() {

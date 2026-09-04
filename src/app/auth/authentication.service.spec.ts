@@ -1,8 +1,9 @@
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { AuthenticationService } from './authentication.service';
 import { CredentialsService, Credentials } from './credentials.service';
 import { MockCredentialsService } from './credentials.service.mock';
+import { vi } from 'vitest';
 
 describe('AuthenticationService', () => {
   let authenticationService: AuthenticationService;
@@ -16,26 +17,24 @@ describe('AuthenticationService', () => {
     authenticationService = TestBed.inject(AuthenticationService);
     credentialsService = TestBed.inject(CredentialsService);
     credentialsService.credentials = null;
-    spyOn(credentialsService, 'setCredentials').and.callThrough();
+    vi.spyOn(credentialsService, 'setCredentials');
   });
 
   describe('login', () => {
-    it('should return credentials', fakeAsync(() => {
+    it('should return credentials', async () => {
       // Act
       const request = authenticationService.login({
         username: 'toto',
         password: '123',
       });
-      tick();
-
       // Assert
       request.subscribe((credentials) => {
         expect(credentials).toBeDefined();
         expect(credentials.token).toBeDefined();
       });
-    }));
+    });
 
-    it('should authenticate user', fakeAsync(() => {
+    it('should authenticate user', async () => {
       expect(credentialsService.isAuthenticated()).toBe(false);
 
       // Act
@@ -43,8 +42,6 @@ describe('AuthenticationService', () => {
         username: 'toto',
         password: '123',
       });
-      tick();
-
       // Assert
       request.subscribe(() => {
         expect(credentialsService.isAuthenticated()).toBe(true);
@@ -52,61 +49,53 @@ describe('AuthenticationService', () => {
         expect((credentialsService.credentials as Credentials).token).toBeDefined();
         expect((credentialsService.credentials as Credentials).token).not.toBeNull();
       });
-    }));
+    });
 
-    it('should persist credentials for the session', fakeAsync(() => {
+    it('should persist credentials for the session', async () => {
       // Act
       const request = authenticationService.login({
         username: 'toto',
         password: '123',
       });
-      tick();
-
       // Assert
       request.subscribe(() => {
         expect(credentialsService.setCredentials).toHaveBeenCalled();
-        expect((credentialsService.setCredentials as jasmine.Spy).calls.mostRecent().args[1]).toBe(undefined);
+        expect(vi.mocked(credentialsService.setCredentials).mock.lastCall?.[1]).toBe(undefined);
       });
-    }));
+    });
 
-    it('should persist credentials across sessions', fakeAsync(() => {
+    it('should persist credentials across sessions', async () => {
       // Act
       const request = authenticationService.login({
         username: 'toto',
         password: '123',
         remember: true,
       });
-      tick();
-
       // Assert
       request.subscribe(() => {
         expect(credentialsService.setCredentials).toHaveBeenCalled();
-        expect((credentialsService.setCredentials as jasmine.Spy).calls.mostRecent().args[1]).toBe(true);
+        expect(vi.mocked(credentialsService.setCredentials).mock.lastCall?.[1]).toBe(true);
       });
-    }));
+    });
   });
 
   describe('logout', () => {
-    it('should clear user authentication', fakeAsync(() => {
+    it('should clear user authentication', async () => {
       // Arrange
       const loginRequest = authenticationService.login({
         username: 'toto',
         password: '123',
       });
-      tick();
-
       // Assert
       loginRequest.subscribe(() => {
         expect(credentialsService.isAuthenticated()).toBe(true);
 
         const request = authenticationService.logout();
-        tick();
-
         request.subscribe(() => {
           expect(credentialsService.isAuthenticated()).toBe(false);
           expect(credentialsService.credentials).toBeNull();
         });
       });
-    }));
+    });
   });
 });

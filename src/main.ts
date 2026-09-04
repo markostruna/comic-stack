@@ -4,16 +4,30 @@
  * For app-specific initialization, use `app/app.component.ts`.
  */
 
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { enableProdMode, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { TranslateModule } from '@ngx-translate/core';
 
-import { AppModule } from '@app/app.module';
+import { apiPrefixInterceptor, errorHandlerInterceptor } from '@shared';
+import { AppComponent } from '@app/app.component';
+import { routes } from '@app/app-routing.module';
 import { environment } from '@env/environment';
 
 if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic()
-  .bootstrapModule(AppModule)
-  .catch((err) => console.error(err));
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideZoneChangeDetection(),
+    provideRouter(routes),
+    provideHttpClient(withInterceptors([apiPrefixInterceptor, errorHandlerInterceptor])),
+    provideNoopAnimations(),
+    importProvidersFrom(TranslateModule.forRoot()),
+    importProvidersFrom(ServiceWorkerModule.register('./ngsw-worker.js', { enabled: environment.production })),
+  ],
+}).catch((err) => console.error(err));

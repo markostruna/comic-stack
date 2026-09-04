@@ -8,7 +8,7 @@ import { Shell } from './shell.service';
 describe('Shell', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ShellComponent],
+      imports: [ShellComponent],
       providers: [AuthenticationGuard, { provide: AuthenticationService, useClass: MockAuthenticationService }],
     });
   });
