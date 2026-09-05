@@ -45,7 +45,7 @@
           <div class="search-field">
             <mat-label class="label">Publisher</mat-label>
             <mat-form-field class="form-field-wrapper" appearance="outline">
-              <mat-select formControlName="publisher" disableOptionCentering>
+              <mat-select formControlName="publisher" disableOptionCentering panelClass="select-dropdown-panel">
                 @for (publisher of publishers; track publisher) {
                 <mat-option [value]="publisher">
                   {{ publisher }}
@@ -59,7 +59,7 @@
           <div class="search-field">
             <mat-label class="label">Collection</mat-label>
             <mat-form-field class="form-field-wrapper" appearance="outline">
-              <mat-select formControlName="collection" disableOptionCentering>
+              <mat-select formControlName="collection" disableOptionCentering panelClass="select-dropdown-panel">
                 @for (collection of collections; track collection) {
                 <mat-option [value]="collection">
                   {{ collection }}
@@ -73,7 +73,7 @@
           <div class="search-field availability">
             <mat-label class="label">Availability</mat-label>
             <mat-form-field class="form-field-wrapper" appearance="outline">
-              <mat-select formControlName="availability" disableOptionCentering>
+              <mat-select formControlName="availability" disableOptionCentering panelClass="select-dropdown-panel">
                 <mat-option value="All"> All </mat-option>
                 <mat-option value="Available"> Available </mat-option>
                 <mat-option value="Missing"> Missing </mat-option>

@@ -7,6 +7,8 @@
           [id]="item['id']"
           [ngClass]="item.class"
           [src]="item.thumbnailPath"
+          (load)="thumbnailLoaded(item)"
+          (error)="thumbnailFailed(item)"
           (click)="openDialog(item)"
           loading="lazy"
           [attr.title]="item['decodedPath']"
@@ -27,9 +29,9 @@
           </div>
           }
         </div>
-        @if (!item.missing) {
+        @if (item.comicMissing !== true) {
         <div class="download-circle">
-          <a href="{{ environment.serverUrl + item.path }}" style="color: white">
+          <a href="{{ environment.serverUrl + item.path }}" style="color: white" (click)="checkComicFile($event, item)">
             <mat-icon class="icon"> download </mat-icon>
           </a>
         </div>

@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { ConfigurationService } from '@app/@shared/configuration.service';
+import { CatalogService } from '@app/@shared/catalog.service';
 import { HelperService } from '@app/@shared/helper.service';
 import { Comic, ComicResolved, Publisher, PublisherResolved } from '@app/@shared/models';
 import { environment } from '@env/environment';
-import { catchError, map, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export interface fieldTypes {
   number: number;
@@ -36,6 +37,7 @@ export interface filenameMatchConfig {
 })
 export class PublisherService {
   private configurationService = inject(ConfigurationService);
+  private catalogService = inject(CatalogService);
   private helperService = inject(HelperService);
 
   fieldTypes: fieldTypes = {
@@ -93,28 +95,19 @@ export class PublisherService {
   ];
 
   getPublishers(path: string, useCache: boolean = true): Observable<PublisherResolved[]> {
-    console.log('getPublishers initiated. Path: (', path);
-
-    return this.configurationService.getPublishers(path).pipe(
-      map((data) => {
-        return this.resolvePublishers(data);
-      }),
-      catchError((err) => {
-        console.log('getPublishers error.');
-        throw err;
-      })
-    );
+    return this.catalogService.readPublishers();
   }
 
   getComics(path: string, publisher: string, useCache: boolean = true): Observable<ComicResolved[]> {
-    console.log('getComics initiated. Path: (', path, '), Publisher: ', publisher, ')');
+    return this.catalogService.readComics(publisher);
+  }
 
-    return this.configurationService.getComics(path, publisher).pipe(
-      catchError((err) => {
-        console.log('getComics error.');
-        throw err;
-      })
-    );
+  importPublishers(path: string): Observable<PublisherResolved[]> {
+    return this.configurationService.getPublishers(path);
+  }
+
+  importComics(path: string, publisher: string): Observable<ComicResolved[]> {
+    return this.configurationService.getComics(path, publisher);
   }
 
   private resolvePublishers(data: PublisherResolved[]): PublisherResolved[] {

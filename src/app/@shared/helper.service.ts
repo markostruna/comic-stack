@@ -81,6 +81,9 @@ export class HelperService {
         path: parentPath + path,
         publisher,
         missing: extension === 'jpg',
+        comicMissing: null,
+        thumbnailMissing: null,
+        coverMissing: null,
       };
 
       comics.push(newComic);

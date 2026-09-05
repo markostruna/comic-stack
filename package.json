@@ -14,7 +14,7 @@
     "test:ci": "npm run write:env -s && npm run lint -s && ng test --watch=false --configuration=ci",
     "e2e": "npm run write:env -s && playwright test",
     "e2e:ui": "npm run write:env -s && playwright test --ui",
-    "translations:extract": "ngx-translate-extract --input ./src --output ./src/translations/template.json --format=json --clean --sort",
+    "translations:extract": "ngx-translate-extract --input ./src --output ./src/translations/en-US.json --format=json --clean --sort",
     "docs": "hads ./docs -o",
     "write:env": "ngx-scripts env npm_package_version",
     "prettier": "prettier --write \"./src/**/*.{ts,js,html,scss}\"",

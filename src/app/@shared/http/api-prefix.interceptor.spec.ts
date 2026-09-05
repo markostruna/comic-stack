@@ -39,4 +39,10 @@ describe('ApiPrefixInterceptor', () => {
     // Assert
     httpMock.expectOne({ url: 'hTtPs://domain.com/toto' });
   });
+
+  it('should not prepend environment.serverUrl when the request is already prefixed', () => {
+    http.get(environment.serverUrl + 'Publishers/Abaton/Covers/cover.jpg').subscribe();
+
+    httpMock.expectOne({ url: environment.serverUrl + 'Publishers/Abaton/Covers/cover.jpg' });
+  });
 });

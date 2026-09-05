@@ -6,6 +6,7 @@ import { environment } from '@env/environment';
 import { PublisherService } from '../publisher.service';
 import { NgClass } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
+import { CatalogService } from '@app/@shared/catalog.service';
 
 @Component({
   selector: 'app-comic',
@@ -46,6 +47,7 @@ export class ComicComponent implements OnInit, OnDestroy {
 
   private readonly route = inject(ActivatedRoute);
   private readonly publisherService = inject(PublisherService);
+  private readonly catalogService = inject(CatalogService);
   readonly dialog = inject(MatDialog);
 
   ngOnInit(): void {
@@ -140,5 +142,44 @@ export class ComicComponent implements OnInit, OnDestroy {
         exists: this.classHeroExists(hero),
       })),
     };
+  }
+
+  checkComicFile(event: MouseEvent, comic: ComicResolved): void {
+    if (comic.comicMissing !== null) {
+      return;
+    }
+
+    event.preventDefault();
+    this.catalogService
+      .checkAvailability(comic, 'comicMissing', environment.serverUrl + comic.path)
+      .subscribe((updated) => {
+        this.updateRenderedComic(updated, this.renderToken());
+        if (!updated.comicMissing) {
+          window.location.href = environment.serverUrl + updated.path;
+        }
+      });
+  }
+
+  thumbnailLoaded(comic: ComicResolved): void {
+    this.recordThumbnailAvailability(comic, false);
+  }
+
+  thumbnailFailed(comic: ComicResolved): void {
+    this.recordThumbnailAvailability(comic, true);
+  }
+
+  private recordThumbnailAvailability(comic: ComicResolved, missing: boolean): void {
+    this.catalogService.recordAvailability(comic, 'thumbnailMissing', missing).subscribe((updated) => {
+      this.updateRenderedComic(updated, this.renderToken());
+    });
+  }
+
+  private updateRenderedComic(updated: ComicResolved, token: number): void {
+    if (token !== this.renderToken()) {
+      return;
+    }
+
+    this.comics.update((comics) => comics.map((comic) => (comic.path === updated.path ? updated : comic)));
+    this.displayedComics.update((comics) => comics.map((comic) => (comic.path === updated.path ? updated : comic)));
   }
 }

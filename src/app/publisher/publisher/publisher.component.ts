@@ -4,6 +4,7 @@ import { HelperService } from '@app/@shared/helper.service';
 import { PublisherResolved } from '@app/@shared/models';
 import { PublisherService } from '../publisher.service';
 import { NgClass } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 type PublisherViewModel = PublisherResolved & {
   cssClass: string;
@@ -14,7 +15,7 @@ type PublisherViewModel = PublisherResolved & {
   templateUrl: './publisher.component.html',
   styleUrls: ['./publisher.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass],
+  imports: [NgClass, TranslateModule],
 })
 export class PublisherComponent implements OnInit {
   private readonly router = inject(Router);

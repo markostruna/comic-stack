@@ -31,13 +31,24 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  min-width: 0;
+  width: 0;
 }
 
 .shell-content {
+  box-sizing: border-box;
   flex: 1;
   min-height: 0;
+  min-width: 0;
   overflow: auto;
   padding: 0.5rem;
+  width: 100%;
+}
+
+.shell-content router-outlet {
+  display: block;
+  min-width: 0;
+  width: 100%;
 }
 
 .shell-toolbar {
