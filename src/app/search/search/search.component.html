@@ -1,6 +1,6 @@
 <div class="page">
   <div class="search-form">
-    <mat-card>
+    <mat-card class="mat-card">
       <mat-card-content>
         <div class="search-form-grid" [formGroup]="form">
           <!-- TITLE -->
@@ -15,13 +15,18 @@
           <div class="search-field">
             <mat-label class="label">Hero</mat-label>
             <mat-form-field class="form-field-wrapper" appearance="outline">
-              <mat-select [formControl]="heroCtrl" disableOptionCentering #singleSelect>
+              <mat-select
+                [formControl]="heroCtrl"
+                disableOptionCentering
+                #singleSelect
+                panelClass="custom-dropdown-panel"
+              >
                 <mat-option>
                   <ngx-mat-select-search
                     [formControl]="heroFilterCtrl"
                     [preventHomeEndKeyPropagation]="true"
                     [placeholderLabel]="'Search hero'"
-                    [noEntriesFoundLabel]="'No hero found!'"
+                    [noEntriesFoundLabel]="''"
                   >
                   </ngx-mat-select-search>
                 </mat-option>
@@ -29,6 +34,8 @@
                 <mat-option [value]="hero">
                   {{ hero }}
                 </mat-option>
+                } @if (filteredHeroes().length === 0) {
+                <mat-option class="no-matches-option" disabled>No matches</mat-option>
                 }
               </mat-select>
             </mat-form-field>

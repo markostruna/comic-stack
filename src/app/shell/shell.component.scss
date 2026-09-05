@@ -17,6 +17,13 @@
   width: 270px;
   max-width: 28%;
   overflow: auto;
+  background-color: black;
+
+  .mdc-list {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
 }
 
 .shell-main {
@@ -30,6 +37,7 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
+  padding: 0.5rem;
 }
 
 .shell-toolbar {
@@ -78,18 +86,19 @@
   align-items: center;
   height: 48px;
   padding: 0 16px;
-  color: inherit;
+  color: white;
   text-decoration: none;
   cursor: pointer;
+  font-weight: 700;
 }
 
 .nav-link:hover {
-  background: rgb(0 0 0 / 4%);
+  background: rgb(63, 68, 68);
 }
 
 .shell-sidenav .nav-link.active {
-  background: #2196f3 !important;
-  color: white !important;
+  background: #2196f3;
+  color: white;
 }
 
 .shell-sidenav .nav-link.active span {
