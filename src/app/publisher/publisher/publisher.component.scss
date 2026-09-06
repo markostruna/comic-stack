@@ -1,58 +1,170 @@
-.rootlink {
-  display: flexbox;
+.portal-search {
   display: flex;
-  -ms-flex-align: center;
-  align-items: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  float: left;
-  width: 130px;
-  height: 130px;
-  // margin: 15px;
-  padding: 5px;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  font-size: 18px;
-  font-weight: 400;
-  text-align: center;
-  text-transform: uppercase;
-  line-height: 1.4;
-  color: #fff;
-  background-color: rgb(0 0 0 / 45%);
-  box-shadow: 0 0 2px rgb(0 0 0 / 35%);
-  border: 2px solid transparent;
-  transition: all 1s ease-in-out;
-  background-size: contain;
-  background-position-x: 0;
-  background-position-y: -20px;
-  background-repeat: no-repeat;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 720px;
+  margin: 0 auto 28px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
-.rootlink:hover {
-  background-color: black;
-  box-shadow: 0 0 32px rgb(0 0 0 / 35%);
-  border: 2px solid yellow;
-  transition: border 0.2s ease, background-color 0.5s ease, all 0.3s ease;
-  background-position-y: 0;
+.search-control {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 25%);
+  border-radius: 4px;
+  background: rgb(255 255 255 / 8%);
+}
+
+.search-control input {
+  min-width: 0;
+  flex: 1;
+  padding: 12px 14px;
+  border: 0;
+  outline: 0;
+  color: white;
+  background: transparent;
+  font: inherit;
+}
+
+.search-control input::placeholder {
+  color: rgb(255 255 255 / 55%);
+}
+
+.search-control button {
+  display: grid;
+  width: 48px;
+  place-items: center;
+  border: 0;
+  color: #111;
+  background: #f1c40f;
   cursor: pointer;
 }
 
-.rootlink:focus {
-  outline: 0;
-  color: #cc7b19;
+.publisher-sections {
+  display: grid;
+  gap: 34px;
 }
 
-.veseli-cetvrtak {
-  background-image: url("/assets/veseli-cetvrtak.jpg");
+.publisher-section {
+  min-width: 0;
 }
 
-.lunov-magnus-strip {
-  background-image: url("/assets/lunov-magnus-strip.jpg");
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgb(255 255 255 / 18%);
 }
 
-.slobodna-dalmacija {
-  background-image: url("/assets/slobodna-dalmacija.jpg");
+.section-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.zlatna-serija {
-  background-image: url("/assets/zlatna-serija.jpg");
+.section-heading h2 {
+  margin: 0;
+  color: white;
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+
+.section-heading a,
+.see-all-link {
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  color: #f1c40f;
+  background: transparent;
+  font-size: 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.section-heading a:hover,
+.section-heading a:focus-visible,
+.see-all-link:hover,
+.see-all-link:focus-visible {
+  color: white;
+  text-decoration: underline;
+}
+
+.swiper-control {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 28%);
+  border-radius: 3px;
+  color: white;
+  background: rgb(255 255 255 / 8%);
+  cursor: pointer;
+}
+
+.swiper-control:hover,
+.swiper-control:focus-visible {
+  border-color: #f1c40f;
+  color: #111;
+  background: #f1c40f;
+}
+
+.swiper-control:disabled {
+  border-color: rgb(255 255 255 / 10%);
+  color: rgb(255 255 255 / 30%);
+  background: transparent;
+  cursor: default;
+  opacity: 0.6;
+}
+
+.swiper-control mat-icon {
+  font-size: 20px;
+}
+
+.comic-swiper {
+  width: 100%;
+  padding: 3px 2px 8px;
+}
+
+.comic-preview {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 7px;
+  color: white;
+  text-decoration: none;
+}
+
+.comic-preview img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 150 / 230;
+  object-fit: cover;
+  background: #111;
+  opacity: 0.82;
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.comic-preview:hover img,
+.comic-preview:focus-visible img {
+  opacity: 1;
+  transform: translateY(-3px);
+}
+
+.comic-preview span {
+  overflow: hidden;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portal-state {
+  padding: 64px 16px;
+  color: rgb(255 255 255 / 70%);
+  text-align: center;
 }

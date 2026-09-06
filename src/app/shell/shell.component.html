@@ -1,43 +1,13 @@
 <div class="shell-shell">
-  <aside class="shell-sidenav" [class.closed]="isMobile() && !menuOpen()">
-    <mat-toolbar color="primary">
-      <span translate>APP_NAME</span>
-      <div class="shell-spacer"></div>
-    </mat-toolbar>
-    <nav>
-      <mat-nav-list>
-        <mat-divider></mat-divider>
-        <a class="nav-link" routerLink="/home" routerLinkActive="active" (click)="closeMenuOnMobile()">
-          <span translate>Home</span>
-        </a>
-        <mat-divider></mat-divider>
-        <a class="nav-link" routerLink="/publisher" routerLinkActive="active" (click)="closeMenuOnMobile()">
-          <span translate>Comics</span>
-        </a>
-        <mat-divider></mat-divider>
-        <a class="nav-link" routerLink="/search" routerLinkActive="active" (click)="closeMenuOnMobile()">
-          <span translate>Search</span>
-        </a>
-        <mat-divider></mat-divider>
-        <a class="nav-link" routerLink="/tools" routerLinkActive="active" (click)="closeMenuOnMobile()">
-          <span translate>Tools</span>
-        </a>
-        <mat-divider></mat-divider>
-        <a class="nav-link" routerLink="/about" routerLinkActive="active" (click)="closeMenuOnMobile()">
-          <span translate>About</span>
-        </a>
-        <mat-divider></mat-divider>
-      </mat-nav-list>
-    </nav>
-  </aside>
-
   <section class="shell-main">
     <div class="shell-toolbar">
-      @if (isMobile()) {
-      <button class="menu-button" mat-icon-button (click)="toggleMenu()">
-        <mat-icon style="color: white">menu</mat-icon>
-      </button>
-      }
+      <a class="shell-brand" routerLink="/publisher" translate>APP_NAME</a>
+      <nav class="shell-nav" aria-label="Primary navigation">
+        <a class="nav-link" routerLink="/publisher" routerLinkActive="active" translate>Comics</a>
+        <a class="nav-link" routerLink="/search" routerLinkActive="active" translate>Search</a>
+        <a class="nav-link" routerLink="/tools" routerLinkActive="active" translate>Tools</a>
+        <a class="nav-link" routerLink="/about" routerLinkActive="active" translate>About</a>
+      </nav>
       <div class="shell-spacer"></div>
       <div style="color: white">
         <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">

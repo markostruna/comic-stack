@@ -1,246 +1,81 @@
-// .search-form {
-//   width: 100%;
-//   max-width: none;
-//   margin: 0;
-//   padding: 0;
-// }
-
-.search-form-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: flex-start;
-  margin: 0;
+.search-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(130px, 1fr)) auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 28px;
+  padding: 16px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  background: rgb(255 255 255 / 5%);
 }
 
 .search-field {
-  display: flex;
-  flex-direction: column;
-  min-width: 200px;
-  flex: 0 0 200px;
-  font-size: 0.95rem;
-  color: #fff;
-  margin: 0;
+  display: grid;
+  gap: 6px;
 }
 
-.search-field .label {
-  display: block;
-  margin: 0 0 4px 15px;
+.search-field label {
+  color: rgb(255 255 255 / 75%);
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #edf2fb;
-  font-size: 12px;
-  line-height: 1.2;
 }
 
-// .search-actions {
-//   display: flex;
-//   justify-content: flex-start;
-//   grid-column: 1 / span 2;
-//   margin-top: 0.25rem;
-// }
+.search-field input,
+.search-field select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 3px;
+  color: white;
+  background: #252525;
+}
 
-// .search-field mat-form-field,
-// .search-field .form-field-wrapper {
-//   width: 100%;
-//   min-width: auto;
-// }
+.search-form button {
+  min-height: 39px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 3px;
+  color: #111;
+  background: #f1c40f;
+  font-weight: 700;
+  cursor: pointer;
+}
 
-// ::ng-deep .search-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined,
-// ::ng-deep .search-field .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-flex {
-//   padding: 0 !important;
-//   background-color: #fff !important;
-//   border: 1px solid rgb(0 0 0 / 12%) !important;
-//   border-radius: 5px !important;
-//   min-height: 39.5px !important;
-//   height: 39.5px !important;
-//   box-sizing: border-box !important;
-// }
+.results-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+  color: white;
+}
 
-// ::ng-deep .search-field .mdc-notched-outline,
-// ::ng-deep .search-field .mdc-notched-outline__leading,
-// ::ng-deep .search-field .mdc-notched-outline__trailing,
-// ::ng-deep .search-field .mdc-notched-outline__notch {
-//   border-radius: 5px !important;
-//   min-height: 39.5px !important;
-//   height: 39.5px !important;
-//   border: 0 !important;
-//   border-color: transparent !important;
-//   border-width: 0 !important;
-//   box-shadow: none !important;
-// }
+.results-heading h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
 
-// ::ng-deep .search-field .mat-mdc-form-field-infix,
-// ::ng-deep .search-field .mat-mdc-input-element,
-// ::ng-deep .search-field .mat-mdc-select-trigger,
-// ::ng-deep .search-field .mat-mdc-select-value-text,
-// ::ng-deep .search-field .mat-mdc-select-value-text span {
-//   position: relative !important;
-//   z-index: 2 !important;
-//   font-size: 12px !important;
-//   line-height: 13.5px !important;
-//   padding: 0 !important;
-//   margin: 0 !important;
-//   color: rgb(0 0 0 / 87%) !important;
-//   -webkit-text-fill-color: rgb(0 0 0 / 87%) !important;
-//   background: transparent !important;
-//   box-shadow: none !important;
-//   text-shadow: none !important;
-// }
+.results-heading span {
+  color: rgb(255 255 255 / 65%);
+  font-size: 0.85rem;
+}
 
-// ::ng-deep .search-field .mat-mdc-form-field-infix {
-//   display: flex !important;
-//   align-items: center !important;
-//   padding: 8px 10px !important;
-//   min-height: 39.5px !important;
-//   height: 39.5px !important;
-// }
+.search-state {
+  padding: 64px 16px;
+  color: rgb(255 255 255 / 70%);
+  text-align: center;
+}
 
-// ::ng-deep .search-field .mat-mdc-input-element {
-//   min-height: 13.5px !important;
-//   height: 13.5px !important;
-// }
+@media (max-width: 900px) {
+  .search-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
-// ::ng-deep .search-field .mat-mdc-select-trigger,
-// ::ng-deep .search-field .mat-mdc-select-value-text,
-// ::ng-deep .search-field .mat-mdc-select-value-text span {
-//   padding: 0 !important;
-//   margin: 0 !important;
-//   text-align: left !important;
-// }
-
-// .search-form mat-card {
-//   width: 100%;
-//   background: rgb(86 120 173) !important;
-//   border: none !important;
-//   border-radius: 4px !important;
-//   box-shadow: 0 2px 1px -1px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 3px 0 rgb(0 0 0 / 12%) !important;
-//   padding: 16px 16px 12px !important;
-// }
-
-// .search-form mat-card .mat-card-content,
-// .search-form mat-card .mat-mdc-card-content {
-//   padding: 0 !important;
-// }
-
-// .search-field .mat-form-field-outline,
-// .search-field .mat-mdc-form-field-outline {
-//   background-color: transparent !important;
-//   border-radius: 5px !important;
-//   border: 0 !important;
-// }
-
-// .search-field .mat-mdc-form-field-infix,
-// .search-field .mat-form-field-infix {
-//   background-color: #fff !important;
-//   border: none !important;
-//   padding: 8px 10px !important;
-//   min-height: 39.5px !important;
-//   border-radius: 5px !important;
-// }
-
-// .search-field .mat-mdc-form-field-flex,
-// .search-field .mat-form-field-flex {
-//   min-height: 39.5px !important;
-//   background-color: transparent !important;
-// }
-
-// .search-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined,
-// .search-field .mat-form-field-appearance-outline .mat-form-field-outline,
-// .search-field .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
-//   padding: 0 !important;
-// }
-
-// .search-field .mat-mdc-input-element,
-// .search-field .mat-input-element,
-// .search-field mat-select,
-// .search-field .mat-select-trigger,
-// .search-field .mat-mdc-select-trigger,
-// .search-field .mat-mdc-select-value-text,
-// .search-field .mat-mdc-select-value-text span {
-//   font-size: 12px !important;
-//   line-height: 13.5px !important;
-//   margin: 0 !important;
-//   padding: 0 !important;
-//   color: #111 !important;
-//   -webkit-text-fill-color: #111 !important;
-//   background-color: #fff !important;
-// }
-
-// .search-field {
-//   font-size: 12px;
-// }
-
-// .search-field mat-form-field,
-// .search-field .form-field-wrapper {
-//   font-size: 12px;
-//   line-height: 13.5px;
-// }
-
-// .search-field .mat-input-element,
-// .search-field .mat-mdc-input-element,
-// .search-field mat-select,
-// .search-field .mat-select-trigger {
-//   font-size: 12px !important;
-//   line-height: 13.5px !important;
-// }
-
-// .search-field .mat-mdc-form-field-infix,
-// .search-field .mat-form-field-infix {
-//   padding: 8px !important;
-// }
-
-// .search-field .mat-mdc-form-field-outline,
-// .search-field .mat-form-field-outline {
-//   min-height: 36.5px !important;
-// }
-
-// @media (max-width: 768px) {
-//   .search-form-grid {
-//     grid-template-columns: 1fr;
-//   }
-
-//   .search-field,
-//   .search-actions {
-//     width: 100%;
-//     grid-column: 1;
-//   }
-// }
-
-// // .container {
-// //   padding: 1em;
-// // }
-
-// /* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
-// ::ng-deep .mat-select-search-inner {
-//   position: absolute;
-//   top: 25px !important;
-//   width: 198px !important;
-//   padding-left: 16px;
-// }
-
-// /* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
-// ::ng-deep .mat-select-search-input {
-//   padding: 0 !important;
-// }
-
-// ::ng-deep .mat-select-search-inside-mat-option .mat-select-search-clear {
-//   top: 0 !important;
-//   right: 0 !important;
-//   scale: 0.8;
-// }
-
-// ::ng-deep .search-field .mat-mdc-form-field-infix {
-//   padding: 8px !important;
-//   min-height: 39.5px !important;
-//   background-color: transparent !important;
-//   border: none !important;
-//   border-radius: 0 !important;
-// }
-
-// ::ng-deep .search-field .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
-//   padding: 8px !important;
-//   min-height: 39.5px !important;
-//   background-color: transparent !important;
-//   border: none !important;
-//   border-radius: 0 !important;
-// }
+  .search-title,
+  .search-form button {
+    grid-column: 1 / -1;
+  }
+}

@@ -1,54 +1,30 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { ComicResolved, Hero } from '@app/@shared/models';
-import { environment } from '@env/environment';
+import { ComicResolved } from '@app/@shared/models';
 import { PublisherService } from '../publisher.service';
-import { NgClass } from '@angular/common';
-import { MatIcon } from '@angular/material/icon';
-import { CatalogService } from '@app/@shared/catalog.service';
+import { ComicCardComponent } from '../comic-card.component';
 
 @Component({
   selector: 'app-comic',
   templateUrl: './comic.component.html',
   styleUrls: ['./comic.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, MatIcon],
+  imports: [ComicCardComponent],
 })
 export class ComicComponent implements OnInit, OnDestroy {
   readonly comicsInput = input<ComicResolved[]>([]);
   readonly displayPublisher = input(false);
-
-  readonly environment = environment;
 
   readonly displayedComics = signal<ComicResolved[]>([]);
   readonly comics = signal<ComicResolved[]>([]);
   private readonly renderToken = signal(0);
   private renderTimeout: ReturnType<typeof setTimeout> | undefined;
 
-  private readonly supportedHeroes = new Set<string>([
-    'zagor',
-    'dilandog',
-    'dampir',
-    'misterno',
-    'martimisterija',
-    'teksviler',
-    'bradbarron',
-    'timidasti',
-    'kitteler',
-    'velikiblek',
-    'kenparker',
-    'kapetanmiki',
-    'komandantmark',
-  ]);
-
   readonly comicsPath = signal('');
   readonly publisher = signal('');
 
   private readonly route = inject(ActivatedRoute);
   private readonly publisherService = inject(PublisherService);
-  private readonly catalogService = inject(CatalogService);
-  readonly dialog = inject(MatDialog);
 
   ngOnInit(): void {
     const publisher = this.route.snapshot?.params['publisher'];
@@ -75,30 +51,8 @@ export class ComicComponent implements OnInit, OnDestroy {
     });
   }
 
-  openDialog(item: any) {}
-
   trackByComic(_index: number, item: ComicResolved): string {
     return item.path;
-  }
-
-  trackByHero(_index: number, hero: Hero): string {
-    return hero.name;
-  }
-
-  trackByTitle(_index: number, title: string): string {
-    return title;
-  }
-
-  classHeroExists(hero: Hero | undefined) {
-    if (!hero?.name) {
-      return false;
-    }
-
-    return this.supportedHeroes.has(hero.name.toLowerCase().replace(/ /g, ''));
-  }
-
-  decodeURIComponent(url: string) {
-    return decodeURIComponent(url);
   }
 
   private renderComicsInChunks(source: ComicResolved[]): void {
@@ -137,49 +91,6 @@ export class ComicComponent implements OnInit, OnDestroy {
     return {
       ...comic,
       decodedPath: decodeURIComponent(comic.path),
-      heroDisplay: comic.heroes?.map((hero) => ({
-        ...hero,
-        exists: this.classHeroExists(hero),
-      })),
     };
-  }
-
-  checkComicFile(event: MouseEvent, comic: ComicResolved): void {
-    if (comic.comicMissing !== null) {
-      return;
-    }
-
-    event.preventDefault();
-    this.catalogService
-      .checkAvailability(comic, 'comicMissing', environment.serverUrl + comic.path)
-      .subscribe((updated) => {
-        this.updateRenderedComic(updated, this.renderToken());
-        if (!updated.comicMissing) {
-          window.location.href = environment.serverUrl + updated.path;
-        }
-      });
-  }
-
-  thumbnailLoaded(comic: ComicResolved): void {
-    this.recordThumbnailAvailability(comic, false);
-  }
-
-  thumbnailFailed(comic: ComicResolved): void {
-    this.recordThumbnailAvailability(comic, true);
-  }
-
-  private recordThumbnailAvailability(comic: ComicResolved, missing: boolean): void {
-    this.catalogService.recordAvailability(comic, 'thumbnailMissing', missing).subscribe((updated) => {
-      this.updateRenderedComic(updated, this.renderToken());
-    });
-  }
-
-  private updateRenderedComic(updated: ComicResolved, token: number): void {
-    if (token !== this.renderToken()) {
-      return;
-    }
-
-    this.comics.update((comics) => comics.map((comic) => (comic.path === updated.path ? updated : comic)));
-    this.displayedComics.update((comics) => comics.map((comic) => (comic.path === updated.path ? updated : comic)));
   }
 }

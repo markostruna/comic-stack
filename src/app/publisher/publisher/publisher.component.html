@@ -1,22 +1,74 @@
 <div class="page">
-  <div
-    style="
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: flex-start;
-      align-content: flex-start;
-      align-items: flex-start;
-    "
-  >
-    @for (item of publishers(); track trackByPublisher($index, item)) {
-    <div class="rootlink" (click)="openFolder(item.path, item.name)" [ngClass]="item.cssClass">
-      {{ item.name }}
+  <form class="portal-search" (ngSubmit)="submitSearch()">
+    <label for="portal-search-input">{{ 'Search comics' | translate }}</label>
+    <div class="search-control">
+      <input
+        id="portal-search-input"
+        type="search"
+        [formControl]="search"
+        [placeholder]="'Search by title' | translate"
+        autocomplete="off"
+      />
+      <button type="button" aria-label="Search" (click)="submitSearch()">
+        <mat-icon>search</mat-icon>
+      </button>
     </div>
+  </form>
+
+  @if (isLoading()) {
+  <div class="portal-state">{{ 'Loading comics' | translate }}</div>
+  } @else if (sections().length === 0) {
+  <div class="portal-state">{{ 'No stored catalog' | translate }}</div>
+  } @else {
+  <div class="publisher-sections">
+    @for (section of sections(); track trackByPublisher($index, section)) {
+    <section class="publisher-section" [attr.aria-labelledby]="'publisher-' + $index">
+      <div class="section-heading">
+        <h2 [id]="'publisher-' + $index">{{ section.name }}</h2>
+        <div class="section-actions">
+          <button type="button" class="see-all-link" (click)="searchPublisher(section.name)">
+            {{ 'See all' | translate }} ({{ section.total }})
+          </button>
+          <button
+            type="button"
+            class="swiper-control"
+            [disabled]="swiperNavigation()[section.path]?.isBeginning ?? true"
+            [attr.aria-label]="'Previous comics' | translate"
+            (click)="slidePrevious(section.path, sectionSwiper)"
+          >
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <button
+            type="button"
+            class="swiper-control"
+            [disabled]="swiperNavigation()[section.path]?.isEnd ?? true"
+            [attr.aria-label]="'Next comics' | translate"
+            (click)="slideNext(section.path, sectionSwiper)"
+          >
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+      <swiper-container
+        #sectionSwiper
+        class="comic-swiper"
+        slides-per-view="2.2"
+        space-between="12"
+        keyboard="true"
+        grab-cursor="true"
+        [grid]="{ rows: section.rows, fill: 'row' }"
+        (swiperinit)="onSwiperStateChange(section.path, $event)"
+        (swiperslidechange)="onSwiperStateChange(section.path, $event)"
+        breakpoints='{"600":{"slidesPerView":3.5},"900":{"slidesPerView":5.5},"1200":{"slidesPerView":7.5}}'
+      >
+        @for (comic of section.comics; track trackByComic($index, comic)) {
+        <swiper-slide>
+          <app-comic-card [comic]="comic"></app-comic-card>
+        </swiper-slide>
+        }
+      </swiper-container>
+    </section>
     }
   </div>
-  @if (publishers().length === 0) {
-  <p>{{ 'No stored catalog' | translate }}</p>
   }
 </div>

@@ -16,6 +16,9 @@ import { apiPrefixInterceptor, errorHandlerInterceptor } from '@shared';
 import { AppComponent } from '@app/app.component';
 import { routes } from '@app/app-routing.module';
 import { environment } from '@env/environment';
+import { register } from 'swiper/element/bundle';
+
+register();
 
 if (environment.production) {
   enableProdMode();

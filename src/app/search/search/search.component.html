@@ -1,92 +1,62 @@
-<div class="page">
-  <div class="search-form">
-    <mat-card class="mat-card">
-      <mat-card-content>
-        <div class="search-form-grid" [formGroup]="form">
-          <!-- TITLE -->
-          <div class="search-field">
-            <mat-label class="label">Comic title</mat-label>
-            <mat-form-field class="form-field-wrapper" appearance="outline">
-              <input matInput placeholder="Title" formControlName="title" autocomplete="off" />
-            </mat-form-field>
-          </div>
+<div class="page search-page">
+  <form class="search-form" [formGroup]="form" (ngSubmit)="searchComics()">
+    <div class="search-field search-title">
+      <label for="search-title">{{ 'Comic title' | translate }}</label>
+      <input id="search-title" type="search" formControlName="title" [placeholder]="'Title or filename' | translate" />
+    </div>
 
-          <!-- HERO -->
-          <div class="search-field">
-            <mat-label class="label">Hero</mat-label>
-            <mat-form-field class="form-field-wrapper" appearance="outline">
-              <mat-select
-                [formControl]="heroCtrl"
-                disableOptionCentering
-                #singleSelect
-                panelClass="custom-dropdown-panel"
-              >
-                <mat-option>
-                  <ngx-mat-select-search
-                    [formControl]="heroFilterCtrl"
-                    [preventHomeEndKeyPropagation]="true"
-                    [placeholderLabel]="'Search hero'"
-                    [noEntriesFoundLabel]="''"
-                  >
-                  </ngx-mat-select-search>
-                </mat-option>
-                @for (hero of filteredHeroes(); track hero) {
-                <mat-option [value]="hero">
-                  {{ hero }}
-                </mat-option>
-                } @if (filteredHeroes().length === 0) {
-                <mat-option class="no-matches-option" disabled>No matches</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
+    <div class="search-field">
+      <label for="search-hero">{{ 'Hero' | translate }}</label>
+      <select id="search-hero" formControlName="hero">
+        <option value="All">{{ 'All heroes' | translate }}</option>
+        @for (hero of options().heroes; track hero) {
+        <option [value]="hero">{{ hero }}</option>
+        }
+      </select>
+    </div>
 
-          <!-- PUBLISHER -->
-          <div class="search-field">
-            <mat-label class="label">Publisher</mat-label>
-            <mat-form-field class="form-field-wrapper" appearance="outline">
-              <mat-select formControlName="publisher" disableOptionCentering panelClass="select-dropdown-panel">
-                @for (publisher of publishers; track publisher) {
-                <mat-option [value]="publisher">
-                  {{ publisher }}
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
+    <div class="search-field">
+      <label for="search-publisher">{{ 'Publisher' | translate }}</label>
+      <select id="search-publisher" formControlName="publisher">
+        <option value="All">{{ 'All publishers' | translate }}</option>
+        @for (publisher of options().publishers; track publisher) {
+        <option [value]="publisher">{{ publisher }}</option>
+        }
+      </select>
+    </div>
 
-          <!-- COLLECTION -->
-          <div class="search-field">
-            <mat-label class="label">Collection</mat-label>
-            <mat-form-field class="form-field-wrapper" appearance="outline">
-              <mat-select formControlName="collection" disableOptionCentering panelClass="select-dropdown-panel">
-                @for (collection of collections; track collection) {
-                <mat-option [value]="collection">
-                  {{ collection }}
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
+    <div class="search-field">
+      <label for="search-collection">{{ 'Collection' | translate }}</label>
+      <select id="search-collection" formControlName="collection">
+        <option value="All">{{ 'All collections' | translate }}</option>
+        @for (collection of options().collections; track collection) {
+        <option [value]="collection">{{ collection }}</option>
+        }
+      </select>
+    </div>
 
-          <!-- AVAILABILITY -->
-          <div class="search-field availability">
-            <mat-label class="label">Availability</mat-label>
-            <mat-form-field class="form-field-wrapper" appearance="outline">
-              <mat-select formControlName="availability" disableOptionCentering panelClass="select-dropdown-panel">
-                <mat-option value="All"> All </mat-option>
-                <mat-option value="Available"> Available </mat-option>
-                <mat-option value="Missing"> Missing </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </div>
+    <div class="search-field">
+      <label for="search-availability">{{ 'Availability' | translate }}</label>
+      <select id="search-availability" formControlName="availability">
+        <option value="All">{{ 'All comics' | translate }}</option>
+        <option value="Available">{{ 'Available' | translate }}</option>
+        <option value="Missing">{{ 'Missing' | translate }}</option>
+      </select>
+    </div>
 
-        <!-- SEARCH BUTTON -->
-        <div class="search-actions">
-          <button class="width-80" mat-flat-button color="warn" (click)="searchComics()">Search</button>
-        </div>
-      </mat-card-content>
-    </mat-card>
+    <button type="submit">{{ 'Search' | translate }}</button>
+  </form>
+
+  @if (isLoading()) {
+  <div class="search-state">{{ 'Loading comics' | translate }}</div>
+  } @else {
+  <div class="results-heading">
+    <h1>{{ 'Search results' | translate }}</h1>
+    <span>{{ results().comics.length }} {{ 'comics' | translate }}</span>
   </div>
+  @if (results().comics.length === 0) {
+  <div class="search-state">{{ 'No comics found' | translate }}</div>
+  } @else {
+  <app-comic [comicsInput]="results().comics" [displayPublisher]="true"></app-comic>
+  } }
 </div>

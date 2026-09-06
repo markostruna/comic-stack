@@ -1,0 +1,38 @@
+<article class="comic-card">
+  <div class="cover-frame">
+    <img
+      [class.missing]="comic().thumbnailMissing === true || comic().missing"
+      [src]="comic().thumbnailPath"
+      [alt]="comic().titlesResolved || comic().filename"
+      [attr.title]="comic().path"
+      loading="lazy"
+    />
+    @if (displayPublisher()) {
+    <div class="comic-publisher">{{ comic().publisher }}</div>
+    } @if (comic().collection) {
+    <div class="comic-collection">{{ comic().collection }}</div>
+    }
+    <div class="hero-container">
+      @for (hero of comic().heroes; track hero.name) {
+      <div class="hero-circle" [attr.title]="hero.name" [style.background-image]="hero.imagePath">?</div>
+      }
+    </div>
+    @if (comic().comicMissing !== true) {
+    <button class="reader-button" type="button" aria-label="Open reader" (click)="openReader($event)">
+      <mat-icon>menu_book</mat-icon>
+    </button>
+    }
+  </div>
+  <div class="comic-info">
+    <div class="comic-number-row">
+      @if (comic().number) {
+      <span class="number-circle number-circle-primary">{{ comic().number }}</span>
+      } @if (comic().seqNumber !== undefined) {
+      <span class="number-circle">{{ comic().seqNumber }}</span>
+      }
+    </div>
+    @for (title of comic().titles; track title) {
+    <div class="title">{{ comic().titles.length > 1 ? '• ' : '' }}{{ title }}</div>
+    }
+  </div>
+</article>

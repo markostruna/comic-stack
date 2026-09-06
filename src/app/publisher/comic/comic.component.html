@@ -2,64 +2,7 @@
   <div class="comic-grid">
     @for (item of displayedComics(); track trackByComic($index, item)) {
     <div class="comic-item">
-      <div style="width: 150px; height: 230px; background-color: black; position: relative">
-        <img
-          [id]="item['id']"
-          [ngClass]="item.class"
-          [src]="item.thumbnailPath"
-          (load)="thumbnailLoaded(item)"
-          (error)="thumbnailFailed(item)"
-          (click)="openDialog(item)"
-          loading="lazy"
-          [attr.title]="item['decodedPath']"
-        />
-        @if (displayPublisher()) {
-        <div class="comic-publisher" style="position: absolute; left: 0; bottom: 0px; right: 0">
-          {{ item.publisher }}
-        </div>
-        } @if (item.collection) {
-        <div class="comic-collection" style="position: absolute; left: 0; top: 0px; right: 0">
-          {{ item.collection }}
-        </div>
-        }
-        <div class="hero-container">
-          @for (hero of item['heroDisplay']; track trackByHero($index, hero)) {
-          <div [attr.title]="hero.name" class="hero-circle" [style.background-image]="hero.imagePath">
-            {{ hero.exists ? '' : '?' }}
-          </div>
-          }
-        </div>
-        @if (item.comicMissing !== true) {
-        <div class="download-circle">
-          <a href="{{ environment.serverUrl + item.path }}" style="color: white" (click)="checkComicFile($event, item)">
-            <mat-icon class="icon"> download </mat-icon>
-          </a>
-        </div>
-        }
-      </div>
-      <div class="comicinfo" style="position: relative">
-        <!-- <div class="heroimage" [ngClass]="calculateClass(item)"></div> -->
-        <div class="comic-number-row" style="margin-bottom: 3px">
-          @if (item.number) {
-          <div class="number-circle2">
-            <span class="number">
-              {{ item.number }}
-            </span>
-          </div>
-          } @if (item.seqNumber !== undefined) {
-          <div class="number-circle">
-            <span class="number">
-              {{ item.seqNumber }}
-            </span>
-          </div>
-          }
-        </div>
-        @if (item.titles.length > 1) { @for (title of item.titles; track trackByTitle($index, title)) {
-        <div class="title">&#x25cf; {{ title }}</div>
-        } } @if (item.titles.length === 1) {
-        <div class="title">{{ item.titles[0] }}</div>
-        }
-      </div>
+      <app-comic-card [comic]="item" [displayPublisher]="displayPublisher()"></app-comic-card>
     </div>
     }
   </div>

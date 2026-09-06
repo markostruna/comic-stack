@@ -1,0 +1,15 @@
+<div class="reader-page">
+  <header class="reader-header">
+    <a routerLink="/publisher">Back to comics</a>
+    <h1>{{ title() }}</h1>
+    @if (downloadUrl()) {
+    <a [href]="downloadUrl()" target="_blank" rel="noopener">Open file</a>
+    }
+  </header>
+
+  @if (source()) {
+  <iframe class="reader-frame" [src]="source()" [title]="title()"></iframe>
+  } @else {
+  <p class="reader-empty">No comic was selected.</p>
+  }
+</div>

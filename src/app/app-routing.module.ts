@@ -7,15 +7,17 @@ import { SearchComponent } from '@app/search/search/search.component';
 import { ParseFoldersComponent } from '@app/tools/parse-folders/parse-folders.component';
 import { PublisherComponent } from '@app/publisher/publisher/publisher.component';
 import { ComicComponent } from '@app/publisher/comic/comic.component';
+import { ReaderComponent } from '@app/publisher/reader/reader.component';
 import { AboutComponent } from '@app/about/about.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, data: { title: marker('Login') } },
   Shell.childRoutes([
     { path: '', redirectTo: '/publisher', pathMatch: 'full' },
-    { path: 'home', component: HomeComponent, data: { title: marker('Home') } },
+    { path: 'home', redirectTo: '/publisher', pathMatch: 'full' },
     { path: 'publisher', component: PublisherComponent, data: { title: marker('Publishers') } },
     { path: 'publisher/:publisher', component: ComicComponent, data: { title: marker('Comics') } },
+    { path: 'reader', component: ReaderComponent, data: { title: marker('Reader') } },
     { path: 'search', component: SearchComponent, data: { title: marker('Search') } },
     { path: 'tools', component: ParseFoldersComponent, data: { title: marker('Parse folders') } },
     { path: 'about', component: AboutComponent, data: { title: marker('About') } },

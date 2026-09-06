@@ -1,0 +1,64 @@
+.reader-page {
+  display: flex;
+  min-height: calc(100vh - 64px);
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  box-sizing: border-box;
+  color: white;
+}
+
+.reader-header {
+  display: grid;
+  grid-template-columns: max-content minmax(0, auto) max-content;
+  align-items: center;
+  gap: 16px;
+}
+
+.reader-header h1 {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: 1.25rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.reader-header a {
+  color: #f1c40f;
+  text-decoration: none;
+}
+
+.reader-header a:hover,
+.reader-header a:focus-visible {
+  color: white;
+  text-decoration: underline;
+}
+
+.reader-frame {
+  width: 100%;
+  min-height: calc(100vh - 150px);
+  flex: 1;
+  border: 0;
+  background: #111;
+}
+
+.reader-empty {
+  padding: 64px 16px;
+  color: rgb(255 255 255 / 70%);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .reader-header {
+    grid-template-columns: auto auto;
+  }
+
+  .reader-header h1 {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    text-align: left;
+  }
+}
