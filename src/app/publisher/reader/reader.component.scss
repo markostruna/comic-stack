@@ -6,6 +6,7 @@
   padding: 16px;
   box-sizing: border-box;
   color: white;
+  background: #11181c;
 }
 
 .reader-header {
@@ -31,6 +32,10 @@
   text-decoration: none;
 }
 
+.download-link {
+  text-align: right;
+}
+
 .reader-header a:hover,
 .reader-header a:focus-visible {
   color: white;
@@ -38,11 +43,60 @@
 }
 
 .reader-frame {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
   width: 100%;
-  min-height: calc(100vh - 150px);
+  min-height: calc(100vh - 190px);
   flex: 1;
-  border: 0;
-  background: #111;
+  overflow: auto;
+  padding: 12px;
+  box-sizing: border-box;
+  background: #080b0d;
+}
+
+.reader-page-image {
+  display: block;
+  width: min(calc((100% - 12px) / 2), 900px);
+  max-width: 100%;
+  height: auto;
+  transform: scale(var(--reader-zoom));
+  transform-origin: top center;
+}
+
+.reader-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.reader-toolbar button {
+  display: inline-flex;
+  min-width: 36px;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: 3px;
+  color: white;
+  background: #263238;
+  cursor: pointer;
+}
+
+.reader-toolbar button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.active,
+.reader-toolbar button:hover:not(:disabled) {
+  color: #111;
+  background: #f1c40f;
 }
 
 .reader-empty {
@@ -60,5 +114,13 @@
     grid-column: 1 / -1;
     grid-row: 1;
     text-align: left;
+  }
+
+  .reader-page-image {
+    width: 100%;
+  }
+
+  .reader-frame {
+    gap: 0;
   }
 }

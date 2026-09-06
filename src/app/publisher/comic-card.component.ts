@@ -2,8 +2,6 @@ import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core
 import { Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { ComicResolved } from '@app/@shared/models';
-import { CatalogService } from '@app/@shared/catalog.service';
-import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-comic-card',
@@ -15,10 +13,8 @@ import { environment } from '@env/environment';
 export class ComicCardComponent {
   readonly comic = input.required<ComicResolved>();
   readonly displayPublisher = input(false);
-  readonly environment = environment;
 
   private readonly router = inject(Router);
-  private readonly catalogService = inject(CatalogService);
 
   openReader(event: MouseEvent): void {
     event.preventDefault();
@@ -28,18 +24,7 @@ export class ComicCardComponent {
       return;
     }
 
-    if (comic.comicMissing === false) {
-      this.navigateToReader(comic);
-      return;
-    }
-
-    this.catalogService
-      .checkAvailability(comic, 'comicMissing', environment.serverUrl + comic.path)
-      .subscribe((updated) => {
-        if (!updated.comicMissing) {
-          this.navigateToReader(updated);
-        }
-      });
+    this.navigateToReader(comic);
   }
 
   private navigateToReader(comic: ComicResolved): void {
