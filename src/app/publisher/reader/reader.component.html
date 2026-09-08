@@ -15,18 +15,29 @@
     <button type="button" (click)="nextPage()" [disabled]="!canGoNext() || isLoading()">
       <mat-icon>arrow_forward</mat-icon>
     </button>
-    <button type="button" [class.active]="twoPageMode()" (click)="toggleTwoPageMode()">
+    <button
+      type="button"
+      class="toggle-button"
+      [class.active]="twoPageMode()"
+      [attr.aria-pressed]="twoPageMode()"
+      (click)="toggleTwoPageMode()"
+    >
       <mat-icon>chrome_reader_mode</mat-icon>
       <span>Pages</span>
+      <span class="toggle-state">{{ twoPageMode() ? 'On' : 'Off' }}</span>
     </button>
     <button
       type="button"
+      class="toggle-button"
       [class.active]="splitSpreads()"
+      [attr.aria-pressed]="splitSpreads()"
+      [disabled]="!canSplit() || isLoading()"
       (click)="toggleSplitSpreads()"
       title="Split wide images into two pages"
     >
       <mat-icon>call_split</mat-icon>
       <span>Split</span>
+      <span class="toggle-state">{{ splitSpreads() ? 'On' : 'Off' }}</span>
     </button>
     <button type="button" (click)="changeZoom(-0.1)"><mat-icon>zoom_out</mat-icon></button>
     <span>{{ zoom() * 100 }}%</span>

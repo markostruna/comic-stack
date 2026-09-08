@@ -95,6 +95,21 @@
   background: #f1c40f;
 }
 
+.toggle-button .toggle-state {
+  padding: 0 5px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgb(255 255 255 / 70%);
+  background: rgb(255 255 255 / 12%);
+}
+
+.toggle-button.active .toggle-state {
+  color: #111;
+  background: rgb(17 17 17 / 20%);
+}
+
 .reader-empty {
   padding: 64px 16px;
   color: rgb(255 255 255 / 70%);
