@@ -44,25 +44,21 @@
 
 .reader-frame {
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 12px;
   width: 100%;
-  min-height: calc(100vh - 190px);
-  flex: 1;
+  height: calc(100vh - 190px);
   overflow: auto;
   padding: 12px;
   box-sizing: border-box;
   background: #080b0d;
+  perspective: 1800px;
+  position: relative;
 }
 
-.reader-page-image {
-  display: block;
-  width: min(calc((100% - 12px) / 2), 900px);
-  max-width: 100%;
-  height: auto;
+.page-flip-container {
+  width: 100%;
+  height: 100%;
   transform: scale(var(--reader-zoom));
-  transform-origin: top center;
+  transform-origin: center center;
 }
 
 .reader-toolbar {
@@ -114,10 +110,6 @@
     grid-column: 1 / -1;
     grid-row: 1;
     text-align: left;
-  }
-
-  .reader-page-image {
-    width: 100%;
   }
 
   .reader-frame {

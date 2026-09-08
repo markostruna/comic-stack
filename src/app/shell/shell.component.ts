@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
 
 import { AuthenticationService, CredentialsService } from '@app/auth';
 import { TranslateModule } from '@ngx-translate/core';
@@ -30,6 +32,13 @@ export class ShellComponent {
   private readonly router = inject(Router);
   private readonly authenticationService = inject(AuthenticationService);
   private readonly credentialsService = inject(CredentialsService);
+  readonly isReaderRoute = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map((event) => event.urlAfterRedirects.startsWith('/reader'))
+    ),
+    { initialValue: this.router.url.startsWith('/reader') }
+  );
   readonly username = this.credentialsService.credentials?.username ?? '';
 
   logout() {

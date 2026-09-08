@@ -11,11 +11,7 @@
     <button type="button" (click)="previousPage()" [disabled]="!canGoPrevious() || isLoading()">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    @if (splitSpreads()) {
-    <span>Page {{ splitPageNumber() }}</span>
-    } @else {
     <span>{{ currentPage() + 1 }} / {{ pages().length }}</span>
-    }
     <button type="button" (click)="nextPage()" [disabled]="!canGoNext() || isLoading()">
       <mat-icon>arrow_forward</mat-icon>
     </button>
@@ -46,9 +42,7 @@
   <p class="reader-empty">{{ error() }}</p>
   } @else {
   <main class="reader-frame" [style.--reader-zoom]="zoom()">
-    @for (page of pageRange(); track page) {
-    <img class="reader-page-image" [src]="pages()[page]" [alt]="'Page ' + (page + 1)" />
-    }
+    <div class="page-flip-container" #pageFlipContainer></div>
   </main>
   }
 </div>

@@ -1,5 +1,5 @@
 <div class="shell-shell">
-  <section class="shell-main">
+  <section class="shell-main" [class.reader-shell]="isReaderRoute()">
     <div class="shell-toolbar">
       <a class="shell-brand" routerLink="/publisher" translate>APP_NAME</a>
       <nav class="shell-nav" aria-label="Primary navigation">

@@ -40,6 +40,15 @@
   box-shadow: 0 0 28px rgb(0 0 0 / 18%);
 }
 
+.shell-main.reader-shell .shell-toolbar,
+.shell-main.reader-shell .shell-content {
+  max-width: none;
+}
+
+.shell-main.reader-shell .shell-content {
+  padding: 0;
+}
+
 .shell-content router-outlet {
   display: block;
   min-width: 0;
