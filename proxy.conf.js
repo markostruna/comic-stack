@@ -20,7 +20,7 @@ const HttpsProxyAgent = require('https-proxy-agent');
 const proxyConfig = {
   '/proxy': {
     pathRewrite: { '^/proxy': '' },
-    target: 'http://localhost/',
+    target: 'http://tusvob.ddns.net',
     changeOrigin: true,
     secure: false,
     timeout: 10000,

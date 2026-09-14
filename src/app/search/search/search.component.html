@@ -7,41 +7,70 @@
 
     <div class="search-field">
       <label for="search-hero">{{ 'Hero' | translate }}</label>
-      <select id="search-hero" formControlName="hero">
-        <option value="All">{{ 'All heroes' | translate }}</option>
-        @for (hero of options().heroes; track hero) {
-        <option [value]="hero">{{ hero }}</option>
-        }
-      </select>
+      <mat-form-field appearance="outline" class="search-select">
+        <mat-select id="search-hero" formControlName="hero" (closed)="resetFilter(heroFilterControl)">
+          <mat-option>
+            <ngx-mat-select-search
+              [formControl]="heroFilterControl"
+              [placeholderLabel]="'Search heroes' | translate"
+              [noEntriesFoundLabel]="'No heroes found' | translate"
+            ></ngx-mat-select-search>
+          </mat-option>
+          <mat-option value="All">{{ 'All heroes' | translate }}</mat-option>
+          @for (hero of filteredHeroes(); track hero) {
+          <mat-option [value]="hero">{{ hero }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <div class="search-field">
       <label for="search-publisher">{{ 'Publisher' | translate }}</label>
-      <select id="search-publisher" formControlName="publisher">
-        <option value="All">{{ 'All publishers' | translate }}</option>
-        @for (publisher of options().publishers; track publisher) {
-        <option [value]="publisher">{{ publisher }}</option>
-        }
-      </select>
+      <mat-form-field appearance="outline" class="search-select">
+        <mat-select id="search-publisher" formControlName="publisher" (closed)="resetFilter(publisherFilterControl)">
+          <mat-option>
+            <ngx-mat-select-search
+              [formControl]="publisherFilterControl"
+              [placeholderLabel]="'Search publishers' | translate"
+              [noEntriesFoundLabel]="'No publishers found' | translate"
+            ></ngx-mat-select-search>
+          </mat-option>
+          <mat-option value="All">{{ 'All publishers' | translate }}</mat-option>
+          @for (publisher of filteredPublishers(); track publisher) {
+          <mat-option [value]="publisher">{{ publisher }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <div class="search-field">
       <label for="search-collection">{{ 'Collection' | translate }}</label>
-      <select id="search-collection" formControlName="collection">
-        <option value="All">{{ 'All collections' | translate }}</option>
-        @for (collection of options().collections; track collection) {
-        <option [value]="collection">{{ collection }}</option>
-        }
-      </select>
+      <mat-form-field appearance="outline" class="search-select">
+        <mat-select id="search-collection" formControlName="collection" (closed)="resetFilter(collectionFilterControl)">
+          <mat-option>
+            <ngx-mat-select-search
+              [formControl]="collectionFilterControl"
+              [placeholderLabel]="'Search collections' | translate"
+              [noEntriesFoundLabel]="'No collections found' | translate"
+            ></ngx-mat-select-search>
+          </mat-option>
+          <mat-option value="All">{{ 'All collections' | translate }}</mat-option>
+          @for (collection of filteredCollections(); track collection) {
+          <mat-option [value]="collection">{{ collection }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <div class="search-field">
       <label for="search-availability">{{ 'Availability' | translate }}</label>
-      <select id="search-availability" formControlName="availability">
-        <option value="All">{{ 'All comics' | translate }}</option>
-        <option value="Available">{{ 'Available' | translate }}</option>
-        <option value="Missing">{{ 'Missing' | translate }}</option>
-      </select>
+      <mat-form-field appearance="outline" class="search-select">
+        <mat-select id="search-availability" formControlName="availability">
+          <mat-option value="All">{{ 'All comics' | translate }}</mat-option>
+          <mat-option value="Available">{{ 'Available' | translate }}</mat-option>
+          <mat-option value="Missing">{{ 'Missing' | translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <button type="submit">{{ 'Search' | translate }}</button>

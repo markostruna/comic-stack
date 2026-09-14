@@ -1,7 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatFormField } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ComicComponent } from '@app/publisher/comic/comic.component';
 import { ComicResolved } from '@app/@shared/models';
 import {
@@ -15,7 +19,14 @@ import {
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
-  imports: [ReactiveFormsModule, TranslateModule, ComicComponent],
+  imports: [
+    ReactiveFormsModule,
+    TranslateModule,
+    ComicComponent,
+    MatFormField,
+    MatSelectModule,
+    NgxMatSelectSearchModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchComponent implements OnInit {
@@ -33,6 +44,14 @@ export class SearchComponent implements OnInit {
     comics: [],
   });
   readonly isLoading = signal(true);
+  readonly heroFilterControl = new FormControl('', { nonNullable: true });
+  readonly publisherFilterControl = new FormControl('', { nonNullable: true });
+  readonly collectionFilterControl = new FormControl('', { nonNullable: true });
+  readonly filteredHeroes = computed(() => this.filterOptions(this.options().heroes, this.heroFilter()));
+  readonly filteredPublishers = computed(() => this.filterOptions(this.options().publishers, this.publisherFilter()));
+  readonly filteredCollections = computed(() =>
+    this.filterOptions(this.options().collections, this.collectionFilter())
+  );
   readonly form = new FormGroup({
     title: new FormControl('', { nonNullable: true }),
     hero: new FormControl('All', { nonNullable: true }),
@@ -40,6 +59,10 @@ export class SearchComponent implements OnInit {
     collection: new FormControl('All', { nonNullable: true }),
     availability: new FormControl<AvailabilityFilter>('All', { nonNullable: true }),
   });
+
+  private readonly heroFilter = toSignal(this.heroFilterControl.valueChanges, { initialValue: '' });
+  private readonly publisherFilter = toSignal(this.publisherFilterControl.valueChanges, { initialValue: '' });
+  private readonly collectionFilter = toSignal(this.collectionFilterControl.valueChanges, { initialValue: '' });
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -74,5 +97,16 @@ export class SearchComponent implements OnInit {
       collection: params['collection'] ?? 'All',
       availability: (params['availability'] as AvailabilityFilter) ?? 'All',
     };
+  }
+
+  resetFilter(control: FormControl<string>): void {
+    control.reset();
+  }
+
+  private filterOptions(options: string[], searchTerm: string): string[] {
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+    return normalizedSearchTerm
+      ? options.filter((option) => option.toLowerCase().includes(normalizedSearchTerm))
+      : options;
   }
 }

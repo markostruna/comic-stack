@@ -24,3 +24,56 @@
 @include mat.all-component-themes($app-theme);
 
 // Theme customization
+
+.cdk-overlay-pane .mat-mdc-select-panel {
+  --mat-menu-container-color: #252525;
+  --mdc-menu-container-color: #252525;
+
+  background: #252525;
+  scrollbar-color: #c7c7c7 #252525;
+  scrollbar-width: auto;
+}
+
+.cdk-overlay-pane .mat-mdc-option {
+  color: white;
+  font-size: 14px;
+}
+
+.cdk-overlay-pane .mat-mdc-option .mdc-list-item__primary-text {
+  font-size: 14px;
+}
+
+:where(.cdk-overlay-pane) .mat-mdc-option.contains-mat-select-search,
+:where(.cdk-overlay-pane) .mat-mdc-option.contains-mat-select-search .mat-select-search-inner,
+:where(.cdk-overlay-pane) .mat-mdc-option.contains-mat-select-search .mat-select-search-input {
+  --mat-sys-surface-container: #252525;
+  --mat-select-panel-background-color: #252525;
+
+  color: white;
+  background-color: #252525;
+  font-size: 14px;
+}
+
+:where(.cdk-overlay-pane) .mat-mdc-option.contains-mat-select-search .mat-select-search-input::placeholder {
+  color: rgb(255 255 255 / 65%);
+}
+
+.cdk-overlay-pane .mat-mdc-select-panel::-webkit-scrollbar {
+  width: 10px;
+}
+
+.cdk-overlay-pane .mat-mdc-select-panel::-webkit-scrollbar-track {
+  background: #252525;
+}
+
+.cdk-overlay-pane .mat-mdc-select-panel::-webkit-scrollbar-thumb {
+  border: 2px solid #252525;
+  border-radius: 5px;
+  background: #c7c7c7;
+}
+
+:where(.cdk-overlay-pane) .mat-mdc-option:hover:not(.mdc-list-item--disabled),
+:where(.cdk-overlay-pane) .mat-mdc-option.mat-mdc-option-active,
+:where(.cdk-overlay-pane) .mat-mdc-option.mdc-list-item--selected {
+  background-color: transparent;
+}
