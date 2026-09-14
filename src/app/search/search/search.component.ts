@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatFormField } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
@@ -24,6 +25,7 @@ import {
     TranslateModule,
     ComicComponent,
     MatFormField,
+    MatInput,
     MatSelectModule,
     NgxMatSelectSearchModule,
   ],
@@ -44,6 +46,7 @@ export class SearchComponent implements OnInit {
     comics: [],
   });
   readonly isLoading = signal(true);
+  readonly openSelect = signal<string | null>(null);
   readonly heroFilterControl = new FormControl('', { nonNullable: true });
   readonly publisherFilterControl = new FormControl('', { nonNullable: true });
   readonly collectionFilterControl = new FormControl('', { nonNullable: true });
@@ -81,6 +84,16 @@ export class SearchComponent implements OnInit {
         },
       });
     });
+  }
+
+  setOpenSelect(select: string): void {
+    this.openSelect.set(select);
+  }
+
+  clearOpenSelect(select: string): void {
+    if (this.openSelect() === select) {
+      this.openSelect.set(null);
+    }
   }
 
   searchComics(): void {

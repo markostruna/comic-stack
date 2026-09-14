@@ -2,13 +2,31 @@
   <form class="search-form" [formGroup]="form" (ngSubmit)="searchComics()">
     <div class="search-field search-title">
       <label for="search-title">{{ 'Comic title' | translate }}</label>
-      <input id="search-title" type="search" formControlName="title" [placeholder]="'Title or filename' | translate" />
+      <mat-form-field appearance="outline" class="search-title-input">
+        <input
+          matInput
+          id="search-title"
+          type="search"
+          formControlName="title"
+          [placeholder]="'Title or filename' | translate"
+        />
+      </mat-form-field>
     </div>
 
     <div class="search-field">
       <label for="search-hero">{{ 'Hero' | translate }}</label>
-      <mat-form-field appearance="outline" class="search-select">
-        <mat-select id="search-hero" formControlName="hero" (closed)="resetFilter(heroFilterControl)">
+      <mat-form-field
+        appearance="outline"
+        class="search-select"
+        [class.search-control-focused]="openSelect() === 'hero'"
+      >
+        <mat-select
+          id="search-hero"
+          formControlName="hero"
+          panelClass="search-dropdown-panel"
+          (opened)="setOpenSelect('hero')"
+          (closed)="clearOpenSelect('hero'); resetFilter(heroFilterControl)"
+        >
           <mat-option>
             <ngx-mat-select-search
               [formControl]="heroFilterControl"
@@ -26,8 +44,18 @@
 
     <div class="search-field">
       <label for="search-publisher">{{ 'Publisher' | translate }}</label>
-      <mat-form-field appearance="outline" class="search-select">
-        <mat-select id="search-publisher" formControlName="publisher" (closed)="resetFilter(publisherFilterControl)">
+      <mat-form-field
+        appearance="outline"
+        class="search-select"
+        [class.search-control-focused]="openSelect() === 'publisher'"
+      >
+        <mat-select
+          id="search-publisher"
+          formControlName="publisher"
+          panelClass="search-dropdown-panel"
+          (opened)="setOpenSelect('publisher')"
+          (closed)="clearOpenSelect('publisher'); resetFilter(publisherFilterControl)"
+        >
           <mat-option>
             <ngx-mat-select-search
               [formControl]="publisherFilterControl"
@@ -45,8 +73,18 @@
 
     <div class="search-field">
       <label for="search-collection">{{ 'Collection' | translate }}</label>
-      <mat-form-field appearance="outline" class="search-select">
-        <mat-select id="search-collection" formControlName="collection" (closed)="resetFilter(collectionFilterControl)">
+      <mat-form-field
+        appearance="outline"
+        class="search-select"
+        [class.search-control-focused]="openSelect() === 'collection'"
+      >
+        <mat-select
+          id="search-collection"
+          formControlName="collection"
+          panelClass="search-dropdown-panel"
+          (opened)="setOpenSelect('collection')"
+          (closed)="clearOpenSelect('collection'); resetFilter(collectionFilterControl)"
+        >
           <mat-option>
             <ngx-mat-select-search
               [formControl]="collectionFilterControl"
@@ -64,8 +102,18 @@
 
     <div class="search-field">
       <label for="search-availability">{{ 'Availability' | translate }}</label>
-      <mat-form-field appearance="outline" class="search-select">
-        <mat-select id="search-availability" formControlName="availability">
+      <mat-form-field
+        appearance="outline"
+        class="search-select"
+        [class.search-control-focused]="openSelect() === 'availability'"
+      >
+        <mat-select
+          id="search-availability"
+          formControlName="availability"
+          panelClass="search-dropdown-panel"
+          (opened)="setOpenSelect('availability')"
+          (closed)="clearOpenSelect('availability')"
+        >
           <mat-option value="All">{{ 'All comics' | translate }}</mat-option>
           <mat-option value="Available">{{ 'Available' | translate }}</mat-option>
           <mat-option value="Missing">{{ 'Missing' | translate }}</mat-option>
