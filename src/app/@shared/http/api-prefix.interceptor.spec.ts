@@ -1,10 +1,10 @@
 import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { environment } from '@env/environment';
-import { ApiPrefixInterceptor } from './api-prefix.interceptor';
+import { apiPrefixInterceptor } from './api-prefix.interceptor';
 
 describe('ApiPrefixInterceptor', () => {
   let http: HttpClient;
@@ -12,14 +12,8 @@ describe('ApiPrefixInterceptor', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
-        {
-          provide: HTTP_INTERCEPTORS,
-          useClass: ApiPrefixInterceptor,
-          multi: true,
-        },
-      ],
+      imports: [],
+      providers: [provideHttpClient(withInterceptors([apiPrefixInterceptor])), provideHttpClientTesting()],
     });
 
     http = TestBed.inject(HttpClient);
@@ -44,5 +38,11 @@ describe('ApiPrefixInterceptor', () => {
 
     // Assert
     httpMock.expectOne({ url: 'hTtPs://domain.com/toto' });
+  });
+
+  it('should not prepend environment.serverUrl when the request is already prefixed', () => {
+    http.get(environment.serverUrl + 'Publishers/Abaton/Covers/cover.jpg').subscribe();
+
+    httpMock.expectOne({ url: environment.serverUrl + 'Publishers/Abaton/Covers/cover.jpg' });
   });
 });

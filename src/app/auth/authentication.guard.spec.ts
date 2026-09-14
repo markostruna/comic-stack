@@ -4,6 +4,7 @@ import { Router, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/ro
 import { CredentialsService } from './credentials.service';
 import { MockCredentialsService } from './credentials.service.mock';
 import { AuthenticationGuard } from './authentication.guard';
+import { vi } from 'vitest';
 
 describe('AuthenticationGuard', () => {
   let authenticationGuard: AuthenticationGuard;
@@ -13,9 +14,9 @@ describe('AuthenticationGuard', () => {
 
   beforeEach(() => {
     mockRouter = {
-      navigate: jasmine.createSpy('navigate'),
+      navigate: vi.fn(),
     };
-    mockSnapshot = jasmine.createSpyObj<RouterStateSnapshot>('RouterStateSnapshot', ['toString']);
+    mockSnapshot = { toString: vi.fn() } as unknown as RouterStateSnapshot;
 
     TestBed.configureTestingModule({
       providers: [

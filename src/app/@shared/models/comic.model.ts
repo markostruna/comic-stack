@@ -1,6 +1,8 @@
 export interface Comic {
-  //  id: string;
   missing: boolean;
+  comicMissing: boolean | null;
+  thumbnailMissing: boolean | null;
+  coverMissing: boolean | null;
   filename: string;
   originalFilename: string;
   extension: string;

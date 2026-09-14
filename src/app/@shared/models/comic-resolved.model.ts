@@ -17,6 +17,9 @@ export interface ComicResolved extends Comic {
   thumbnailPath: string;
   currentBackgroundImage: string;
   coverPath: string;
+  comicMissing: boolean | null;
+  thumbnailMissing: boolean | null;
+  coverMissing: boolean | null;
   backgroundImageUrl: string;
   class: string;
   loaded: boolean;

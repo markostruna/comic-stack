@@ -1,120 +1,125 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, UntypedFormControl } from '@angular/forms';
-import { MatSelect } from '@angular/material/select';
-import { ReplaySubject, Subject, take, takeUntil } from 'rxjs';
-
-export interface FilterForm {
-  title: FormControl<string | null>;
-  hero: FormControl<string | null>;
-  publisher: FormControl<string | null>;
-  collection: FormControl<string | null>;
-  availability: FormControl<string | null>;
-}
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatFormField } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ComicComponent } from '@app/publisher/comic/comic.component';
+import { ComicResolved } from '@app/@shared/models';
+import {
+  AvailabilityFilter,
+  ComicSearchFilters,
+  ComicSearchOptions,
+  PublisherService,
+} from '@app/publisher/publisher.service';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
+  imports: [
+    ReactiveFormsModule,
+    TranslateModule,
+    ComicComponent,
+    MatFormField,
+    MatInput,
+    MatSelectModule,
+    NgxMatSelectSearchModule,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('singleSelect', { static: true })
-  singleSelect!: MatSelect;
+export class SearchComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly publisherService = inject(PublisherService);
 
-  publishers: string[] = ['All', 'Ludens', 'Veseli četvrtak', 'Zlatna Serija'];
-  allHeroes: string[] = ['All', 'Veliki Blek', 'Kapetan Miki', 'Teks Viler', 'Zagor'];
-  collections: string[] = ['All', 'Maxi', 'Giant', 'Specijalno Izdanje'];
-  heroes: string[] = [];
-
-  form = this.fb.group<FilterForm>({
-    hero: this.fb.control<string>('All'),
-    title: this.fb.control<string>(''),
-    publisher: this.fb.control<string>('All'),
-    collection: this.fb.control<string>('All'),
-    availability: this.fb.control<string>('All'),
+  readonly options = signal<ComicSearchOptions>({ heroes: [], publishers: [], collections: [] });
+  readonly results = signal<ComicSearchFilters & { comics: ComicResolved[] }>({
+    title: '',
+    hero: 'All',
+    publisher: 'All',
+    collection: 'All',
+    availability: 'All',
+    comics: [],
+  });
+  readonly isLoading = signal(true);
+  readonly openSelect = signal<string | null>(null);
+  readonly heroFilterControl = new FormControl('', { nonNullable: true });
+  readonly publisherFilterControl = new FormControl('', { nonNullable: true });
+  readonly collectionFilterControl = new FormControl('', { nonNullable: true });
+  readonly filteredHeroes = computed(() => this.filterOptions(this.options().heroes, this.heroFilter()));
+  readonly filteredPublishers = computed(() => this.filterOptions(this.options().publishers, this.publisherFilter()));
+  readonly filteredCollections = computed(() =>
+    this.filterOptions(this.options().collections, this.collectionFilter())
+  );
+  readonly form = new FormGroup({
+    title: new FormControl('', { nonNullable: true }),
+    hero: new FormControl('All', { nonNullable: true }),
+    publisher: new FormControl('All', { nonNullable: true }),
+    collection: new FormControl('All', { nonNullable: true }),
+    availability: new FormControl<AvailabilityFilter>('All', { nonNullable: true }),
   });
 
-  public heroCtrl: UntypedFormControl = new UntypedFormControl();
-  public heroFilterCtrl: UntypedFormControl = new UntypedFormControl();
-  public filteredHeroes: ReplaySubject<string[]> = new ReplaySubject<string[]>(1);
-  protected _onDestroy = new Subject<void>();
-
-  constructor(private fb: FormBuilder) {}
+  private readonly heroFilter = toSignal(this.heroFilterControl.valueChanges, { initialValue: '' });
+  private readonly publisherFilter = toSignal(this.publisherFilterControl.valueChanges, { initialValue: '' });
+  private readonly collectionFilter = toSignal(this.collectionFilterControl.valueChanges, { initialValue: '' });
 
   ngOnInit(): void {
-    this.heroes = this.allHeroes;
-
-    this.heroCtrl.setValue(this.allHeroes[3]);
-    this.filteredHeroes.next(this.allHeroes.slice());
-
-    this.heroFilterCtrl.valueChanges.pipe(takeUntil(this._onDestroy)).subscribe(() => {
-      this.filterHeroes();
+    this.route.queryParams.subscribe((params) => {
+      const filters = this.filtersFromParams(params);
+      this.form.patchValue(filters, { emitEvent: false });
+      this.isLoading.set(true);
+      this.publisherService.getAllComics().subscribe({
+        next: (comics) => {
+          this.options.set(this.publisherService.getSearchOptions(comics));
+          this.results.set({ ...filters, comics: this.publisherService.searchComicsFromList(comics, filters) });
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.results.set({ ...filters, comics: [] });
+          this.isLoading.set(false);
+        },
+      });
     });
   }
 
-  ngAfterViewInit() {
-    this.setInitialValue();
+  setOpenSelect(select: string): void {
+    this.openSelect.set(select);
   }
 
-  ngOnDestroy() {
-    this._onDestroy.next();
-    this._onDestroy.complete();
-  }
-
-  protected setInitialValue() {
-    this.filteredHeroes.pipe(take(1), takeUntil(this._onDestroy)).subscribe(() => {
-      if (this.singleSelect != null) {
-        this.singleSelect.compareWith = (a: string, b: string) => a > b;
-      }
-    });
-  }
-
-  protected filterHeroes() {
-    if (!this.allHeroes) {
-      return;
+  clearOpenSelect(select: string): void {
+    if (this.openSelect() === select) {
+      this.openSelect.set(null);
     }
-    // get the search keyword
-    let search = this.heroFilterCtrl.value;
-    if (!search) {
-      this.filteredHeroes.next(this.allHeroes.slice());
-      return;
-    } else {
-      search = search.toLowerCase();
-    }
-    // filter the banks
-    this.filteredHeroes.next(this.allHeroes.filter((hero) => hero.toLowerCase().indexOf(search) > -1));
   }
 
-  searchComics() {
-    // this.comics = [];
-    // const selectedTitle = (this.form.get('title')?.value ?? '').toLowerCase();
-    // const selectedHero = (this.form.get('hero')?.value ?? '').toLowerCase();
-    // const selectedPublisher = (this.form.get('publisher')?.value ?? '').toLowerCase();
-    // const selectedCollection = (this.form.get('collection')?.value ?? '').toLowerCase();
-    // const selectedAvailability = (this.form.get('availability')?.value ?? 'All').toLowerCase();
-    // this.allComics.forEach((comic) => {
-    //   const hero2 = comic.hero2 ?? '';
-    //   if (comic.hero.toLowerCase().indexOf(selectedHero) < 0 && hero2.toLowerCase().indexOf(selectedHero) < 0) {
-    //     return;
-    //   }
-    //   const title2 = comic.title2 ?? '';
-    //   if (comic.title.toLowerCase().indexOf(selectedTitle) < 0 && title2.toLowerCase().indexOf(selectedTitle) < 0) {
-    //     return;
-    //   }
-    //   if (comic.publisher.toLowerCase().indexOf(selectedPublisher) < 0) {
-    //     return;
-    //   }
-    //   const collection = comic.collection ?? '';
-    //   if (collection?.toLowerCase()?.indexOf(selectedCollection) < 0) {
-    //     return;
-    //   }
-    //   if (selectedAvailability === 'available' && comic.missing === true) {
-    //     return;
-    //   }
-    //   if (selectedAvailability === 'missing' && comic.missing !== true) {
-    //     return;
-    //   }
-    //   this.comics.push(comic);
-    // });
-    // this.searchResults.displayComics();
+  searchComics(): void {
+    const filters = this.form.getRawValue();
+    const queryParams = Object.fromEntries(Object.entries(filters).filter(([, value]) => value && value !== 'All'));
+    this.router.navigate(['/search'], { queryParams });
+  }
+
+  private filtersFromParams(params: Record<string, string>): ComicSearchFilters {
+    return {
+      title: params['title'] ?? '',
+      hero: params['hero'] ?? 'All',
+      publisher: params['publisher'] ?? 'All',
+      collection: params['collection'] ?? 'All',
+      availability: (params['availability'] as AvailabilityFilter) ?? 'All',
+    };
+  }
+
+  resetFilter(control: FormControl<string>): void {
+    control.reset();
+  }
+
+  private filterOptions(options: string[], searchTerm: string): string[] {
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+    return normalizedSearchTerm
+      ? options.filter((option) => option.toLowerCase().includes(normalizedSearchTerm))
+      : options;
   }
 }

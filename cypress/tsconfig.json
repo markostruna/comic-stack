@@ -1,8 +1,11 @@
 {
   "extends": "../tsconfig.json",
   "include": ["**/*.ts"],
+  "exclude": [],
   "compilerOptions": {
     "sourceMap": false,
+    "module": "commonjs",
+    "moduleResolution": "node",
     "types": ["cypress"]
   }
 }

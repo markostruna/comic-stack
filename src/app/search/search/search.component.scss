@@ -1,38 +1,266 @@
 .search-form {
-  min-width: 150px;
-  max-width: 900px;
-  width: 100%;
-  margin-top: 20px;
-  margin-left: 6px;
-  margin-right: 6px;
-}
-
-.search-label {
-  margin-left: 15px;
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(130px, 1fr)) auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 28px;
+  padding: 16px;
+  border: 1px solid rgb(255 255 255 / 12%);
+  background: rgb(255 255 255 / 5%);
 }
 
 .search-field {
-  font-size: 12px;
-  color: black;
+  display: grid;
+  gap: 6px;
 }
 
-// .container {
-//   padding: 1em;
-// }
-
-::ng-deep .mat-select-search-inner {
-  position: absolute;
-  top: 25px !important;
-  width: 198px !important;
-  padding-left: 16px;
+.search-field label {
+  color: rgb(255 255 255 / 75%);
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
-::ng-deep .mat-select-search-input {
-  padding: 0 !important;
+.search-field:focus-within > label {
+  color: #2196f3;
 }
 
-::ng-deep .mat-select-search-inside-mat-option .mat-select-search-clear {
-  top: 0 !important;
-  right: 0 !important;
-  scale: 0.8;
+.search-field:has(.search-control-focused) > label {
+  color: #2196f3;
+}
+
+.search-field .search-title-input,
+.search-field .search-select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.search-title-input {
+  height: 39px;
+  min-height: 39px;
+  margin: 0;
+}
+
+.search-title-input ::ng-deep .mat-mdc-form-field,
+.search-title-input ::ng-deep .mat-mdc-text-field-wrapper,
+.search-title-input ::ng-deep .mdc-text-field {
+  height: 39px;
+  min-height: 39px;
+  background-color: #252525 !important;
+}
+
+.search-title-input ::ng-deep .mat-mdc-form-field-infix {
+  min-height: 39px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.search-title-input ::ng-deep .mat-mdc-input-element {
+  color: white;
+  font-size: 14px;
+}
+
+.search-title-input ::ng-deep .mat-mdc-input-element::placeholder {
+  color: rgb(255 255 255 / 65%);
+}
+
+:host ::ng-deep .search-title-input .mat-mdc-input-element::placeholder {
+  color: rgb(255 255 255 / 65%) !important;
+}
+
+.search-title-input ::ng-deep .mdc-notched-outline__leading,
+.search-title-input ::ng-deep .mdc-notched-outline__notch,
+.search-title-input ::ng-deep .mdc-notched-outline__trailing {
+  border-width: 1px !important;
+  border-color: rgb(255 255 255 / 45%) !important;
+}
+
+.search-title-input ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.search-title-input ::ng-deep input {
+  height: 39px;
+}
+
+.search-select {
+  height: 39px;
+  min-height: 39px;
+  margin: 0;
+}
+
+.search-select ::ng-deep .mat-mdc-form-field,
+.search-select ::ng-deep .mat-mdc-text-field-wrapper {
+  height: 39px;
+  min-height: 39px;
+  padding: 0 10px;
+  background-color: #252525 !important;
+}
+
+.search-select ::ng-deep .mdc-text-field {
+  min-height: 39px;
+  background-color: #252525 !important;
+}
+
+.search-select ::ng-deep .mat-mdc-form-field-flex,
+.search-select ::ng-deep .mat-mdc-form-field-infix,
+.search-select ::ng-deep .mat-mdc-select-trigger {
+  height: 39px;
+  min-height: 39px;
+}
+
+.search-select ::ng-deep .mat-mdc-form-field-infix {
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.search-select ::ng-deep .mat-mdc-select-trigger {
+  color: white;
+  font: inherit;
+  font-weight: 400;
+}
+
+.search-select ::ng-deep .mat-mdc-select-arrow {
+  color: white;
+}
+
+.search-select ::ng-deep .mat-mdc-select-arrow svg {
+  fill: white;
+}
+
+.search-select ::ng-deep .mdc-notched-outline__leading,
+.search-select ::ng-deep .mdc-notched-outline__notch,
+.search-select ::ng-deep .mdc-notched-outline__trailing {
+  border-width: 1px !important;
+  border-color: rgb(255 255 255 / 45%) !important;
+}
+
+.search-title-input ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+.search-title-input ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+.search-title-input ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__trailing,
+.search-select ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+.search-select ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+.search-select ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline__trailing {
+  border-width: 1px !important;
+  border-color: rgb(255 255 255 / 45%) !important;
+}
+
+.search-title-input ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.search-title-input ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.search-title-input ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing,
+.search-title-input ::ng-deep .mat-mdc-form-field.search-control-focused .mdc-notched-outline__leading,
+.search-title-input ::ng-deep .mat-mdc-form-field.search-control-focused .mdc-notched-outline__notch,
+.search-title-input ::ng-deep .mat-mdc-form-field.search-control-focused .mdc-notched-outline__trailing,
+.search-select ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.search-select ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.search-select ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing,
+.search-select ::ng-deep .mat-mdc-form-field.search-control-focused .mdc-notched-outline__leading,
+.search-select ::ng-deep .mat-mdc-form-field.search-control-focused .mdc-notched-outline__notch,
+.search-select ::ng-deep .mat-mdc-form-field.search-control-focused .mdc-notched-outline__trailing {
+  border-width: 1px !important;
+  border-color: #2196f3 !important;
+}
+
+:host ::ng-deep .search-title-input.mat-focused .mdc-notched-outline__leading,
+:host ::ng-deep .search-title-input.mat-focused .mdc-notched-outline__notch,
+:host ::ng-deep .search-title-input.mat-focused .mdc-notched-outline__trailing,
+:host ::ng-deep .search-select.search-control-focused .mdc-notched-outline__leading,
+:host ::ng-deep .search-select.search-control-focused .mdc-notched-outline__notch,
+:host ::ng-deep .search-select.search-control-focused .mdc-notched-outline__trailing {
+  border-width: 1px !important;
+  border-color: #2196f3 !important;
+}
+
+:host ::ng-deep .search-select:focus-within .mdc-notched-outline__leading,
+:host ::ng-deep .search-select:focus-within .mdc-notched-outline__notch,
+:host ::ng-deep .search-select:focus-within .mdc-notched-outline__trailing {
+  border-width: 1px !important;
+  border-color: #2196f3 !important;
+}
+
+:host ::ng-deep .search-select:focus-within .mat-mdc-select-arrow,
+:host ::ng-deep .search-select:focus-within .mat-mdc-select-arrow svg,
+:host ::ng-deep .search-select.search-control-focused .mat-mdc-select-arrow,
+:host ::ng-deep .search-select.search-control-focused .mat-mdc-select-arrow svg {
+  color: #2196f3 !important;
+  fill: #2196f3 !important;
+}
+
+::ng-deep .mat-mdc-select-panel {
+  background-color: #252525;
+}
+
+::ng-deep .mat-mdc-option {
+  color: white;
+}
+
+::ng-deep .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background-color: transparent !important;
+}
+
+::ng-deep .search-dropdown-panel .mat-mdc-option.mat-mdc-option-active.mdc-list-item:not(.contains-mat-select-search),
+::ng-deep .search-dropdown-panel .mat-mdc-option:focus.mdc-list-item:not(.contains-mat-select-search) {
+  --mat-option-focus-state-layer-color: #1976d2;
+
+  background-color: #1976d2 !important;
+}
+
+::ng-deep
+  .search-dropdown-panel
+  .mat-mdc-option.mat-mdc-option-active.mdc-list-item:not(.contains-mat-select-search)
+  .mdc-list-item__primary-text,
+::ng-deep
+  .search-dropdown-panel
+  .mat-mdc-option:focus.mdc-list-item:not(.contains-mat-select-search)
+  .mdc-list-item__primary-text {
+  color: white !important;
+}
+
+.search-form button {
+  min-height: 39px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 3px;
+  color: #111;
+  background: #f1c40f;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.results-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+  color: white;
+}
+
+.results-heading h1 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.results-heading span {
+  color: rgb(255 255 255 / 65%);
+  font-size: 0.85rem;
+}
+
+.search-state {
+  padding: 64px 16px;
+  color: rgb(255 255 255 / 70%);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .search-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .search-title,
+  .search-form button {
+    grid-column: 1 / -1;
+  }
 }

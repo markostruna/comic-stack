@@ -1,40 +1,47 @@
-import { Title } from '@angular/platform-browser';
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
 
 import { AuthenticationService, CredentialsService } from '@app/auth';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { LanguageSelectorComponent } from '../i18n/language-selector.component';
 
 @Component({
   selector: 'app-shell',
   templateUrl: './shell.component.html',
   styleUrls: ['./shell.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    TranslateModule,
+    RouterLink,
+    RouterLinkActive,
+    MatIconButton,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger,
+    LanguageSelectorComponent,
+    RouterOutlet,
+  ],
 })
-export class ShellComponent implements OnInit {
-  constructor(
-    private router: Router,
-    private titleService: Title,
-    private authenticationService: AuthenticationService,
-    private credentialsService: CredentialsService,
-    private breakpoint: BreakpointObserver
-  ) {}
-
-  ngOnInit() {}
+export class ShellComponent {
+  private readonly router = inject(Router);
+  private readonly authenticationService = inject(AuthenticationService);
+  private readonly credentialsService = inject(CredentialsService);
+  readonly isReaderRoute = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map((event) => event.urlAfterRedirects.startsWith('/reader'))
+    ),
+    { initialValue: this.router.url.startsWith('/reader') }
+  );
+  readonly username = this.credentialsService.credentials?.username ?? '';
 
   logout() {
     this.authenticationService.logout().subscribe(() => this.router.navigate(['/login'], { replaceUrl: true }));
-  }
-
-  get username(): string | null {
-    const credentials = this.credentialsService.credentials;
-    return credentials ? credentials.username : null;
-  }
-
-  get isMobile(): boolean {
-    return this.breakpoint.isMatched(Breakpoints.Small) || this.breakpoint.isMatched(Breakpoints.XSmall);
-  }
-
-  get title(): string {
-    return this.titleService.getTitle();
   }
 }

@@ -1,27 +1,107 @@
+@use "@angular/material" as mat;
+@use "theme/theme";
+
 /*
  * Entry point of global application style.
  * Component-specific style should not go here and be included directly as part of the components.
  */
 
 // Theme variables, must be included before the libraries to allow overriding defaults
-@import "theme/theme-variables";
+@use "theme/theme-variables" as *;
 
 // 3rd party libraries
-@import "~material-design-icons-iconfont/src/material-design-icons";
+@use "material-design-icons-iconfont/dist/material-design-icons.css";
 
-// Angular Material custom theme
-// The mixins below must be included once so we separated them from the variables
-@import "~@angular/material/theming";
-
-// Include the common styles for Angular Material. We include this here so that you only
+// Include the common styles for Angular Material. We include this here so you
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat-core();
+@include mat.elevation-classes();
+@include mat.app-background();
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include angular-material-theme($app-theme);
+@include mat.all-component-themes($app-theme);
 
 // Theme customization
-@import "theme/theme";
+
+.cdk-overlay-pane .mat-mdc-select-panel {
+  --mat-menu-container-color: #252525;
+  --mdc-menu-container-color: #252525;
+
+  background: #252525;
+  scrollbar-color: #c7c7c7 #252525;
+  scrollbar-width: auto;
+}
+
+.cdk-overlay-pane .mat-mdc-option {
+  color: white;
+  font-size: 14px;
+}
+
+.cdk-overlay-pane .mat-mdc-option .mdc-list-item__primary-text {
+  font-size: 14px;
+}
+
+:where(.cdk-overlay-pane) .mat-mdc-option.contains-mat-select-search,
+:where(.cdk-overlay-pane) .mat-mdc-option.contains-mat-select-search .mat-select-search-inner,
+:where(.cdk-overlay-pane) .mat-mdc-option.contains-mat-select-search .mat-select-search-input {
+  --mat-sys-surface-container: #252525;
+  --mat-select-panel-background-color: #252525;
+
+  color: white;
+  background-color: #252525;
+  font-size: 14px;
+}
+
+:where(.cdk-overlay-pane) .mat-mdc-option.contains-mat-select-search .mat-select-search-input::placeholder {
+  color: rgb(255 255 255 / 65%);
+}
+
+:where(.cdk-overlay-pane) .mat-mdc-option.contains-mat-select-search mat-divider {
+  border-top-color: rgb(255 255 255 / 22%);
+}
+
+.search-dropdown-panel .mat-mdc-option {
+  min-height: 40px;
+  height: 40px;
+}
+
+.search-dropdown-panel {
+  border: 1px solid rgb(255 255 255 / 45%);
+}
+
+:where(.search-dropdown-panel .mat-mdc-option.contains-mat-select-search, .search-dropdown-panel
+    .mat-mdc-option.contains-mat-select-search
+    .mat-select-search-inner, .search-dropdown-panel
+    .mat-mdc-option.contains-mat-select-search
+    .mat-select-search-inner-row, .search-dropdown-panel
+    .mat-mdc-option.contains-mat-select-search
+    .mat-select-search-input) {
+  height: 40px;
+  min-height: 40px;
+}
+
+.search-dropdown-panel .mat-mdc-option.contains-mat-select-search {
+  border-bottom: 1px solid rgb(255 255 255 / 22%);
+  background-color: transparent;
+}
+
+.cdk-overlay-pane .mat-mdc-select-panel::-webkit-scrollbar {
+  width: 10px;
+}
+
+.cdk-overlay-pane .mat-mdc-select-panel::-webkit-scrollbar-track {
+  background: #252525;
+}
+
+.cdk-overlay-pane .mat-mdc-select-panel::-webkit-scrollbar-thumb {
+  border: 2px solid #252525;
+  border-radius: 5px;
+  background: #c7c7c7;
+}
+
+:where(.cdk-overlay-pane) .mat-mdc-option:hover:not(.mdc-list-item--disabled),
+:where(.cdk-overlay-pane) .mat-mdc-option.mdc-list-item--selected {
+  background-color: transparent;
+}

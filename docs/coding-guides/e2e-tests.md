@@ -6,9 +6,9 @@ While unit tests are the first choice for catching bugs and regression on indivi
 complement them with test cases covering the integration between the individual components, hence the need for E2E
 tests.
 
-These tests use [Cypress](https://www.cypress.io/), which is a next generation front end testing tool built for the modern web.
+These tests use [Playwright](https://playwright.dev/), a browser automation framework for reliable end-to-end testing.
 
-If you are new to Cypress, you can read the [introduction guide](https://docs.cypress.io/guides/core-concepts/introduction-to-cypress#Cypress-Can-Be-Simple-Sometimes), as although it seems similar on the surface as other tools like Selenium or Protractor, Cypress is fundamentally different.
+The tests use page objects under `playwright/page-objects` and are run with `npm run e2e`.
 
 ## Good practices
 

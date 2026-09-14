@@ -1,0 +1,133 @@
+.comic-card {
+  width: 150px;
+  color: white;
+}
+
+.cover-frame {
+  position: relative;
+  width: 150px;
+  height: 230px;
+  background: #111;
+}
+
+.cover-frame img {
+  display: block;
+  width: 150px;
+  height: 230px;
+  object-fit: contain;
+  opacity: 0.82;
+  transition: opacity 0.16s ease, box-shadow 0.16s ease;
+}
+
+.cover-frame:hover img,
+.cover-frame:focus-within img {
+  opacity: 1;
+  box-shadow: 0 0 22px rgb(255 255 255 / 18%);
+}
+
+.cover-frame .missing {
+  opacity: 0.2;
+}
+
+.comic-publisher,
+.comic-collection {
+  position: absolute;
+  right: 0;
+  left: 0;
+  overflow: hidden;
+  padding: 2px 4px;
+  color: #111;
+  font-size: 11px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.comic-publisher {
+  bottom: 0;
+  background: rgb(255 255 0 / 80%);
+}
+
+.comic-collection {
+  top: 0;
+  background: rgb(128 255 0 / 80%);
+}
+
+.hero-container {
+  position: absolute;
+  bottom: -5px;
+  left: -5px;
+  display: flex;
+  gap: 4px;
+}
+
+.hero-circle {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid #111;
+  border-radius: 50%;
+  color: #111;
+  background-color: white;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  font-size: 20px;
+}
+
+.reader-button {
+  position: absolute;
+  right: -4px;
+  bottom: -5px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid #111;
+  border-radius: 50%;
+  color: white;
+  background: cadetblue;
+  cursor: pointer;
+}
+
+.reader-button mat-icon {
+  font-size: 21px;
+}
+
+.comic-info {
+  min-height: 52px;
+  padding: 3px 2px;
+  overflow: hidden;
+}
+
+.comic-number-row {
+  display: flex;
+  gap: 5px;
+  min-height: 20px;
+  margin-bottom: 3px;
+}
+
+.number-circle {
+  display: inline-grid;
+  width: 28px;
+  min-height: 16px;
+  place-items: center;
+  border-radius: 5px;
+  color: #111;
+  background: steelblue;
+  font-size: 10px;
+}
+
+.number-circle-primary {
+  background: yellow;
+}
+
+.title {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

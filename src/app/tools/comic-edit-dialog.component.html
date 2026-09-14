@@ -1,0 +1,71 @@
+<h2 mat-dialog-title>{{ 'Edit comic' | translate }}</h2>
+<div mat-dialog-content class="dialog-content">
+  <div class="images">
+    <div class="image-panel">
+      <span>{{ 'Thumbnail' | translate }}</span>
+      @if (imageAvailable(comic.thumbnailMissing)) {
+      <img [src]="comic.thumbnailPath" [alt]="comic.filename" (load)="thumbnailLoaded()" (error)="thumbnailFailed()" />
+      } @else {
+      <mat-icon>broken_image</mat-icon>
+      }
+    </div>
+    <div class="image-panel">
+      <span>{{ 'Cover' | translate }}</span>
+      @if (imageAvailable(comic.coverMissing)) {
+      <img [src]="comic.coverPath" [alt]="comic.filename" (load)="coverLoaded()" (error)="coverFailed()" />
+      } @else {
+      <mat-icon>broken_image</mat-icon>
+      }
+    </div>
+    <div class="availability">
+      <strong>{{ 'Availability' | translate }}</strong>
+      <span
+        >{{ 'Comic file' | translate }}:
+        {{ comicFileMissing() ? ('Missing' | translate) : ('Available' | translate) }}</span
+      >
+      <span
+        >{{ 'Thumbnail' | translate }}:
+        {{
+          comic.thumbnailMissing === true
+            ? ('Missing' | translate)
+            : comic.thumbnailMissing === false
+            ? ('Available' | translate)
+            : ('Unknown' | translate)
+        }}</span
+      >
+      <span
+        >{{ 'Cover' | translate }}:
+        {{
+          comic.coverMissing === true
+            ? ('Missing' | translate)
+            : comic.coverMissing === false
+            ? ('Available' | translate)
+            : ('Unknown' | translate)
+        }}</span
+      >
+    </div>
+  </div>
+
+  @if (isChecking) {
+  <p>{{ 'Checking availability' | translate }}</p>
+  }
+
+  <div class="fields">
+    <label>Publisher<input [(ngModel)]="comic.publisher" /></label>
+    <label>Filename<input [(ngModel)]="comic.filename" /></label>
+    <label>Original filename<input [(ngModel)]="comic.originalFilename" /></label>
+    <label>Extension<input [(ngModel)]="comic.extension" /></label>
+    <label>Path<input [(ngModel)]="comic.path" /></label>
+    <label>Thumbnail path<input [(ngModel)]="comic.thumbnailPath" /></label>
+    <label>Cover path<input [(ngModel)]="comic.coverPath" /></label>
+    <label>Number<input type="number" [(ngModel)]="comic.number" /></label>
+    <label>Sequence number<input type="number" [(ngModel)]="comic.seqNumber" /></label>
+    <label>Collection<input [(ngModel)]="comic.collection" /></label>
+    <label>Heroes<textarea [(ngModel)]="comic.heroesResolved"></textarea></label>
+    <label>Titles<textarea [(ngModel)]="comic.titlesResolved"></textarea></label>
+  </div>
+</div>
+<div mat-dialog-actions align="end">
+  <button type="button" (click)="cancel()">{{ 'Cancel' | translate }}</button>
+  <button type="button" (click)="save()" [disabled]="isChecking || isSaving">{{ 'Save' | translate }}</button>
+</div>

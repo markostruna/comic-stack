@@ -17,7 +17,7 @@
       "tools": ["prettier", "hads"],
       "utility": ["lodash", "moment"],
       "deploy": "none",
-      "projectName": "comic-3",
+      "projectName": "comic-stack",
       "packageManager": "npm",
       "mobile": [],
       "desktop": [],

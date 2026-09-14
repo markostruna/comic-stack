@@ -1,0 +1,59 @@
+<div class="reader-page" #readerContainer>
+  <header class="reader-header">
+    <a routerLink="/publisher">Back to comics</a>
+    <h1>{{ title() }}</h1>
+    @if (downloadUrl()) {
+    <a class="download-link" [href]="downloadUrl()" download>Download</a>
+    }
+  </header>
+
+  <div class="reader-toolbar">
+    <button type="button" (click)="previousPage()" [disabled]="!canGoPrevious() || isLoading()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span>{{ currentPage() + 1 }} / {{ pages().length }}</span>
+    <button type="button" (click)="nextPage()" [disabled]="!canGoNext() || isLoading()">
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
+    <button
+      type="button"
+      class="toggle-button"
+      [class.active]="twoPageMode()"
+      [attr.aria-pressed]="twoPageMode()"
+      (click)="toggleTwoPageMode()"
+    >
+      <mat-icon>chrome_reader_mode</mat-icon>
+      <span>Pages</span>
+      <span class="toggle-state">{{ twoPageMode() ? 'On' : 'Off' }}</span>
+    </button>
+    <button
+      type="button"
+      class="toggle-button"
+      [class.active]="splitSpreads()"
+      [attr.aria-pressed]="splitSpreads()"
+      [disabled]="!canSplit() || isLoading()"
+      (click)="toggleSplitSpreads()"
+      title="Split wide images into two pages"
+    >
+      <mat-icon>call_split</mat-icon>
+      <span>Split</span>
+      <span class="toggle-state">{{ splitSpreads() ? 'On' : 'Off' }}</span>
+    </button>
+    <button type="button" (click)="changeZoom(-0.1)"><mat-icon>zoom_out</mat-icon></button>
+    <span>{{ zoom() * 100 }}%</span>
+    <button type="button" (click)="changeZoom(0.1)"><mat-icon>zoom_in</mat-icon></button>
+    <button type="button" (click)="toggleFullscreen(readerContainer)">
+      <mat-icon>{{ isFullscreen() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+    </button>
+  </div>
+
+  @if (isLoading()) {
+  <p class="reader-empty">Loading comic pages...</p>
+  } @else if (error()) {
+  <p class="reader-empty">{{ error() }}</p>
+  } @else {
+  <main class="reader-frame" [style.--reader-zoom]="zoom()">
+    <div class="page-flip-container" #pageFlipContainer></div>
+  </main>
+  }
+</div>

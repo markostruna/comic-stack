@@ -1,9 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ConfigurationService } from '@app/@shared/configuration.service';
+import { CatalogService } from '@app/@shared/catalog.service';
 import { HelperService } from '@app/@shared/helper.service';
 import { Comic, ComicResolved, Publisher, PublisherResolved } from '@app/@shared/models';
 import { environment } from '@env/environment';
-import { catchError, map, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
+
+export type AvailabilityFilter = 'All' | 'Available' | 'Missing';
+
+export interface ComicSearchFilters {
+  title: string;
+  hero: string;
+  publisher: string;
+  collection: string;
+  availability: AvailabilityFilter;
+}
+
+export interface ComicSearchOptions {
+  heroes: string[];
+  publishers: string[];
+  collections: string[];
+}
 
 export interface fieldTypes {
   number: number;
@@ -35,6 +53,12 @@ export interface filenameMatchConfig {
   providedIn: 'root',
 })
 export class PublisherService {
+  private configurationService = inject(ConfigurationService);
+  private catalogService = inject(CatalogService);
+  private helperService = inject(HelperService);
+  private publishersCache?: Observable<PublisherResolved[]>;
+  private readonly comicsCache = new Map<string, Observable<ComicResolved[]>>();
+
   fieldTypes: fieldTypes = {
     number: 0,
     string: 1,
@@ -89,34 +113,56 @@ export class PublisherService {
     { fields: ['hero', 'seqNumber', 'title'] },
   ];
 
-  constructor(private configurationService: ConfigurationService, private helperService: HelperService) {}
-
   getPublishers(path: string, useCache: boolean = true): Observable<PublisherResolved[]> {
-    console.log('getPublishers initiated. Path: (', path);
+    if (!useCache) {
+      return this.catalogService.readPublishers();
+    }
 
-    return this.configurationService.getPublishers(path).pipe(
-      map((data) => {
-        return this.resolvePublishers(data);
-      }),
-      catchError((err) => {
-        console.log('getPublishers error.');
-        throw err;
-      })
-    );
+    this.publishersCache ??= this.catalogService.readPublishers().pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    return this.publishersCache;
   }
 
   getComics(path: string, publisher: string, useCache: boolean = true): Observable<ComicResolved[]> {
-    console.log('getComics initiated. Path: (', path, '), Publisher: ', publisher, ')');
+    if (!useCache) {
+      return this.catalogService.readComics(publisher);
+    }
 
-    return this.configurationService.getComics(path, publisher).pipe(
-      map((data) => {
-        return this.resolveComics(data, path);
-      }),
-      catchError((err) => {
-        console.log('getComics error.');
-        throw err;
-      })
-    );
+    const cached = this.comicsCache.get(publisher);
+    if (cached) {
+      return cached;
+    }
+
+    const comics = this.catalogService.readComics(publisher).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    this.comicsCache.set(publisher, comics);
+    return comics;
+  }
+
+  getAllComics(): Observable<ComicResolved[]> {
+    return this.catalogService.readComics();
+  }
+
+  getSearchOptions(comics: ComicResolved[]): ComicSearchOptions {
+    return {
+      heroes: this.unique(comics.flatMap((comic) => comic.heroes?.map((hero) => hero.name) ?? [])),
+      publishers: this.unique(comics.map((comic) => comic.publisher)),
+      collections: this.unique(comics.map((comic) => comic.collection ?? '').filter(Boolean)),
+    };
+  }
+
+  searchComics(filters: ComicSearchFilters): Observable<ComicResolved[]> {
+    return this.getAllComics().pipe(map((comics) => comics.filter((comic) => this.matchesFilters(comic, filters))));
+  }
+
+  searchComicsFromList(comics: ComicResolved[], filters: ComicSearchFilters): ComicResolved[] {
+    return comics.filter((comic) => this.matchesFilters(comic, filters));
+  }
+
+  importPublishers(path: string): Observable<PublisherResolved[]> {
+    return this.configurationService.getPublishers(path);
+  }
+
+  importComics(path: string, publisher: string): Observable<ComicResolved[]> {
+    return this.configurationService.getComics(path, publisher);
   }
 
   private resolvePublishers(data: PublisherResolved[]): PublisherResolved[] {
@@ -149,8 +195,8 @@ export class PublisherService {
       ...comic,
       thumbnailPath: environment.serverUrl + parentPath + 'Thumbnails/' + comic.originalFilename + '.jpg',
       coverPath: environment.serverUrl + parentPath + 'Covers/' + comic.originalFilename + '.jpg',
-      currentBackgroundImage: '/assets/spinner.gif',
-      backgroundImageUrl: 'url("/assets/spinner.gif")',
+      currentBackgroundImage: 'assets/preset-light.png',
+      backgroundImageUrl: 'url("assets/preset-light.png")',
       class: 'thumb' + (comic.missing ? ' missing' : ''),
       loaded: false,
       number: undefined,
@@ -223,8 +269,7 @@ export class PublisherService {
         resolved.numberResolved = resolved?.number?.toString() ?? '';
 
         if (resolved.seqNumber) {
-          resolved.numberResolved +=
-            (resolved.numberResolved.length > 0 ? '-' : '') + resolved.seqNumber?.toString() ?? '';
+          resolved.numberResolved += (resolved.numberResolved.length > 0 ? '-' : '') + resolved.seqNumber.toString();
         }
 
         return resolved;
@@ -236,5 +281,41 @@ export class PublisherService {
     }
 
     return resolved;
+  }
+
+  private matchesFilters(comic: ComicResolved, filters: ComicSearchFilters): boolean {
+    const title = `${comic.titlesResolved ?? ''} ${comic.filename ?? ''}`.toLowerCase();
+    const hero = (comic.heroesResolved ?? '').toLowerCase();
+    const publisher = (comic.publisher ?? '').toLowerCase();
+    const collection = (comic.collection ?? '').toLowerCase();
+    const selectedTitle = (filters.title ?? '').trim().toLowerCase();
+    const selectedHero = (filters.hero ?? 'All').toLowerCase();
+    const selectedPublisher = (filters.publisher ?? 'All').toLowerCase();
+    const selectedCollection = (filters.collection ?? 'All').toLowerCase();
+
+    if (selectedTitle && !title.includes(selectedTitle)) {
+      return false;
+    }
+    if (selectedHero !== 'all' && hero !== selectedHero && !hero.includes(selectedHero)) {
+      return false;
+    }
+    if (selectedPublisher !== 'all' && publisher !== selectedPublisher) {
+      return false;
+    }
+    if (selectedCollection !== 'all' && collection !== selectedCollection) {
+      return false;
+    }
+    if (filters.availability === 'Available' && comic.comicMissing === true) {
+      return false;
+    }
+    if (filters.availability === 'Missing' && comic.comicMissing !== true) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private unique(values: string[]): string[] {
+    return [...new Set(values.filter(Boolean))].sort((left, right) => left.localeCompare(right));
   }
 }

@@ -1,7 +1,19 @@
 .comicbox {
   margin: 5px;
+
   /* background-color: rgba(0, 0, 0, 0.1); */
   padding-top: 20px;
+}
+
+.comic-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.comic-item {
+  width: 150px;
 }
 
 .thumb {
@@ -16,30 +28,31 @@
 
 .missing {
   opacity: 0.2;
+
   /* border:2px solid red;
   margin:-2px; */
 }
 
 .loading {
-  background-image: url("/assets/spinner.gif");
-  background-position: center !important;
-  background-size: cover !important;
+  background-position: center;
+  background-size: cover;
 }
 
 .thumb:hover {
   opacity: 1;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgb(0 0 0 / 20%);
   background-blend-mode: darken;
-  box-shadow: 0 0 32px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 32px rgb(0 0 0 / 20%);
   transition: border 0.2s ease, background-color 0.5s ease, all 0.3s ease;
 }
 
 .comicinfo {
   /* margin:2px; */
   // width: 146px;
+
   /* height:110px; */
   padding: 2px;
-  background-color: rgba(255, 255, 255, 0);
+  background-color: rgb(255 255 255 / 0%);
   overflow: hidden;
   text-overflow: ellipsis;
   word-wrap: normal;
@@ -47,50 +60,65 @@
   color: white;
   // height: 90px;
   // height: 110px;
-  overflow: hidden;
 }
 
 .comicinfo-missing {
-  background: rgba(155, 0, 0, 0.8);
+  background: rgb(155 0 0 / 80%);
 }
 
 .comic-publisher {
   position: relative;
+
   /* width: 196px; */
-  background-color: rgba(255, 255, 0, 0.8);
+  background-color: rgb(255 255 0 / 80%);
   color: black;
+
   /* border-radius: 5px; */
+
   /* background: rgba(0, 105, 0, 0.8);
   color: white; */
   text-align: center;
   font-size: 12px;
+
   /* line-height: 14px; */
+
   /* transform: rotate(-45deg) translate(-35px, 0px); */
 }
 
 .comic-collection {
   position: relative;
+
   /* width: 196px; */
-  background-color: rgba(128, 255, 0, 0.8);
+  background-color: rgb(128 255 0 / 80%);
   color: black;
+
   /* border-radius: 5px; */
+
   /* background: rgba(0, 105, 0, 0.8);
   color: white; */
   text-align: center;
   font-size: 12px;
+
   /* line-height: 14px; */
+
   /* transform: rotate(-45deg) translate(-35px, 0px); */
 }
 
 .comic-missing {
   height: 2px;
   width: 150px;
-  margin: 0px;
+  margin: 0;
   border-radius: 50%;
+
   /* float: right; */
-  background: rgba(155, 0, 0, 0.8);
+  background: rgb(155 0 0 / 80%);
   color: white;
   text-align: center;
+}
+
+.comic-number-row {
+  display: flex;
+  gap: 5px;
 }
 
 .number-circle {
@@ -133,55 +161,55 @@
 }
 
 .zagor {
-  background-image: url("/assets/zagor.png");
+  background-image: url("../../../assets/zagor.png");
 }
 
 .dilandog {
-  background-image: url("/assets/dylandog.png");
+  background-image: url("../../../assets/dilan-dog.png");
 }
 
 .dampir {
-  background-image: url("/assets/dampyr.png");
+  background-image: url("../../../assets/dampir.png");
 }
 
 .misterno {
-  background-image: url("/assets/misterno.png");
+  background-image: url("../../../assets/mister-no.png");
 }
 
 .martimisterija {
-  background-image: url("/assets/martimisterija.png");
+  background-image: url("../../../assets/marti-misterija.png");
 }
 
 .teksviler {
-  background-image: url("/assets/teks.png");
+  background-image: url("../../../assets/teks-viler.png");
 }
 
 .bradbarron {
-  background-image: url("/assets/bradbarron.png");
+  background-image: url("../../../assets/brad-barron.png");
 }
 
 .timidasti {
-  background-image: url("/assets/timidasti.png");
+  background-image: url("../../../assets/tim-i-dasti.png");
 }
 
 .kitteler {
-  background-image: url("/assets/kitteler.png");
+  background-image: url("../../../assets/kit-teler.png");
 }
 
 .velikiblek {
-  background-image: url("/assets/blek.png");
+  background-image: url("../../../assets/veliki-blek.png");
 }
 
 .kenparker {
-  background-image: url("/assets/kenparker.png");
+  background-image: url("../../../assets/ken-parker.png");
 }
 
 .kapetanmiki {
-  background-image: url("/assets/kapetanmiki.png");
+  background-image: url("../../../assets/kapetan-miki.png");
 }
 
 .komandantmark {
-  background-image: url("/assets/komandantmark.png");
+  background-image: url("../../../assets/komandant-mark.png");
 }
 
 .number {
@@ -209,7 +237,6 @@
   border-radius: 50%;
   width: 36px;
   height: 36px;
-  background-color: white;
   border: 1px solid black;
   background-size: contain;
   font-size: 32px;
@@ -218,8 +245,6 @@
 }
 
 .title {
-  color: darkorange;
-  font-size: 12px;
   font-size: 12px;
   font-weight: 400;
   text-align: left;
@@ -231,17 +256,15 @@
 .pager {
   font-size: 16px;
   color: white;
-  font-family: Roboto;
+  font-family: Roboto, sans-serif;
   font-weight: 600;
-  margin-top: 20px;
-  margin-bottom: 0;
-  margin-left: 5px;
-  margin-right: 5px;
+  margin: 20px 5px 0;
 }
 
 .pagerItem {
   cursor: pointer;
 }
+
 .example-viewport1 {
   height: 700px;
   width: 900px;
@@ -259,10 +282,9 @@
   height: 36px;
   font-size: 32px;
   padding-left: 5px;
-  color: white;
   cursor: pointer;
 }
 
-::ng-deep .mat-tooltip.mat-tooltip {
+::ng-deep .mat-mdc-tooltip.mat-tooltip {
   background-color: black;
 }

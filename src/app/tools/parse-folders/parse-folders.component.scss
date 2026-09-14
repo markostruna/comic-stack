@@ -1,6 +1,68 @@
-// table {
-//   width: 100%;
-// }
+:host {
+  display: block;
+  min-width: 0;
+  width: 100%;
+}
+
+.page {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+}
+
+.actions {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.actions-bottom {
+  justify-content: flex-end;
+}
+
+.table-wrapper {
+  box-sizing: border-box;
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.my-table {
+  min-width: 100%;
+  width: max-content;
+}
+
+.table-paginator {
+  box-sizing: border-box;
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.missing-icons {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.missing-icons mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+button {
+  cursor: pointer;
+  padding: 6px 14px;
+}
+
+input:not([type="checkbox"]) {
+  min-width: 120px;
+}
 
 // .full-width {
 //   font-size: 14px;
