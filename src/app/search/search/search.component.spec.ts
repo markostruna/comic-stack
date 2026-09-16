@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { CatalogService } from '@app/@shared/catalog.service';
 import { PublisherService } from '@app/publisher/publisher.service';
+import { TranslateModule } from '@ngx-translate/core';
 import { vi } from 'vitest';
 
 import { SearchComponent } from './search.component';
@@ -14,7 +15,7 @@ describe('SearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SearchComponent],
+      imports: [TranslateModule.forRoot(), SearchComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -29,6 +30,8 @@ describe('SearchComponent', () => {
           useValue: {
             getAllComics: () => of([]),
             getSearchOptions: () => ({ heroes: [], publishers: [], collections: [] }),
+            getSearchOptionsFromApi: () => of({ heroes: [], publishers: [], collections: [] }),
+            searchComics: () => of([]),
             searchComicsFromList: () => [],
           },
         },

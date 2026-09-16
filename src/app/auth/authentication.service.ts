@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 
+import { environment } from '@env/environment';
 import { Credentials, CredentialsService } from './credentials.service';
 
 export interface LoginContext {
@@ -10,13 +12,13 @@ export interface LoginContext {
 }
 
 /**
- * Provides a base for authentication workflow.
- * The login/logout methods should be replaced with proper implementation.
+ * Handles access and refresh tokens issued by the PHP API.
  */
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
+  private readonly http = inject(HttpClient);
   private credentialsService = inject(CredentialsService);
 
   /**
@@ -25,13 +27,32 @@ export class AuthenticationService {
    * @return The user credentials.
    */
   login(context: LoginContext): Observable<Credentials> {
-    // Replace by proper authentication call
-    const data = {
-      username: context.username,
-      token: '123456',
-    };
-    this.credentialsService.setCredentials(data, context.remember);
-    return of(data);
+    return this.http
+      .post<{
+        accessToken: string;
+        refreshToken: string;
+        user: { id: number; username: string; role: 'admin' | 'user' };
+      }>(`${environment.apiUrl}auth/login`, { username: context.username, password: context.password })
+      .pipe(
+        map((response) => ({
+          id: response.user.id,
+          username: response.user.username,
+          role: response.user.role,
+          token: response.accessToken,
+          refreshToken: response.refreshToken,
+        })),
+        tap((credentials) => this.credentialsService.setCredentials(credentials, context.remember))
+      );
+  }
+
+  refresh(): Observable<Credentials> {
+    const current = this.credentialsService.credentials;
+    return this.http
+      .post<{ accessToken: string }>(`${environment.apiUrl}auth/refresh`, { refreshToken: current?.refreshToken })
+      .pipe(
+        map((response) => ({ ...current!, token: response.accessToken })),
+        tap((credentials) => this.credentialsService.setCredentials(credentials, !!current?.refreshToken))
+      );
   }
 
   /**
@@ -39,8 +60,10 @@ export class AuthenticationService {
    * @return True if the user was logged out successfully.
    */
   logout(): Observable<boolean> {
-    // Customize credentials invalidation here
-    this.credentialsService.setCredentials();
-    return of(true);
+    const refreshToken = this.credentialsService.credentials?.refreshToken;
+    return this.http.post(`${environment.apiUrl}auth/logout`, { refreshToken }).pipe(
+      map(() => true),
+      tap(() => this.credentialsService.setCredentials())
+    );
   }
 }

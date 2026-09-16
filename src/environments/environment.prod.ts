@@ -10,6 +10,7 @@ export const environment = {
   production: true,
   version: env['npm_package_version'],
   serverUrl: 'http://tusvob.ddns.net/',
+  apiUrl: 'https://tusvob.ddns.net/api/',
   jokeServerUrl: 'https://api.chucknorris.io/',
   defaultLanguage: 'en-US',
   supportedLanguages: ['en-US'],

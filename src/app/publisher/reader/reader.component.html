@@ -2,9 +2,6 @@
   <header class="reader-header">
     <a routerLink="/publisher">Back to comics</a>
     <h1>{{ title() }}</h1>
-    @if (downloadUrl()) {
-    <a class="download-link" [href]="downloadUrl()" download>Download</a>
-    }
   </header>
 
   <div class="reader-toolbar">
@@ -42,6 +39,17 @@
     <button type="button" (click)="changeZoom(-0.1)"><mat-icon>zoom_out</mat-icon></button>
     <span>{{ zoom() * 100 }}%</span>
     <button type="button" (click)="changeZoom(0.1)"><mat-icon>zoom_in</mat-icon></button>
+    <button
+      type="button"
+      (click)="saveBookmark()"
+      [disabled]="isSavingBookmark() || isLoading()"
+      title="Bookmark this page"
+    >
+      <mat-icon>bookmark_add</mat-icon>
+    </button>
+    @if (bookmarkMessage()) {
+    <span class="bookmark-message" aria-live="polite">{{ bookmarkMessage() }}</span>
+    }
     <button type="button" (click)="toggleFullscreen(readerContainer)">
       <mat-icon>{{ isFullscreen() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
     </button>

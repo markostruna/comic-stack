@@ -1,5 +1,4 @@
 import { Injectable, inject } from '@angular/core';
-import { ConfigurationService } from '@app/@shared/configuration.service';
 import { CatalogService } from '@app/@shared/catalog.service';
 import { HelperService } from '@app/@shared/helper.service';
 import { Comic, ComicResolved, Publisher, PublisherResolved } from '@app/@shared/models';
@@ -53,7 +52,6 @@ export interface filenameMatchConfig {
   providedIn: 'root',
 })
 export class PublisherService {
-  private configurationService = inject(ConfigurationService);
   private catalogService = inject(CatalogService);
   private helperService = inject(HelperService);
   private publishersCache?: Observable<PublisherResolved[]>;
@@ -150,19 +148,15 @@ export class PublisherService {
   }
 
   searchComics(filters: ComicSearchFilters): Observable<ComicResolved[]> {
-    return this.getAllComics().pipe(map((comics) => comics.filter((comic) => this.matchesFilters(comic, filters))));
+    return this.catalogService.searchComics(filters);
+  }
+
+  getSearchOptionsFromApi(): Observable<ComicSearchOptions> {
+    return this.catalogService.readSearchOptions();
   }
 
   searchComicsFromList(comics: ComicResolved[], filters: ComicSearchFilters): ComicResolved[] {
     return comics.filter((comic) => this.matchesFilters(comic, filters));
-  }
-
-  importPublishers(path: string): Observable<PublisherResolved[]> {
-    return this.configurationService.getPublishers(path);
-  }
-
-  importComics(path: string, publisher: string): Observable<ComicResolved[]> {
-    return this.configurationService.getComics(path, publisher);
   }
 
   private resolvePublishers(data: PublisherResolved[]): PublisherResolved[] {

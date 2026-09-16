@@ -117,14 +117,14 @@ export class PublisherComponent implements OnInit, AfterViewInit {
     return item.path;
   }
 
-  slidePrevious(sectionPath: string, swiper: { swiper?: { slidePrev: () => void } }): void {
-    swiper.swiper?.slidePrev();
-    setTimeout(() => this.updateSwiperNavigation(sectionPath, swiper));
+  slidePrevious(sectionPath: string, swiper: HTMLElement): void {
+    (swiper as HTMLElement & { swiper?: { slidePrev: () => void } }).swiper?.slidePrev();
+    setTimeout(() => this.updateSwiperNavigation(sectionPath, swiper as HTMLElement & { swiper?: unknown }));
   }
 
-  slideNext(sectionPath: string, swiper: { swiper?: { slideNext: () => void } }): void {
-    swiper.swiper?.slideNext();
-    setTimeout(() => this.updateSwiperNavigation(sectionPath, swiper));
+  slideNext(sectionPath: string, swiper: HTMLElement): void {
+    (swiper as HTMLElement & { swiper?: { slideNext: () => void } }).swiper?.slideNext();
+    setTimeout(() => this.updateSwiperNavigation(sectionPath, swiper as HTMLElement & { swiper?: unknown }));
   }
 
   onSwiperStateChange(sectionPath: string, event: Event): void {

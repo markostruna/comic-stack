@@ -32,10 +32,6 @@
   text-decoration: none;
 }
 
-.download-link {
-  text-align: right;
-}
-
 .reader-header a:hover,
 .reader-header a:focus-visible {
   color: white;
@@ -87,6 +83,11 @@
 .reader-toolbar button:disabled {
   cursor: default;
   opacity: 0.35;
+}
+
+.bookmark-message {
+  color: rgb(255 255 255 / 75%);
+  font-size: 0.85rem;
 }
 
 .active,

@@ -1,13 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, defer, from, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { environment } from '@env/environment';
 import { ComicResolved, PublisherResolved } from './models';
-
-interface CatalogSnapshot {
-  publishers: PublisherResolved[];
-  comics: ComicResolved[];
-}
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
@@ -17,26 +13,32 @@ export class CatalogService {
   private readonly checks = new Map<string, Observable<ComicResolved>>();
 
   readPublishers(): Observable<PublisherResolved[]> {
-    return defer(() => from(this.readStore<PublisherResolved>('publishers')));
+    return this.http.get<PublisherResolved[]>(`${environment.apiUrl}publishers`);
   }
 
   readComics(publisher?: string): Observable<ComicResolved[]> {
-    return defer(() =>
-      from(
-        this.readStore<ComicResolved>('comics').then((comics) =>
-          (publisher === undefined ? comics : comics.filter((comic) => comic.publisher === publisher)).map((comic) => ({
-            ...comic,
-            comicMissing: comic.extension.toLowerCase() === 'jpg' ? true : comic.comicMissing ?? null,
-            thumbnailMissing: comic.thumbnailMissing ?? null,
-            coverMissing: comic.coverMissing ?? null,
-          }))
-        )
-      )
-    );
+    const url = publisher
+      ? `${environment.apiUrl}publishers/${encodeURIComponent(publisher)}/comics`
+      : `${environment.apiUrl}comics`;
+    return this.http
+      .get<ComicResolved[] | { items: ComicResolved[] }>(url)
+      .pipe(map((response) => (Array.isArray(response) ? response : response.items)));
   }
 
-  replaceCatalog(publishers: PublisherResolved[], comics: ComicResolved[]): Observable<void> {
-    return defer(() => from(this.replaceStores({ publishers, comics })));
+  searchComics(filters: object): Observable<ComicResolved[]> {
+    let params = new HttpParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value && value !== 'All') params = params.set(key, value);
+    });
+    return this.http
+      .get<{ items: ComicResolved[] }>(`${environment.apiUrl}comics`, { params })
+      .pipe(map((response) => response.items));
+  }
+
+  readSearchOptions(): Observable<{ heroes: string[]; publishers: string[]; collections: string[] }> {
+    return this.http.get<{ heroes: string[]; publishers: string[]; collections: string[] }>(
+      `${environment.apiUrl}search/options`
+    );
   }
 
   checkAvailability(
@@ -139,32 +141,6 @@ export class CatalogService {
         }
       };
     });
-  }
-
-  private readStore<T>(storeName: 'publishers' | 'comics'): Promise<T[]> {
-    return this.open().then(
-      (database) =>
-        new Promise<T[]>((resolve, reject) => {
-          const request = database.transaction(storeName, 'readonly').objectStore(storeName).getAll();
-          request.onerror = () => reject(request.error);
-          request.onsuccess = () => resolve(request.result as T[]);
-        })
-    );
-  }
-
-  private replaceStores(snapshot: CatalogSnapshot): Promise<void> {
-    return this.open().then(
-      (database) =>
-        new Promise<void>((resolve, reject) => {
-          const transaction = database.transaction(['publishers', 'comics'], 'readwrite');
-          transaction.objectStore('publishers').clear();
-          transaction.objectStore('comics').clear();
-          snapshot.publishers.forEach((publisher) => transaction.objectStore('publishers').put(publisher));
-          snapshot.comics.forEach((comic) => transaction.objectStore('comics').put(comic));
-          transaction.onerror = () => reject(transaction.error);
-          transaction.oncomplete = () => resolve();
-        })
-    );
   }
 
   private updateComic(comic: ComicResolved): Observable<void> {

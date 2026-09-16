@@ -1,4 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
@@ -18,11 +19,12 @@ import {
 } from '@angular/material/table';
 import { CatalogService } from '@app/@shared/catalog.service';
 import { ComicResolved, PublisherResolved } from '@app/@shared/models';
-import { PublisherService } from '@app/publisher/publisher.service';
 import { marker } from '@biesbjerg/ngx-translate-extract-marker';
 import { TranslateModule } from '@ngx-translate/core';
-import { Observable, forkJoin } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { ComicEditDialogComponent } from '../comic-edit-dialog.component';
+import { environment } from '@env/environment';
+import { interval, startWith, switchMap, takeWhile } from 'rxjs';
 
 @Component({
   selector: 'app-parse-folders',
@@ -52,28 +54,29 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
   @ViewChild('empTbSort') empTbSort = new MatSort();
   @ViewChild('paginator') paginator!: MatPaginator;
 
-  readonly publishersFolder = 'Publishers/';
   readonly publishers = signal<PublisherResolved[]>([]);
   readonly comics = signal<ComicResolved[]>([]);
 
-  readonly previewColumns: string[] = [
+  readonly storedColumns: string[] = [
     marker('publisherResolved'),
     marker('numberResolved'),
     marker('heroesResolved'),
     marker('titlesResolved'),
     marker('filename'),
+    marker('missingInformation'),
+    marker('actions'),
   ];
-  readonly storedColumns: string[] = [...this.previewColumns, marker('missingInformation'), marker('actions')];
 
   readonly dataSource = signal(new MatTableDataSource<ComicResolved>());
-  readonly isPreview = signal(false);
   readonly isBusy = signal(false);
+  readonly scanStatus = signal('');
+  readonly scanRunId = signal<number | null>(null);
 
   readonly pageSizes = [5, 10, 25, 50, 100];
 
-  private readonly publisherService = inject(PublisherService);
   private readonly catalogService = inject(CatalogService);
   private readonly dialog = inject(MatDialog);
+  private readonly http = inject(HttpClient);
 
   ngOnInit(): void {
     this.loadStoredData();
@@ -95,59 +98,32 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
 
   importData() {
     this.isBusy.set(true);
-    this.publisherService.importPublishers(this.publishersFolder).subscribe({
-      next: (publishers) => this.importComics(publishers),
-      error: () => this.isBusy.set(false),
-    });
-  }
-
-  private importComics(publishers: PublisherResolved[]) {
-    const requests: Observable<ComicResolved[]>[] = [];
-
-    publishers.forEach((publisher) => {
-      const comicsPath = this.publishersFolder + publisher.name + '/';
-      requests.push(this.publisherService.importComics(comicsPath, publisher.name));
-    });
-
-    forkJoin(requests).subscribe((data) => {
-      const comics: ComicResolved[] = [];
-
-      data.forEach((resolvedComics) => {
-        comics.push(...resolvedComics);
-      });
-
-      this.publishers.set(publishers);
-      this.isPreview.set(true);
-      this.isBusy.set(false);
-      this.setComics(comics);
-    });
-  }
-
-  storeData() {
-    if (!this.isPreview()) {
-      return;
-    }
-
-    this.isBusy.set(true);
-    this.catalogService.replaceCatalog(this.publishers(), this.comics()).subscribe({
-      next: () => {
-        this.isPreview.set(false);
-        this.isBusy.set(false);
-        this.loadStoredData();
+    this.http.post<{ scanRunId: number }>(`${environment.apiUrl}admin/scan`, {}).subscribe({
+      next: ({ scanRunId }) => {
+        this.scanRunId.set(scanRunId);
+        this.scanStatus.set('queued');
+        interval(1000)
+          .pipe(
+            startWith(0),
+            switchMap(() => this.http.get<{ status: string }>(`${environment.apiUrl}admin/scan/${scanRunId}`)),
+            takeWhile((run) => run.status === 'queued' || run.status === 'running', true)
+          )
+          .subscribe({
+            next: (run) => this.scanStatus.set(run.status),
+            complete: () => {
+              this.isBusy.set(false);
+              this.loadStoredData();
+            },
+            error: () => {
+              this.scanStatus.set('failed');
+              this.isBusy.set(false);
+            },
+          });
       },
-      error: () => this.isBusy.set(false),
-    });
-  }
-
-  resetMissingInformation() {
-    this.isBusy.set(true);
-    this.catalogService.resetAvailability().subscribe({
-      next: () => {
-        this.isPreview.set(false);
+      error: () => {
+        this.scanStatus.set('failed');
         this.isBusy.set(false);
-        this.loadStoredData();
       },
-      error: () => this.isBusy.set(false),
     });
   }
 

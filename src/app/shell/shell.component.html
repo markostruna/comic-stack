@@ -15,6 +15,10 @@
         </button>
         <mat-menu #userMenu="matMenu">
           <span mat-menu-item disabled>{{ username }}</span>
+          <a mat-menu-item routerLink="/bookmarks">
+            <mat-icon>bookmark</mat-icon>
+            <span>Bookmarks</span>
+          </a>
           <button mat-menu-item (click)="logout()">
             <mat-icon>logout</mat-icon>
             <span translate>Logout</span>

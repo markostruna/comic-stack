@@ -72,11 +72,19 @@ export class SearchComponent implements OnInit {
       const filters = this.filtersFromParams(params);
       this.form.patchValue(filters, { emitEvent: false });
       this.isLoading.set(true);
-      this.publisherService.getAllComics().subscribe({
-        next: (comics) => {
-          this.options.set(this.publisherService.getSearchOptions(comics));
-          this.results.set({ ...filters, comics: this.publisherService.searchComicsFromList(comics, filters) });
-          this.isLoading.set(false);
+      this.publisherService.getSearchOptionsFromApi().subscribe({
+        next: (options) => {
+          this.options.set(options);
+          this.publisherService.searchComics(filters).subscribe({
+            next: (comics) => {
+              this.results.set({ ...filters, comics });
+              this.isLoading.set(false);
+            },
+            error: () => {
+              this.results.set({ ...filters, comics: [] });
+              this.isLoading.set(false);
+            },
+          });
         },
         error: () => {
           this.results.set({ ...filters, comics: [] });

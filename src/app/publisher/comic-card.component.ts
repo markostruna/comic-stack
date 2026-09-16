@@ -28,6 +28,6 @@ export class ComicCardComponent {
   }
 
   private navigateToReader(comic: ComicResolved): void {
-    this.router.navigate(['/reader'], { queryParams: { path: comic.path, title: comic.titlesResolved } });
+    this.router.navigate(['/reader', (comic as ComicResolved & { id: number }).id]);
   }
 }
