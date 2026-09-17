@@ -1,0 +1,93 @@
+.dialog-content {
+  min-width: min(820px, 88vw);
+  padding-top: 4px;
+}
+
+.images {
+  display: grid;
+  grid-template-columns: 140px 140px minmax(180px, 1fr);
+  gap: 22px;
+  align-items: start;
+  margin-bottom: 28px;
+}
+
+.image-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: rgb(0 0 0 / 60%);
+  font-size: 12px;
+}
+
+.image-panel img {
+  width: 120px;
+  height: 170px;
+  object-fit: contain;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+}
+
+.availability {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 1px;
+}
+
+.section-label,
+.field-label {
+  color: rgb(0 0 0 / 60%);
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.availability-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #2e7d32;
+  font-size: 16px;
+}
+
+.missing-value {
+  color: #b3261e;
+}
+
+.availability-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentcolor;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 28px;
+}
+
+.detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.field-value {
+  min-height: 22px;
+  overflow-wrap: anywhere;
+  color: rgb(0 0 0 / 87%);
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.multiline {
+  white-space: pre-wrap;
+}
+
+@media (max-width: 650px) {
+  .images,
+  .fields {
+    grid-template-columns: 1fr;
+  }
+}

@@ -28,14 +28,15 @@
 }
 
 .reader-header a {
-  color: #f1c40f;
+  color: white;
+  font-weight: 600;
   text-decoration: none;
 }
 
 .reader-header a:hover,
 .reader-header a:focus-visible {
-  color: white;
-  text-decoration: underline;
+  color: #f1c40f;
+  text-decoration: none;
 }
 
 .reader-frame {
@@ -65,21 +66,6 @@
   flex-wrap: wrap;
 }
 
-.reader-toolbar button {
-  display: inline-flex;
-  min-width: 36px;
-  min-height: 36px;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 6px 8px;
-  border: 1px solid rgb(255 255 255 / 20%);
-  border-radius: 3px;
-  color: white;
-  background: #263238;
-  cursor: pointer;
-}
-
 .reader-toolbar button:disabled {
   cursor: default;
   opacity: 0.35;
@@ -90,8 +76,7 @@
   font-size: 0.85rem;
 }
 
-.active,
-.reader-toolbar button:hover:not(:disabled) {
+.toggle-button.active {
   color: #111;
   background: #f1c40f;
 }

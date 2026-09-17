@@ -121,7 +121,7 @@
       </mat-form-field>
     </div>
 
-    <button type="submit">{{ 'Search' | translate }}</button>
+    <button mat-flat-button color="primary" type="submit">{{ 'Search' | translate }}</button>
   </form>
 
   @if (isLoading()) {
@@ -134,6 +134,15 @@
   @if (results().comics.length === 0) {
   <div class="search-state">{{ 'No comics found' | translate }}</div>
   } @else {
-  <app-comic [comicsInput]="results().comics" [displayPublisher]="true"></app-comic>
+  <app-comic [comicsInput]="pagedComics()" [displayPublisher]="true"></app-comic>
+  <mat-paginator
+    [length]="results().comics.length"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[pageSize]"
+    [showFirstLastButtons]="true"
+    (page)="onPageChange($event)"
+    class="search-paginator"
+  ></mat-paginator>
   } }
 </div>

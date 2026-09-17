@@ -70,7 +70,7 @@
   padding: 0 0.5rem;
   gap: 16px;
   background: black !important;
-  color: white;
+  color: rgb(255 255 255 / 86%);
   border-bottom: none;
 }
 
@@ -126,12 +126,24 @@
 }
 
 .nav-link:hover {
+  color: #f1c40f;
   background: rgb(63, 68, 68);
 }
 
 .nav-link.active {
   background: #2196f3;
   color: white;
+}
+
+.shell-brand,
+.shell-toolbar a {
+  color: white;
+}
+
+.shell-brand:hover,
+.shell-toolbar a:hover,
+.shell-toolbar a:focus-visible {
+  color: #f1c40f;
 }
 
 .info-item {

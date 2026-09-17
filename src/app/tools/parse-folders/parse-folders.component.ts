@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
+import { MatButton } from '@angular/material/button';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import {
   MatTableDataSource,
@@ -22,7 +23,7 @@ import { ComicResolved, PublisherResolved } from '@app/@shared/models';
 import { marker } from '@biesbjerg/ngx-translate-extract-marker';
 import { TranslateModule } from '@ngx-translate/core';
 import { forkJoin } from 'rxjs';
-import { ComicEditDialogComponent } from '../comic-edit-dialog.component';
+import { ComicDetailsDialogComponent } from '../comic-details-dialog.component';
 import { environment } from '@env/environment';
 import { interval, startWith, switchMap, takeWhile } from 'rxjs';
 
@@ -46,6 +47,7 @@ import { interval, startWith, switchMap, takeWhile } from 'rxjs';
     MatPaginator,
     MatDialogModule,
     MatIcon,
+    MatButton,
     TranslateModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,8 +63,9 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
     marker('publisherResolved'),
     marker('numberResolved'),
     marker('heroesResolved'),
+    marker('collection'),
     marker('titlesResolved'),
-    marker('filename'),
+    marker('originalFilename'),
     marker('missingInformation'),
     marker('actions'),
   ];
@@ -97,12 +100,13 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
   }
 
   importData() {
+    this.dialog.closeAll();
     this.isBusy.set(true);
     this.http.post<{ scanRunId: number }>(`${environment.apiUrl}admin/scan`, {}).subscribe({
       next: ({ scanRunId }) => {
         this.scanRunId.set(scanRunId);
         this.scanStatus.set('queued');
-        interval(1000)
+        interval(5000)
           .pipe(
             startWith(0),
             switchMap(() => this.http.get<{ status: string }>(`${environment.apiUrl}admin/scan/${scanRunId}`)),
@@ -127,64 +131,18 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  editComic(comic: ComicResolved) {
-    this.dialog
-      .open(ComicEditDialogComponent, {
-        width: 'min(900px, 96vw)',
-        maxHeight: '90vh',
-        data: comic,
-      })
-      .afterClosed()
-      .subscribe((updated?: ComicResolved) => {
-        if (!updated) {
-          return;
-        }
-        this.comics.update((comics) => comics.map((item) => (item.path === updated.path ? updated : item)));
-        this.setComics(this.comics());
-      });
+  showDetails(comic: ComicResolved) {
+    this.dialog.open(ComicDetailsDialogComponent, {
+      width: 'min(900px, 96vw)',
+      maxHeight: '90vh',
+      data: comic,
+    });
   }
 
   missingInformation(comic: ComicResolved): string[] {
     const missing: string[] = [];
     if (comic.comicMissing === true) missing.push('comic');
-    if (comic.thumbnailMissing === true) missing.push('thumbnail');
-    if (comic.coverMissing === true) missing.push('cover');
     return missing;
-  }
-
-  updateComic(index: number, field: string, value: string | boolean) {
-    this.comics.update((comics) =>
-      comics.map((comic, comicIndex) => {
-        if (comicIndex !== index) {
-          return comic;
-        }
-
-        const updated = { ...comic, [field]: value } as ComicResolved;
-        if (field === 'comicMissing') {
-          updated.missing = value as boolean;
-        }
-        if (field === 'titlesResolved') {
-          updated.titles = String(value).split(' / ').filter(Boolean);
-        }
-        if (field === 'heroesResolved') {
-          updated.heroes = String(value)
-            .split(',')
-            .map((name) => name.trim())
-            .filter(Boolean)
-            .map((name) => ({ name, imagePath: '' }));
-        }
-        if (field === 'publisherResolved') {
-          updated.publisher = String(value).split(' / ')[0];
-        }
-        if (field === 'numberResolved') {
-          const [number, sequence] = String(value).split('-');
-          updated.number = number ? Number(number) : undefined;
-          updated.seqNumber = sequence ? Number(sequence) : undefined;
-        }
-        return updated;
-      })
-    );
-    this.setComics(this.comics());
   }
 
   comicIndex(comic: ComicResolved): number {

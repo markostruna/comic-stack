@@ -1,0 +1,4 @@
+ALTER TABLE comic
+  ADD COLUMN seq_number INT NULL AFTER number,
+  ADD COLUMN hero VARCHAR(768) NULL AFTER seq_number,
+  ADD COLUMN collection VARCHAR(768) NULL AFTER hero;

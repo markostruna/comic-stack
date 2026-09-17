@@ -15,6 +15,7 @@ import { ComicResolved, PublisherResolved } from '@app/@shared/models';
 import { PublisherService } from '../publisher.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatIcon } from '@angular/material/icon';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
 import { forkJoin } from 'rxjs';
 import { ComicCardComponent } from '../comic-card.component';
@@ -37,7 +38,7 @@ interface SwiperNavigationState {
   templateUrl: './publisher.component.html',
   styleUrls: ['./publisher.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MatIcon, TranslateModule, ComicCardComponent],
+  imports: [ReactiveFormsModule, MatIcon, MatButton, MatIconButton, TranslateModule, ComicCardComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class PublisherComponent implements OnInit, AfterViewInit {
@@ -145,7 +146,7 @@ export class PublisherComponent implements OnInit, AfterViewInit {
       name: publisher.name,
       path: publisher.path,
       comics: availableComics.slice(0, 20),
-      total: comics.length,
+      total: availableComics.length,
       rows: availableComics.length >= 10 ? 2 : 1,
     };
   }

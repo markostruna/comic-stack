@@ -1,6 +1,8 @@
 <div class="page">
   <div class="actions">
-    <button type="button" (click)="importData()" [disabled]="isBusy()">{{ 'Scan library' | translate }}</button>
+    <button mat-flat-button color="primary" type="button" (click)="importData()" [disabled]="isBusy()">
+      {{ 'Scan library' | translate }}
+    </button>
     @if (scanStatus()) {
     <span>{{ scanStatus() }} ({{ scanRunId() }})</span>
     }
@@ -17,11 +19,11 @@
           } @else {
           <span class="missing-icons" [attr.title]="missingInformation(emp).join(', ')">
             @for (missing of missingInformation(emp); track missing) {
-            <mat-icon>{{ missing === 'comic' ? 'description' : missing === 'thumbnail' ? 'image' : 'photo' }}</mat-icon>
+            <mat-icon>description</mat-icon>
             }
           </span>
           } } @else if (column === 'actions') {
-          <button type="button" (click)="editComic(emp)">{{ 'Edit' | translate }}</button>
+          <button mat-button type="button" (click)="showDetails(emp)">{{ 'Details' | translate }}</button>
           } @else {
           {{ emp[column] ?? '' }}
           }

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
+import { MatIconButton } from '@angular/material/button';
 import { ComicResolved } from '@app/@shared/models';
 
 @Component({
@@ -8,7 +9,7 @@ import { ComicResolved } from '@app/@shared/models';
   templateUrl: './comic-card.component.html',
   styleUrls: ['./comic-card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIcon],
+  imports: [MatIcon, MatIconButton],
 })
 export class ComicCardComponent {
   readonly comic = input.required<ComicResolved>();

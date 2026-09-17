@@ -15,6 +15,7 @@ import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { environment } from '@env/environment';
 import { UserStateService } from '@app/@shared/user-state.service';
 import { PageFlip } from 'page-flip';
@@ -25,7 +26,7 @@ import type { FlipCorner, SizeType } from 'page-flip';
   templateUrl: './reader.component.html',
   styleUrls: ['./reader.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, MatIcon],
+  imports: [RouterLink, MatIcon, MatButton, MatIconButton],
 })
 export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
@@ -52,6 +53,13 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
   private pageFlip: PageFlip | null = null;
   private remoteMode = false;
   private comicId = 0;
+  private initializingPageFlip = false;
+  private readonly pagePrefetchBehind = 4;
+  private readonly pagePrefetchAhead = 4;
+  private pageFlipWindowStart = 0;
+  private pageFlipWindowEnd = 0;
+  private readonly prefetchedPageUrls = new Set<string>();
+  private readonly unloadedPagePlaceholder = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
   private progressTimeoutId?: number;
   private resizeTimeoutId?: number;
 
@@ -110,7 +118,25 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
       return;
     }
 
-    this.pageFlip?.flipPrev('bottom' as FlipCorner);
+    const pageFlip = this.pageFlip;
+    if (!pageFlip) {
+      return;
+    }
+
+    if (document.fullscreenElement) {
+      pageFlip.flipPrev('top' as FlipCorner);
+      return;
+    }
+
+    let animationStarted = false;
+    pageFlip.on('changeState', (event) => {
+      animationStarted = event.data === 'flipping';
+    });
+    pageFlip.flipPrev('top' as FlipCorner);
+    pageFlip.off('changeState');
+    if (!animationStarted) {
+      pageFlip.turnToPrevPage();
+    }
   }
 
   toggleTwoPageMode(): void {
@@ -152,17 +178,18 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   canGoPrevious(): boolean {
-    return this.currentPage() > 0;
+    return (this.pageFlip?.getCurrentPageIndex() ?? this.currentPage()) > 0;
   }
 
   canGoNext(): boolean {
-    return this.currentPage() + 1 < this.pages().length;
+    return (this.pageFlip?.getCurrentPageIndex() ?? this.currentPage()) + 1 < this.pages().length;
   }
 
   private async loadRemoteComic(comicId: number): Promise<void> {
     const token = ++this.loadToken;
     this.comicId = comicId;
     this.remoteMode = true;
+    this.prefetchedPageUrls.clear();
     this.isLoading.set(true);
     this.error.set('');
     try {
@@ -186,14 +213,16 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
         this.pageAspectRatio.set(sizedPage.width / sizedPage.height);
       }
       this.pages.set(pages.map((page) => `${environment.apiUrl}comics/${comicId}/pages/${page.idx}`));
-      this.pageFlipUrls = this.pages();
       this.currentPage.set(Math.min(progress.pageIndex ?? 0, Math.max(0, this.pages().length - 1)));
       this.fittedForPages = null;
       this.refreshPageFlip();
     } catch (loadError) {
       this.error.set(loadError instanceof Error ? loadError.message : 'Unable to load comic pages.');
     } finally {
-      if (token === this.loadToken) this.isLoading.set(false);
+      if (token === this.loadToken) {
+        this.isLoading.set(false);
+        window.setTimeout(() => this.refreshPageFlip(), 0);
+      }
     }
   }
 
@@ -203,7 +232,6 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     if (!this.pageFlipContainer) {
-      window.setTimeout(() => this.refreshPageFlip(), 0);
       return;
     }
 
@@ -227,9 +255,21 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
 
           this.pageAspectRatio.set(pageRatio);
           this.revokePageFlipUrls();
-          this.pageFlipUrls = sourcePages;
           this.fittedForPages = sourcePages;
         }
+
+        const currentPage = this.currentPage();
+        const visiblePageCount = this.twoPageMode() ? 2 : 1;
+        this.pageFlipWindowStart = Math.max(0, currentPage - this.pagePrefetchBehind);
+        this.pageFlipWindowEnd = Math.min(
+          sourcePages.length - 1,
+          currentPage + visiblePageCount + this.pagePrefetchAhead - 1
+        );
+        this.pageFlipUrls = sourcePages.map((pageUrl, pageIndex) =>
+          pageIndex >= this.pageFlipWindowStart && pageIndex <= this.pageFlipWindowEnd
+            ? pageUrl
+            : this.unloadedPagePlaceholder
+        );
 
         const frameWidth = Math.max(1, container.nativeElement.clientWidth);
         const frameHeight = Math.max(1, container.nativeElement.clientHeight);
@@ -278,9 +318,18 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
           const pageIndex = Number(event.data);
           this.currentPage.set(pageIndex);
           this.queueProgressWrite(pageIndex);
+          const visiblePageCount = this.twoPageMode() ? 2 : 1;
+          this.prefetchPages(sourcePages, pageIndex + visiblePageCount, this.pagePrefetchAhead);
+          const needsWindowRefresh =
+            pageIndex < this.pageFlipWindowStart + 1 || pageIndex >= this.pageFlipWindowEnd - visiblePageCount + 1;
+          if (!this.initializingPageFlip && needsWindowRefresh) {
+            this.refreshPageFlip();
+          }
         });
+        this.initializingPageFlip = true;
         this.pageFlip.loadFromImages(this.pageFlipUrls);
         this.pageFlip.turnToPage(startPage);
+        this.initializingPageFlip = false;
       } catch (flipError) {
         this.error.set(flipError instanceof Error ? flipError.message : 'Unable to display the comic pages.');
       }
@@ -302,5 +351,18 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private revokePageFlipUrls(): void {
     this.pageFlipUrls = [];
+  }
+
+  private prefetchPages(sourcePages: string[], startPage: number, count: number): void {
+    for (let pageIndex = startPage; pageIndex < startPage + count && pageIndex < sourcePages.length; pageIndex++) {
+      const pageUrl = sourcePages[pageIndex];
+      if (!pageUrl || this.prefetchedPageUrls.has(pageUrl)) {
+        continue;
+      }
+
+      this.prefetchedPageUrls.add(pageUrl);
+      const image = new Image();
+      image.src = pageUrl;
+    }
   }
 }
