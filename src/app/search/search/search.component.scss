@@ -56,7 +56,9 @@
 }
 
 .search-title-input ::ng-deep .mat-mdc-input-element {
-  color: white;
+  color: white !important;
+  -webkit-text-fill-color: white;
+  caret-color: white;
   font-size: 14px;
 }
 
