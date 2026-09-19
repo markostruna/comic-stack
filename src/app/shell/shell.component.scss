@@ -183,3 +183,33 @@
     padding: 0.5rem;
   }
 }
+
+@media (max-width: 700px) and (orientation: landscape) {
+  .shell-main.reader-shell .shell-toolbar {
+    display: none;
+  }
+
+  .shell-main.reader-shell .shell-content {
+    padding: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .shell-main.reader-shell .shell-toolbar {
+    display: none;
+  }
+
+  .shell-main.reader-shell .shell-content {
+    padding: 0;
+  }
+}
+
+@media (orientation: landscape) and (pointer: coarse) {
+  .shell-main.reader-shell .shell-toolbar {
+    display: none;
+  }
+
+  .shell-main.reader-shell .shell-content {
+    padding: 0;
+  }
+}

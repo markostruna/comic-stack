@@ -23,5 +23,7 @@ export interface ComicResolved extends Comic {
   loaded: boolean;
   fakeEntry: boolean;
   publisherResolved: string;
+  readingProgress?: { pageIndex: number; totalPages: number };
+  bookmarked?: boolean;
   [key: string]: any;
 }

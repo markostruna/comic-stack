@@ -46,6 +46,7 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
   readonly isLoading = signal(false);
   readonly error = signal('');
   readonly isFullscreen = signal(false);
+  readonly isControlsOpen = signal(true);
   readonly isSavingBookmark = signal(false);
   readonly bookmarkMessage = signal('');
   private loadToken = 0;
@@ -112,6 +113,13 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
     window.clearTimeout(this.resizeTimeoutId);
     this.resizeTimeoutId = window.setTimeout(() => this.refreshPageFlip(), 150);
     this.setAutomaticPageMode();
+  }
+
+  @HostListener('document:fullscreenchange')
+  handleFullscreenChange(): void {
+    const isFullscreen = document.fullscreenElement === this.pageFlipContainer?.nativeElement.closest('.reader-page');
+    this.isFullscreen.set(isFullscreen);
+    requestAnimationFrame(() => requestAnimationFrame(() => this.refreshPageFlip()));
   }
 
   nextPage(): void {
@@ -260,6 +268,10 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
     this.zoom.update((value) => Math.min(2.5, Math.max(0.5, Math.round((value + delta) * 10) / 10)));
   }
 
+  toggleControls(): void {
+    this.isControlsOpen.update((open) => !open);
+  }
+
   saveBookmark(): void {
     if (!this.comicId || this.isSavingBookmark()) return;
     this.isSavingBookmark.set(true);
@@ -277,12 +289,10 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
   async toggleFullscreen(container: HTMLElement): Promise<void> {
     if (document.fullscreenElement) {
       await document.exitFullscreen();
-      this.isFullscreen.set(false);
       return;
     }
 
     await container.requestFullscreen();
-    this.isFullscreen.set(true);
   }
 
   canGoPrevious(): boolean {

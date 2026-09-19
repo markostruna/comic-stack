@@ -19,6 +19,7 @@ import { MatButton, MatIconButton } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
 import { forkJoin } from 'rxjs';
 import { ComicCardComponent } from '../comic-card.component';
+import { UserStateService } from '@app/@shared/user-state.service';
 
 export interface PublisherSection {
   name: string;
@@ -44,6 +45,7 @@ interface SwiperNavigationState {
 export class PublisherComponent implements OnInit, AfterViewInit {
   private readonly router = inject(Router);
   private readonly publisherService = inject(PublisherService);
+  private readonly userState = inject(UserStateService);
 
   readonly publishersFolder = 'Publishers/';
   readonly sections = signal<PublisherSection[]>([]);
@@ -73,17 +75,27 @@ export class PublisherComponent implements OnInit, AfterViewInit {
           return;
         }
 
-        forkJoin(
-          publishers.map((publisher) =>
-            this.publisherService.getComics(`${this.publishersFolder}${publisher.name}/`, publisher.name)
-          )
-        ).subscribe({
-          next: (comicGroups) => {
-            this.sections.set(
-              publishers
-                .map((publisher, index) => this.createSection(publisher, comicGroups[index]))
-                .filter((section): section is PublisherSection => section !== undefined)
-            );
+        forkJoin({
+          comicGroups: forkJoin(
+            publishers.map((publisher) =>
+              this.publisherService.getComics(`${this.publishersFolder}${publisher.name}/`, publisher.name)
+            )
+          ),
+          continueReading: this.userState.readContinueReading(),
+          bookmarks: this.userState.readBookmarks(),
+        }).subscribe({
+          next: ({ comicGroups, continueReading, bookmarks }) => {
+            const markedComics = this.decorateComics(comicGroups, continueReading, bookmarks);
+            const specialSections = [
+              this.createSpecialSection('Continue reading', 'continue-reading', markedComics.continueReading),
+              this.createSpecialSection('Bookmarks', 'bookmarks', markedComics.bookmarks),
+            ].filter((section): section is PublisherSection => section !== undefined);
+            this.sections.set([
+              ...specialSections,
+              ...publishers
+                .map((publisher, index) => this.createSection(publisher, markedComics.allByPublisher[index]))
+                .filter((section): section is PublisherSection => section !== undefined),
+            ]);
             this.initializeSwiperNavigation(this.sections());
             this.isLoading.set(false);
             queueMicrotask(() => this.refreshSwiperNavigation());
@@ -148,6 +160,47 @@ export class PublisherComponent implements OnInit, AfterViewInit {
       comics: availableComics.slice(0, 20),
       total: availableComics.length,
       rows: availableComics.length >= 10 ? 2 : 1,
+    };
+  }
+
+  private createSpecialSection(name: string, path: string, comics: ComicResolved[]): PublisherSection | undefined {
+    if (comics.length === 0) {
+      return undefined;
+    }
+
+    return { name, path, comics, total: comics.length, rows: comics.length >= 10 ? 2 : 1 };
+  }
+
+  private decorateComics(
+    comicGroups: ComicResolved[][],
+    continueReading: Array<{ id: number; pageIndex: number; totalPages: number }>,
+    bookmarks: Array<{ comicId: number }>
+  ): {
+    allByPublisher: ComicResolved[][];
+    continueReading: ComicResolved[];
+    bookmarks: ComicResolved[];
+  } {
+    const comics = comicGroups.flat();
+    const progressById = new Map(
+      continueReading.filter((entry) => entry.pageIndex > 0).map((entry) => [entry.id, entry])
+    );
+    const bookmarkedIds = new Set(bookmarks.map((bookmark) => bookmark.comicId));
+    const decorated = comics.map((comic) => {
+      const id = (comic as ComicResolved & { id?: number }).id;
+      const progress = id === undefined ? undefined : progressById.get(id);
+      return {
+        ...comic,
+        readingProgress: progress ? { pageIndex: progress.pageIndex, totalPages: progress.totalPages } : undefined,
+        bookmarked: id !== undefined && bookmarkedIds.has(id),
+      };
+    });
+
+    return {
+      allByPublisher: comicGroups.map((group) =>
+        group.map((groupComic) => decorated.find((comic) => comic.path === groupComic.path)!)
+      ),
+      continueReading: decorated.filter((comic) => comic.readingProgress !== undefined),
+      bookmarks: decorated.filter((comic) => comic.bookmarked === true),
     };
   }
 

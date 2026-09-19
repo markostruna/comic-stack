@@ -53,6 +53,47 @@
   background: rgb(128 255 0 / 80%);
 }
 
+.reading-badge,
+.bookmark-badge {
+  position: absolute;
+  top: 6px;
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  color: #111;
+  background: #f1c40f;
+}
+
+.reading-badge {
+  right: 6px;
+}
+
+.bookmark-badge {
+  right: 35px;
+  background: #7ec8c8;
+}
+
+.reading-badge mat-icon,
+.bookmark-badge mat-icon {
+  font-size: 17px;
+}
+
+.reading-progress {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 5px;
+  background: rgb(255 255 255 / 35%);
+}
+
+.reading-progress span {
+  display: block;
+  height: 100%;
+  background: #f1c40f;
+}
+
 .hero-container {
   position: absolute;
   bottom: -5px;

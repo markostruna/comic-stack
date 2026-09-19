@@ -26,9 +26,11 @@
       <div class="section-heading">
         <h2 [id]="'publisher-' + $index">{{ section.name }}</h2>
         <div class="section-actions">
+          @if (section.path !== 'continue-reading' && section.path !== 'bookmarks') {
           <button mat-button type="button" class="see-all-link" (click)="searchPublisher(section.name)">
             {{ 'See all' | translate }} ({{ section.total }})
           </button>
+          }
           <button
             mat-icon-button
             type="button"
