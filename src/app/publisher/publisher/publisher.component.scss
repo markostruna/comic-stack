@@ -81,6 +81,10 @@
   text-decoration: none;
 }
 
+.see-all-link .mdc-button__label {
+  color: #b0bec5;
+}
+
 .see-all-link {
   --mdc-text-button-label-text-color: #b0bec5;
 }
@@ -96,6 +100,11 @@
 .see-all-link:hover,
 .see-all-link:focus-visible {
   --mdc-text-button-label-text-color: #f1c40f;
+}
+
+.see-all-link:hover .mdc-button__label,
+.see-all-link:focus-visible .mdc-button__label {
+  color: #f1c40f;
 }
 
 .swiper-control {
