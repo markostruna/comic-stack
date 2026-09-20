@@ -513,6 +513,12 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
         this.pageFlip.loadFromImages(this.pageFlipUrls);
         this.pageFlip.turnToPage(startPage);
         this.initializingPageFlip = false;
+        const pageFlip = this.pageFlip;
+        requestAnimationFrame(() => {
+          if (this.pageFlip === pageFlip) {
+            pageFlip.update();
+          }
+        });
       } catch (flipError) {
         this.error.set(flipError instanceof Error ? flipError.message : 'Unable to display the comic pages.');
       }
@@ -562,7 +568,13 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
       }
 
       if (!half) {
-        this.pageFlipUrls[pageIndex] = pageUrl;
+        pending.push(
+          this.loadImage(pageUrl).then((image) => {
+            const processedUrl = this.preparePageImage(image);
+            this.processedDisplayPageUrls.set(pageIndex, processedUrl);
+            this.pageFlipUrls[pageIndex] = processedUrl;
+          })
+        );
         continue;
       }
 
@@ -606,7 +618,62 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     context.drawImage(image, sourceX, 0, width, image.naturalHeight, 0, 0, width, image.naturalHeight);
+    this.replaceOuterWhiteWithBlack(context, canvas.width, canvas.height);
     return canvas.toDataURL('image/jpeg', 0.92);
+  }
+
+  private preparePageImage(image: HTMLImageElement): string {
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Unable to prepare comic page.');
+    }
+
+    context.drawImage(image, 0, 0);
+    this.replaceOuterWhiteWithBlack(context, canvas.width, canvas.height);
+    return canvas.toDataURL('image/jpeg', 0.92);
+  }
+
+  private replaceOuterWhiteWithBlack(context: CanvasRenderingContext2D, width: number, height: number): void {
+    const imageData = context.getImageData(0, 0, width, height);
+    const pixels = imageData.data;
+    let contentLeft = width;
+    let contentTop = height;
+    let contentRight = -1;
+    let contentBottom = -1;
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const offset = (y * width + x) * 4;
+        if (pixels[offset] < 245 || pixels[offset + 1] < 245 || pixels[offset + 2] < 245) {
+          contentLeft = Math.min(contentLeft, x);
+          contentTop = Math.min(contentTop, y);
+          contentRight = Math.max(contentRight, x);
+          contentBottom = Math.max(contentBottom, y);
+        }
+      }
+    }
+
+    if (contentRight < 0) {
+      return;
+    }
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        if (x >= contentLeft && x <= contentRight && y >= contentTop && y <= contentBottom) {
+          continue;
+        }
+
+        const offset = (y * width + x) * 4;
+        pixels[offset] = 8;
+        pixels[offset + 1] = 11;
+        pixels[offset + 2] = 13;
+      }
+    }
+
+    context.putImageData(imageData, 0, 0);
   }
 
   private setOrientationDefaults(pageRatio: number): void {
