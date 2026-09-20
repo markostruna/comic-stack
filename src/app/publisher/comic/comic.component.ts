@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ComicResolved } from '@app/@shared/models';
 import { PublisherService } from '../publisher.service';
@@ -11,7 +21,7 @@ import { ComicCardComponent } from '../comic-card.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ComicCardComponent],
 })
-export class ComicComponent implements OnInit, OnDestroy {
+export class ComicComponent implements OnChanges, OnInit, OnDestroy {
   readonly comicsInput = input<ComicResolved[]>([]);
   readonly displayPublisher = input(false);
 
@@ -25,6 +35,12 @@ export class ComicComponent implements OnInit, OnDestroy {
 
   private readonly route = inject(ActivatedRoute);
   private readonly publisherService = inject(PublisherService);
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['comicsInput'] && !changes['comicsInput'].firstChange && this.comicsInput().length > 0) {
+      this.renderComicsInChunks(this.comicsInput());
+    }
+  }
 
   ngOnInit(): void {
     const publisher = this.route.snapshot?.params['publisher'];

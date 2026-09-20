@@ -12,68 +12,64 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { environment } from '@env/environment';
-import { Archive } from 'libarchive.js';
+import { UserStateService } from '@app/@shared/user-state.service';
 import { PageFlip } from 'page-flip';
-import type { FlipCorner, SizeType } from 'page-flip';
-
-interface ExtractedFileEntry {
-  file: Blob & {
-    name?: string;
-    size: number;
-    type: string;
-    extract?: () => Promise<File>;
-  };
-  path: string;
-}
-
-// Describes where one final (post-split) page comes from: a whole source file, or one half of it.
-interface PageSource {
-  file: Blob & { name?: string; type: string };
-  half: 'left' | 'right' | null;
-}
-
-// A source image is treated as a two-page spread scan when its aspect ratio is at least this wide.
-const SPREAD_ASPECT_RATIO_THRESHOLD = 1.35;
-
-// A single shared 1x1 transparent pixel used to fill page-flip's image array for pages that
-// haven't been processed yet, so it doesn't eagerly load every page's real image up front.
-const PLACEHOLDER_PAGE_URL = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+import type { Page, SizeType } from 'page-flip';
 
 @Component({
   selector: 'app-reader',
   templateUrl: './reader.component.html',
   styleUrls: ['./reader.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, MatIcon],
+  imports: [RouterLink, MatIcon, MatButton, MatIconButton],
 })
 export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
-  private readonly downloadTimeoutMs = 120_000;
-  private readonly archiveOperationTimeoutMs = 300_000;
+  private readonly http = inject(HttpClient);
+  private readonly userState = inject(UserStateService);
   @ViewChild('pageFlipContainer') private pageFlipContainer?: ElementRef<HTMLElement>;
 
   readonly title = signal('Comic reader');
   readonly pages = signal<string[]>([]);
-  readonly downloadUrl = signal('');
   readonly currentPage = signal(0);
   readonly twoPageMode = signal(false);
   readonly splitSpreads = signal(false);
   readonly canSplit = signal(false);
   readonly zoom = signal(1);
   readonly pageAspectRatio = signal(800 / 1120);
+  private sourcePageAspectRatio = 800 / 1120;
   readonly isLoading = signal(false);
   readonly error = signal('');
   readonly isFullscreen = signal(false);
-  private imageFiles: Array<Blob & { name?: string; type: string }> = [];
-  private pageSources: PageSource[] = [];
+  readonly isControlsOpen = signal(true);
+  readonly isSavingBookmark = signal(false);
+  readonly bookmarkMessage = signal('');
   private loadToken = 0;
   private pageFlipUrls: string[] = [];
   private fittedForPages: string[] | null = null;
-  private readonly pageLetterboxCache = new Map<number, string>();
-  private readonly processingPageIndices = new Set<number>();
   private pageFlip: PageFlip | null = null;
+  private remoteMode = false;
+  private comicId = 0;
+  private pageAspectRatioPages: string[] | null = null;
+  private pageSpreadFlags: boolean[] = [];
+  private displayPageUrls: string[] = [];
+  private displayPageSourceIndices: number[] = [];
+  private displayPageHalves: Array<'left' | 'right' | null> = [];
+  private readonly processedDisplayPageUrls = new Map<number, string>();
+  private displayPagesAreSplit = false;
+  private initializingPageFlip = false;
+  private readonly pagePrefetchBehind = 4;
+  private readonly pagePrefetchAhead = 4;
+  private pageFlipWindowStart = 0;
+  private pageFlipWindowEnd = 0;
+  private readonly prefetchedPageUrls = new Set<string>();
+  private readonly unloadedPagePlaceholder = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+  private progressTimeoutId?: number;
   private resizeTimeoutId?: number;
 
   ngAfterViewInit(): void {
@@ -81,17 +77,14 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe((params) => {
-      const path = params.get('path');
-      if (!path) {
+    this.route.paramMap.subscribe((params) => {
+      const comicId = params.get('comicId');
+      if (!comicId) {
         this.error.set('No comic was selected.');
         return;
       }
 
-      this.title.set(params.get('title') || 'Comic reader');
-      const url = environment.serverUrl + path;
-      this.downloadUrl.set(url);
-      void this.loadArchive(url);
+      void this.loadRemoteComic(Number(comicId));
     });
   }
 
@@ -99,6 +92,7 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
     this.pageFlip?.destroy();
     this.revokePageFlipUrls();
     window.clearTimeout(this.resizeTimeoutId);
+    window.clearTimeout(this.progressTimeoutId);
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -118,6 +112,14 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
   handleWindowResize(): void {
     window.clearTimeout(this.resizeTimeoutId);
     this.resizeTimeoutId = window.setTimeout(() => this.refreshPageFlip(), 150);
+    this.setAutomaticPageMode();
+  }
+
+  @HostListener('document:fullscreenchange')
+  handleFullscreenChange(): void {
+    const isFullscreen = document.fullscreenElement === this.pageFlipContainer?.nativeElement.closest('.reader-page');
+    this.isFullscreen.set(isFullscreen);
+    requestAnimationFrame(() => requestAnimationFrame(() => this.refreshPageFlip()));
   }
 
   nextPage(): void {
@@ -125,7 +127,7 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
       return;
     }
 
-    this.pageFlip?.flipNext('bottom' as FlipCorner);
+    this.flipFromCorner('forward', 'bottom');
   }
 
   previousPage(): void {
@@ -133,215 +135,224 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
       return;
     }
 
-    this.pageFlip?.flipPrev('bottom' as FlipCorner);
+    if (this.twoPageMode()) {
+      this.flipFromCorner('back', 'top');
+      return;
+    }
+
+    this.flipBackRevealingPreviousPage();
+  }
+
+  // In single-page mode page-flip draws a full two-page book but hard-clips the canvas to
+  // its right half, so nothing rendered into the left half is ever visible - which is where
+  // its own backward flip lives. The only motion it can show here is the forward one, so
+  // play that backwards: the previous page swings out from the spine and covers the current
+  // page left-to-right, the exact mirror of the forward peel.
+  private flipBackRevealingPreviousPage(): void {
+    const pageFlip = this.pageFlip;
+    if (!pageFlip) {
+      return;
+    }
+
+    const render = pageFlip.getRender();
+    // Settle any flip still in flight before taking over the animation slot.
+    render.finishAnimation();
+
+    const pageCollection = pageFlip.getPageCollection();
+    const currentPageIndex = pageCollection.getCurrentPageIndex();
+    const flipController = pageFlip.getFlipController();
+    const rect = pageFlip.getBoundsRect();
+
+    // Set up a forward flip purely for its geometry - it is the one drawn in the visible
+    // half. A forward flip is refused on the last page, so report one more while it starts.
+    const originalGetPageCount = pageFlip.getPageCount;
+    pageFlip.getPageCount = () => originalGetPageCount.call(pageFlip) + 1;
+    let started = false;
+    try {
+      started = flipController.start({ x: rect.left + rect.width - 10, y: rect.top + rect.height - 2 });
+    } finally {
+      pageFlip.getPageCount = originalGetPageCount;
+    }
+
+    if (!started) {
+      return;
+    }
+
+    // A flip only draws the folded-over flap; the flat part of the turning page is the
+    // static right page, and the page being revealed is the bottom one. Played in reverse
+    // the turning page is the one arriving, so the previous page has to be both the flap
+    // and the static page, with the current page revealed beneath it.
+    const internals = flipController as unknown as {
+      flippingPage: Page | null;
+      bottomPage: Page | null;
+      calc: unknown;
+      state: string;
+    };
+    const previousPage = pageCollection.getPage(currentPageIndex - 1);
+    internals.flippingPage = previousPage;
+    internals.bottomPage = pageCollection.getPage(currentPageIndex);
+    render.setRightPage(previousPage);
+
+    // Walk the forward flip's path in reverse: from fully turned over (off to the left,
+    // out of view) to lying flat across the page.
+    const margin = rect.height / 10;
+    const from = { x: -rect.pageWidth, y: rect.height };
+    const to = { x: rect.pageWidth - margin, y: rect.height - margin };
+    const steps = Math.max(1, Math.round(Math.max(Math.abs(to.x - from.x), Math.abs(to.y - from.y))));
+    const frames = [];
+    for (let step = 0; step <= steps; step++) {
+      const progress = step / steps;
+      const point = render.convertToGlobal({
+        x: from.x + (to.x - from.x) * progress,
+        y: from.y + (to.y - from.y) * progress,
+      });
+      frames.push(() => flipController.fold(point));
+    }
+
+    const flippingTime = pageFlip.getSettings().flippingTime;
+    render.startAnimation(frames, steps >= 1000 ? flippingTime : (steps / 1000) * flippingTime, () => {
+      // The previous page is already the one on screen, so this settles without a jump.
+      pageFlip.turnToPrevPage();
+      // page-flip clears these with null itself; its typings just don't admit it.
+      render.setBottomPage(null as unknown as Page);
+      render.setFlippingPage(null as unknown as Page);
+      render.clearShadow();
+      internals.flippingPage = null;
+      internals.bottomPage = null;
+      internals.calc = null;
+      internals.state = 'read';
+    });
+  }
+
+  // page-flip's own flipNext()/flipPrev() build the synthetic touch point from hard-coded
+  // window coordinates that only line up when the book fills its container. Whenever the
+  // pages are letterboxed (the frame is wider/taller than the fitted spread) the point
+  // falls outside the book, disableFlipByClick rejects it, and the flip is dropped. Build
+  // the point from the book's own bounds instead so it always lands on the right corner.
+  private flipFromCorner(direction: 'forward' | 'back', corner: 'top' | 'bottom'): void {
+    const pageFlip = this.pageFlip;
+    if (!pageFlip) {
+      return;
+    }
+
+    const rect = pageFlip.getBoundsRect();
+    pageFlip.getFlipController().flip({
+      x: direction === 'forward' ? rect.left + rect.width - 10 : rect.left + 10,
+      y: rect.top + (corner === 'top' ? 1 : rect.height - 2),
+    });
   }
 
   toggleTwoPageMode(): void {
+    const currentPage = this.pageFlip?.getCurrentPageIndex();
+    if (currentPage !== undefined) {
+      this.currentPage.set(currentPage);
+    }
     this.twoPageMode.update((enabled) => !enabled);
+    this.fittedForPages = null;
     this.refreshPageFlip();
   }
 
   toggleSplitSpreads(): void {
-    if (!this.canSplit()) {
-      return;
+    if (!this.canSplit()) return;
+    const enabled = !this.splitSpreads();
+    if (!enabled) {
+      this.currentPage.set(this.displayPageSourceIndices[this.currentPage()] ?? this.currentPage());
     }
-
-    this.splitSpreads.update((enabled) => !enabled);
-    void this.renderPages();
+    this.splitSpreads.set(enabled);
+    this.fittedForPages = null;
+    this.processedDisplayPageUrls.clear();
+    this.refreshPageFlip();
   }
 
   changeZoom(delta: number): void {
     this.zoom.update((value) => Math.min(2.5, Math.max(0.5, Math.round((value + delta) * 10) / 10)));
   }
 
+  toggleControls(): void {
+    this.isControlsOpen.update((open) => !open);
+  }
+
+  saveBookmark(): void {
+    if (!this.comicId || this.isSavingBookmark()) return;
+    this.isSavingBookmark.set(true);
+    this.bookmarkMessage.set('');
+    firstValueFrom(this.userState.createBookmark(this.comicId, this.currentPage()))
+      .then(() => {
+        this.bookmarkMessage.set('Bookmark saved.');
+      })
+      .catch(() => {
+        this.bookmarkMessage.set('Unable to save bookmark.');
+      })
+      .finally(() => this.isSavingBookmark.set(false));
+  }
+
   async toggleFullscreen(container: HTMLElement): Promise<void> {
     if (document.fullscreenElement) {
       await document.exitFullscreen();
-      this.isFullscreen.set(false);
       return;
     }
 
     await container.requestFullscreen();
-    this.isFullscreen.set(true);
   }
 
   canGoPrevious(): boolean {
-    return this.currentPage() > 0;
+    return (this.pageFlip?.getCurrentPageIndex() ?? this.currentPage()) > 0;
   }
 
   canGoNext(): boolean {
-    return this.currentPage() + 1 < this.pages().length;
+    const pageCount = this.displayPageUrls.length || this.pages().length;
+    return (this.pageFlip?.getCurrentPageIndex() ?? this.currentPage()) + 1 < pageCount;
   }
 
-  private async loadArchive(url: string): Promise<void> {
+  private async loadRemoteComic(comicId: number): Promise<void> {
     const token = ++this.loadToken;
-    this.imageFiles = [];
-    this.pageSources = [];
-    this.pages.set([]);
-    this.currentPage.set(0);
-    this.error.set('');
+    this.comicId = comicId;
+    this.remoteMode = true;
+    this.prefetchedPageUrls.clear();
     this.isLoading.set(true);
-    const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), this.downloadTimeoutMs);
-
+    this.error.set('');
+    this.sourcePageAspectRatio = 800 / 1120;
+    this.pageAspectRatio.set(this.sourcePageAspectRatio);
     try {
-      const workerUrl = new URL(`${environment.assetPath}worker-bundle.js`, document.baseURI);
-      Archive.init({ workerUrl });
-      const response = await fetch(url, { signal: controller.signal });
-      if (!response.ok) {
-        throw new Error(`Unable to load comic (${response.status}).`);
+      const [comic, pages, progress] = await Promise.all([
+        firstValueFrom(
+          this.http.get<{ title_resolved?: string; titlesResolved?: string }>(`${environment.apiUrl}comics/${comicId}`)
+        ),
+        firstValueFrom(
+          this.http.get<Array<{ idx: number; width: number | null; height: number | null; isSpread: boolean }>>(
+            `${environment.apiUrl}comics/${comicId}/pages`
+          )
+        ),
+        firstValueFrom(this.http.get<{ pageIndex: number }>(`${environment.apiUrl}comics/${comicId}/progress`)),
+      ]);
+      if (token !== this.loadToken) return;
+      this.title.set(comic.titlesResolved || comic.title_resolved || 'Comic reader');
+      const sizedPage = pages.find((page) => page.width && page.height);
+      if (sizedPage?.width && sizedPage.height) {
+        this.sourcePageAspectRatio = sizedPage.width / sizedPage.height;
+        this.pageAspectRatio.set(this.sourcePageAspectRatio);
       }
-
-      const archiveFile = new File([await response.arrayBuffer()], url.split('/').pop() || 'comic.archive');
-      const archive = await this.withTimeout(Archive.open(archiveFile), 'The comic reader worker timed out.');
-      await this.withTimeout(archive.extractFiles(), 'Extracting the comic pages timed out.');
-      const extractedEntries = (await this.withTimeout(
-        archive.getFilesArray(),
-        'Reading the extracted comic pages timed out.'
-      )) as ExtractedFileEntry[];
-      this.imageFiles = extractedEntries
-        .filter(({ file }) => file && typeof file.size === 'number' && typeof file.slice === 'function')
-        .filter(({ file, path }) => {
-          const name = `${path}${file.name ?? ''}`;
-          return (file.type ?? '').startsWith('image/') || /\.(avif|bmp|gif|jpe?g|png|webp)$/i.test(name);
-        })
-        .sort(({ path: leftPath, file: leftFile }, { path: rightPath, file: rightFile }) =>
-          `${leftPath}${leftFile.name ?? ''}`.localeCompare(`${rightPath}${rightFile.name ?? ''}`, undefined, {
-            numeric: true,
-          })
-        )
-        .map(({ file }) => file);
-
-      if (token !== this.loadToken) {
-        return;
-      }
-
-      if (this.imageFiles.length === 0) {
-        this.error.set('No readable pages were found in this comic.');
-        return;
-      }
-
-      // A comic scanned as double-page spreads should start already split into readable
-      // single pages; a normally-scanned (portrait) comic has nothing to split, so disable it.
-      const isLandscapeScan = await this.detectLandscapeScan();
-      if (token !== this.loadToken) {
-        return;
-      }
-      this.canSplit.set(isLandscapeScan);
-      this.splitSpreads.set(isLandscapeScan);
-      // Default to a two-page spread only when the browser window itself is wide (landscape);
-      // a narrow (portrait) window defaults to a single page at a time.
-      this.twoPageMode.set(window.innerWidth > window.innerHeight);
-
-      await this.buildPages(token);
+      this.pages.set(pages.map((page) => `${environment.apiUrl}comics/${comicId}/pages/${page.idx}`));
+      this.currentPage.set(Math.min(progress.pageIndex ?? 0, Math.max(0, this.pages().length - 1)));
+      this.fittedForPages = null;
+      this.pageAspectRatioPages = null;
+      this.displayPageUrls = [];
+      this.displayPageSourceIndices = [];
+      this.displayPageHalves = [];
+      this.pageSpreadFlags = pages.map(
+        (page) => Boolean(page.isSpread) || Boolean(page.width && page.height && page.width / page.height >= 1.35)
+      );
+      this.processedDisplayPageUrls.clear();
+      this.setOrientationDefaults(this.pageAspectRatio());
+      this.refreshPageFlip();
     } catch (loadError) {
-      if (token === this.loadToken) {
-        this.error.set(
-          loadError instanceof DOMException && loadError.name === 'AbortError'
-            ? 'The comic download timed out.'
-            : loadError instanceof Error
-            ? loadError.message
-            : 'Unable to read this comic archive.'
-        );
-      }
-    } finally {
-      window.clearTimeout(timeoutId);
-      if (token === this.loadToken) {
-        this.isLoading.set(false);
-      }
-    }
-  }
-
-  private async renderPages(): Promise<void> {
-    if (this.imageFiles.length === 0) {
-      return;
-    }
-
-    const token = ++this.loadToken;
-    this.currentPage.set(0);
-    this.error.set('');
-    this.isLoading.set(true);
-
-    try {
-      await this.buildPages(token);
-    } catch (renderError) {
-      if (token === this.loadToken) {
-        this.error.set(renderError instanceof Error ? renderError.message : 'Unable to prepare comic pages.');
-      }
+      this.error.set(loadError instanceof Error ? loadError.message : 'Unable to load comic pages.');
     } finally {
       if (token === this.loadToken) {
         this.isLoading.set(false);
+        window.setTimeout(() => this.refreshPageFlip(), 0);
       }
     }
-  }
-
-  // Skip the cover (index 0), which is often a single portrait page even in an otherwise
-  // double-page-per-scan comic - sample a later page to decide if the comic is scanned as
-  // landscape spreads.
-  private async detectLandscapeScan(): Promise<boolean> {
-    const sampleIndex = Math.min(2, this.imageFiles.length - 1);
-    const file = this.imageFiles[sampleIndex];
-    if (!file) {
-      return false;
-    }
-
-    const sourceUrl = URL.createObjectURL(file);
-    try {
-      const image = await this.loadImage(sourceUrl);
-      return image.naturalWidth / image.naturalHeight >= SPREAD_ASPECT_RATIO_THRESHOLD;
-    } catch {
-      return false;
-    } finally {
-      URL.revokeObjectURL(sourceUrl);
-    }
-  }
-
-  private async buildPages(token: number): Promise<void> {
-    const pageSources = await this.buildPageSources(token);
-    if (token !== this.loadToken) {
-      return;
-    }
-
-    this.pageSources = pageSources;
-    // Only holds placeholders for length/identity - actual page images are resolved lazily,
-    // on demand, in ensurePagesProcessed().
-    this.pages.set(pageSources.map((_, index) => String(index)));
-    this.refreshPageFlip();
-  }
-
-  // Determines the final page list (splitting wide scans into two pages each) without
-  // producing any page images yet - only decoding each source file once to read its
-  // dimensions, since Split needs an accurate page count up front.
-  private async buildPageSources(token: number): Promise<PageSource[]> {
-    const pageSources: PageSource[] = [];
-    const splitSpreads = this.splitSpreads();
-
-    for (const [index, file] of this.imageFiles.entries()) {
-      if (token !== this.loadToken) {
-        return [];
-      }
-
-      // The cover (index 0) is never split, even if it happens to be a wide scan.
-      if (!splitSpreads || index === 0) {
-        pageSources.push({ file, half: null });
-        continue;
-      }
-
-      const sourceUrl = URL.createObjectURL(file);
-      try {
-        const image = await this.loadImage(sourceUrl);
-        const aspectRatio = image.naturalWidth / image.naturalHeight;
-        if (aspectRatio < SPREAD_ASPECT_RATIO_THRESHOLD) {
-          pageSources.push({ file, half: null });
-        } else {
-          pageSources.push({ file, half: 'left' }, { file, half: 'right' });
-        }
-      } finally {
-        URL.revokeObjectURL(sourceUrl);
-      }
-    }
-
-    return pageSources;
   }
 
   private refreshPageFlip(): void {
@@ -350,26 +361,35 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     if (!this.pageFlipContainer) {
-      window.setTimeout(() => this.refreshPageFlip(), 0);
       return;
     }
 
     window.setTimeout(async () => {
       const container = this.pageFlipContainer;
       const sourcePages = this.pages();
-      const pageSources = this.pageSources;
       if (!container || sourcePages.length === 0) {
         return;
       }
 
       try {
-        // Only decode/letterbox the page(s) actually about to be shown - not the whole
-        // archive - unless the underlying page list itself changed (e.g. Split was toggled).
+        const wasSplit = this.displayPagesAreSplit;
         if (sourcePages !== this.fittedForPages) {
-          // Skip the cover (index 0), which is often a single portrait page even in an
-          // otherwise double-page-per-scan comic - sample a later page instead.
-          const sizingPageIndex = Math.min(2, sourcePages.length - 1);
-          const pageRatio = await this.probePageRatio(pageSources[sizingPageIndex]);
+          let pageRatio = this.sourcePageAspectRatio;
+          if (sourcePages !== this.pageAspectRatioPages) {
+            const orientationPage = sourcePages[Math.min(3, sourcePages.length - 1)];
+            const detectedRatio = await this.detectPageAspectRatio(orientationPage);
+            if (detectedRatio) {
+              pageRatio = detectedRatio;
+              this.sourcePageAspectRatio = detectedRatio;
+              this.pageAspectRatio.set(detectedRatio);
+              if (!this.pageSpreadFlags.some(Boolean) && detectedRatio >= 1.35) {
+                this.pageSpreadFlags = sourcePages.map((_pageUrl, pageIndex) => pageIndex > 0);
+              }
+            }
+            this.setOrientationDefaults(pageRatio);
+            this.pageAspectRatioPages = sourcePages;
+          }
+
           if (!Number.isFinite(pageRatio) || pageRatio <= 0) {
             return;
           }
@@ -380,13 +400,43 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
 
           this.pageAspectRatio.set(pageRatio);
           this.revokePageFlipUrls();
-          this.processingPageIndices.clear();
-          // page-flip immediately constructs an Image (and requests its src) for every entry
-          // in this array, so a placeholder is used until a page is actually needed - handing
-          // it every page's real blob URL up front would fetch/decode the whole archive at once.
-          this.pageFlipUrls = sourcePages.map(() => PLACEHOLDER_PAGE_URL);
+          if (this.splitSpreads()) {
+            this.displayPageUrls = [];
+            this.displayPageSourceIndices = [];
+            this.displayPageHalves = [];
+            sourcePages.forEach((pageUrl, pageIndex) => {
+              if (pageIndex > 0 && this.pageSpreadFlags[pageIndex]) {
+                this.displayPageUrls.push(pageUrl, pageUrl);
+                this.displayPageSourceIndices.push(pageIndex, pageIndex);
+                this.displayPageHalves.push('left', 'right');
+              } else {
+                this.displayPageUrls.push(pageUrl);
+                this.displayPageSourceIndices.push(pageIndex);
+                this.displayPageHalves.push(null);
+              }
+            });
+            if (pageRatio >= 1.35) {
+              this.pageAspectRatio.set(pageRatio / 2);
+            }
+          } else {
+            this.displayPageUrls = sourcePages;
+            this.displayPageSourceIndices = sourcePages.map((_pageUrl, pageIndex) => pageIndex);
+            this.displayPageHalves = sourcePages.map(() => null);
+          }
+          this.displayPagesAreSplit = this.splitSpreads();
           this.fittedForPages = sourcePages;
         }
+
+        const displayPages = this.displayPageUrls;
+        const currentPage = this.currentPage();
+        const visiblePageCount = this.twoPageMode() ? 2 : 1;
+        this.pageFlipWindowStart = Math.max(0, currentPage - this.pagePrefetchBehind);
+        this.pageFlipWindowEnd = Math.min(
+          displayPages.length - 1,
+          currentPage + visiblePageCount + this.pagePrefetchAhead - 1
+        );
+        this.pageFlipUrls = displayPages.map(() => this.unloadedPagePlaceholder);
+        await this.processDisplayPageWindow(displayPages);
 
         const frameWidth = Math.max(1, container.nativeElement.clientWidth);
         const frameHeight = Math.max(1, container.nativeElement.clientHeight);
@@ -395,7 +445,9 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
 
         // Fit one (or two, side by side) pages into the available space while keeping
         // each page's true aspect ratio.
-        let pageWidth = twoPageMode ? frameWidth / 2 : frameWidth;
+        // page-flip switches to portrait only when the container is narrower than
+        // two configured page widths, so make single-page mode explicit here.
+        let pageWidth = twoPageMode ? frameWidth / 2 : frameWidth + 1;
         let pageHeight = pageWidth / pageRatio;
         if (pageHeight > frameHeight) {
           pageHeight = frameHeight;
@@ -404,12 +456,16 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
         pageWidth = Math.max(1, Math.floor(pageWidth));
         pageHeight = Math.max(1, Math.floor(pageHeight));
 
-        const startPage = Math.min(this.currentPage(), this.pageFlipUrls.length - 1);
+        const startPage = Math.min(
+          Math.max(
+            0,
+            this.splitSpreads() && !wasSplit
+              ? this.displayPageSourceIndices.findIndex((pageIndex) => pageIndex >= this.currentPage())
+              : this.currentPage()
+          ),
+          this.pageFlipUrls.length - 1
+        );
 
-        // Make sure the page(s) about to be shown are fully processed before the book is
-        // (re)built, so switching Pages/Split never flashes a blank placeholder for the
-        // current view - only pages further ahead are left to load in the background.
-        await this.ensurePagesProcessed(this.visibleIndicesFor(startPage));
         if (sourcePages !== this.pages()) {
           return;
         }
@@ -419,6 +475,10 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
         // child of it, replaced on every rebuild.
         this.pageFlip?.destroy();
         const flipHost = document.createElement('div');
+        if (!twoPageMode) {
+          flipHost.style.width = `${pageWidth}px`;
+          flipHost.style.margin = '0 auto';
+        }
         container.nativeElement.replaceChildren(flipHost);
         this.pageFlip = new PageFlip(flipHost, {
           width: pageWidth,
@@ -438,261 +498,207 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
         this.pageFlip.on('flip', (event) => {
           const pageIndex = Number(event.data);
           this.currentPage.set(pageIndex);
-          void this.ensurePagesProcessed(this.prefetchIndicesFor(pageIndex));
+          this.queueProgressWrite(this.displayPageSourceIndices[pageIndex] ?? pageIndex);
+          const visiblePageCount = this.twoPageMode() ? 2 : 1;
+          if (!this.splitSpreads()) {
+            this.prefetchPages(sourcePages, pageIndex + visiblePageCount, this.pagePrefetchAhead);
+          }
+          const needsWindowRefresh =
+            pageIndex < this.pageFlipWindowStart + 1 || pageIndex >= this.pageFlipWindowEnd - visiblePageCount + 1;
+          if (!this.initializingPageFlip && needsWindowRefresh) {
+            this.refreshPageFlip();
+          }
         });
+        this.initializingPageFlip = true;
         this.pageFlip.loadFromImages(this.pageFlipUrls);
         this.pageFlip.turnToPage(startPage);
-        void this.ensurePagesProcessed(this.prefetchIndicesFor(startPage));
+        this.initializingPageFlip = false;
+        const pageFlip = this.pageFlip;
+        requestAnimationFrame(() => {
+          if (this.pageFlip === pageFlip) {
+            pageFlip.update();
+          }
+        });
       } catch (flipError) {
         this.error.set(flipError instanceof Error ? flipError.message : 'Unable to display the comic pages.');
       }
     });
   }
 
-  // Pages paired in a spread starting right after the cover (index 0), matching page-flip's
-  // own showCover pairing: [0], [1, 2], [3, 4], ...
-  private visibleIndicesFor(pageIndex: number): number[] {
-    if (!this.twoPageMode() || pageIndex === 0) {
-      return [pageIndex];
-    }
-
-    const offset = pageIndex - 1;
-    const pairStart = 1 + (offset - (offset % 2));
-    return [pairStart, pairStart + 1].filter((index) => index < this.pages().length);
-  }
-
-  // The current spread plus several spreads ahead (and one behind), so flipping forward
-  // never shows a blank placeholder while the destination page is still being processed.
-  private prefetchIndicesFor(pageIndex: number): number[] {
-    const pageCount = this.pages().length;
-    const indices = new Set<number>();
-    for (const candidate of [pageIndex - 1, pageIndex, pageIndex + 1, pageIndex + 2, pageIndex + 3, pageIndex + 4]) {
-      if (candidate < 0 || candidate >= pageCount) {
-        continue;
-      }
-      this.visibleIndicesFor(candidate).forEach((index) => indices.add(index));
-    }
-    return [...indices];
-  }
-
-  private async ensurePagesProcessed(indices: number[]): Promise<void> {
-    const sourcePages = this.pages();
-    const pageSources = this.pageSources;
-    const pageRatio = this.pageAspectRatio();
-    const pending = indices.filter(
-      (index) =>
-        index >= 0 &&
-        index < sourcePages.length &&
-        !this.pageLetterboxCache.has(index) &&
-        !this.processingPageIndices.has(index)
-    );
-    if (pending.length === 0) {
-      return;
-    }
-
-    pending.forEach((index) => this.processingPageIndices.add(index));
-    try {
-      const processedUrls = await Promise.all(
-        pending.map((index) => this.resolveAndLetterboxPage(pageSources[index], pageRatio))
+  private queueProgressWrite(pageIndex: number): void {
+    if (!this.remoteMode || !this.comicId) return;
+    window.clearTimeout(this.progressTimeoutId);
+    this.progressTimeoutId = window.setTimeout(() => {
+      void firstValueFrom(
+        this.http.put(`${environment.apiUrl}comics/${this.comicId}/progress`, {
+          pageIndex,
+          totalPages: this.pages().length,
+        })
       );
-
-      if (sourcePages !== this.pages()) {
-        processedUrls.forEach((url) => URL.revokeObjectURL(url));
-        return;
-      }
-
-      pending.forEach((index, position) => {
-        this.pageLetterboxCache.set(index, processedUrls[position]);
-        this.pageFlipUrls[index] = processedUrls[position];
-      });
-      this.pageFlip?.updateFromImages(this.pageFlipUrls);
-    } finally {
-      pending.forEach((index) => this.processingPageIndices.delete(index));
-    }
-  }
-
-  // Reads just the natural dimensions of a page's source, cheap enough to do once per
-  // rebuild without decoding the whole archive's worth of pages.
-  private async probePageRatio(source: PageSource): Promise<number> {
-    const sourceUrl = URL.createObjectURL(source.file);
-    try {
-      const image = await this.loadImage(sourceUrl);
-      if (source.half === null) {
-        return image.naturalWidth / image.naturalHeight;
-      }
-      const halfWidth = Math.floor(image.naturalWidth / 2);
-      const width = source.half === 'left' ? halfWidth : image.naturalWidth - halfWidth;
-      return width / image.naturalHeight;
-    } finally {
-      URL.revokeObjectURL(sourceUrl);
-    }
-  }
-
-  // Decodes the source file once and, in a single pass, crops it to the requested half (if
-  // any) and letterboxes it to the book's aspect ratio - only ever called for a page that's
-  // actually about to be shown.
-  private async resolveAndLetterboxPage(source: PageSource, pageRatio: number): Promise<string> {
-    const sourceUrl = URL.createObjectURL(source.file);
-    try {
-      const image = await this.loadImage(sourceUrl);
-      if (source.half === null) {
-        return this.createContainedPageUrl(image, image.naturalWidth, image.naturalHeight, pageRatio);
-      }
-
-      const halfWidth = Math.floor(image.naturalWidth / 2);
-      const sourceX = source.half === 'left' ? 0 : halfWidth;
-      const width = source.half === 'left' ? halfWidth : image.naturalWidth - halfWidth;
-      const region = this.extractRegion(image, sourceX, 0, width, image.naturalHeight);
-      return this.createContainedPageUrl(region, width, image.naturalHeight, pageRatio);
-    } finally {
-      URL.revokeObjectURL(sourceUrl);
-    }
-  }
-
-  private extractRegion(
-    image: HTMLImageElement,
-    sourceX: number,
-    sourceY: number,
-    width: number,
-    height: number
-  ): HTMLCanvasElement {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const context = canvas.getContext('2d');
-    if (!context) {
-      throw new Error('Unable to prepare a split comic page.');
-    }
-
-    context.drawImage(image, sourceX, sourceY, width, height, 0, 0, width, height);
-    return canvas;
-  }
-
-  private async createContainedPageUrl(
-    source: CanvasImageSource,
-    sourceWidth: number,
-    sourceHeight: number,
-    pageRatio: number
-  ): Promise<string> {
-    const imageBounds = this.findContentBounds(source, sourceWidth, sourceHeight);
-    const canvasWidth = 1000;
-    const canvasHeight = Math.max(1, Math.round(canvasWidth / pageRatio));
-    const canvas = document.createElement('canvas');
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-    const context = canvas.getContext('2d');
-    if (!context) {
-      throw new Error('Unable to prepare a comic page for display.');
-    }
-
-    context.fillStyle = '#fff';
-    context.fillRect(0, 0, canvasWidth, canvasHeight);
-    const boundsWidth = imageBounds.width;
-    const boundsHeight = imageBounds.height;
-    const scale = Math.min(canvasWidth / boundsWidth, canvasHeight / boundsHeight);
-    const width = boundsWidth * scale;
-    const height = boundsHeight * scale;
-    context.drawImage(
-      source,
-      imageBounds.x,
-      imageBounds.y,
-      boundsWidth,
-      boundsHeight,
-      (canvasWidth - width) / 2,
-      (canvasHeight - height) / 2,
-      width,
-      height
-    );
-
-    return new Promise<string>((resolve, reject) => {
-      canvas.toBlob((blob) => {
-        if (blob) {
-          resolve(URL.createObjectURL(blob));
-        } else {
-          reject(new Error('Unable to prepare a comic page for display.'));
-        }
-      }, 'image/png');
-    });
-  }
-
-  private findContentBounds(
-    source: CanvasImageSource,
-    sourceWidth: number,
-    sourceHeight: number
-  ): { x: number; y: number; width: number; height: number } {
-    const scanWidth = Math.min(800, sourceWidth);
-    const scanHeight = Math.max(1, Math.round((sourceHeight / sourceWidth) * scanWidth));
-    const canvas = document.createElement('canvas');
-    canvas.width = scanWidth;
-    canvas.height = scanHeight;
-    const context = canvas.getContext('2d');
-    if (!context) {
-      return { x: 0, y: 0, width: sourceWidth, height: sourceHeight };
-    }
-
-    context.drawImage(source, 0, 0, scanWidth, scanHeight);
-    const pixels = context.getImageData(0, 0, scanWidth, scanHeight).data;
-    let left = scanWidth;
-    let top = scanHeight;
-    let right = -1;
-    let bottom = -1;
-
-    for (let y = 0; y < scanHeight; y += 1) {
-      for (let x = 0; x < scanWidth; x += 1) {
-        const pixel = (y * scanWidth + x) * 4;
-        if (pixels[pixel] < 245 || pixels[pixel + 1] < 245 || pixels[pixel + 2] < 245) {
-          left = Math.min(left, x);
-          top = Math.min(top, y);
-          right = Math.max(right, x);
-          bottom = Math.max(bottom, y);
-        }
-      }
-    }
-
-    if (right < left || bottom < top) {
-      return { x: 0, y: 0, width: sourceWidth, height: sourceHeight };
-    }
-
-    const scaleX = sourceWidth / scanWidth;
-    const scaleY = sourceHeight / scanHeight;
-    return {
-      x: Math.floor(left * scaleX),
-      y: Math.floor(top * scaleY),
-      width: Math.min(sourceWidth, Math.ceil((right - left + 1) * scaleX)),
-      height: Math.min(sourceHeight, Math.ceil((bottom - top + 1) * scaleY)),
-    };
+    }, 500);
   }
 
   private revokePageFlipUrls(): void {
-    // pageFlipUrls is a mix of raw source URLs (owned by objectUrls) and letterboxed
-    // URLs we created ourselves (cached in pageLetterboxCache) - only the latter are ours to revoke.
-    this.pageLetterboxCache.forEach((pageUrl) => URL.revokeObjectURL(pageUrl));
-    this.pageLetterboxCache.clear();
     this.pageFlipUrls = [];
   }
 
-  private loadImage(sourceUrl: string): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
+  private detectPageAspectRatio(pageUrl: string): Promise<number | null> {
+    return new Promise((resolve) => {
       const image = new Image();
-      image.onload = () => resolve(image);
-      image.onerror = () => reject(new Error('Unable to decode a comic page image.'));
-      image.src = sourceUrl;
+      image.onload = () =>
+        resolve(image.naturalWidth > 0 && image.naturalHeight > 0 ? image.naturalWidth / image.naturalHeight : null);
+      image.onerror = () => resolve(null);
+      image.src = pageUrl;
     });
   }
 
-  private withTimeout<T>(promise: Promise<T>, message: string): Promise<T> {
-    return new Promise<T>((resolve, reject) => {
-      const timeoutId = window.setTimeout(() => reject(new Error(message)), this.archiveOperationTimeoutMs);
-      promise.then(
-        (value) => {
-          window.clearTimeout(timeoutId);
-          resolve(value);
-        },
-        (error: unknown) => {
-          window.clearTimeout(timeoutId);
-          reject(error);
-        }
+  private async processDisplayPageWindow(displayPages: string[]): Promise<void> {
+    const imagePromises = new Map<string, Promise<HTMLImageElement>>();
+    const pending: Promise<void>[] = [];
+
+    for (let pageIndex = this.pageFlipWindowStart; pageIndex <= this.pageFlipWindowEnd; pageIndex++) {
+      const pageUrl = displayPages[pageIndex];
+      const half = this.displayPageHalves[pageIndex];
+      if (!pageUrl) continue;
+
+      const cachedUrl = this.processedDisplayPageUrls.get(pageIndex);
+      if (cachedUrl) {
+        this.pageFlipUrls[pageIndex] = cachedUrl;
+        continue;
+      }
+
+      if (!half) {
+        pending.push(
+          this.loadImage(pageUrl).then((image) => {
+            const processedUrl = this.preparePageImage(image);
+            this.processedDisplayPageUrls.set(pageIndex, processedUrl);
+            this.pageFlipUrls[pageIndex] = processedUrl;
+          })
+        );
+        continue;
+      }
+
+      let imagePromise = imagePromises.get(pageUrl);
+      if (!imagePromise) {
+        imagePromise = this.loadImage(pageUrl);
+        imagePromises.set(pageUrl, imagePromise);
+      }
+
+      pending.push(
+        imagePromise.then((image) => {
+          const halfWidth = Math.floor(image.naturalWidth / 2);
+          const sourceX = half === 'left' ? 0 : halfWidth;
+          const width = half === 'left' ? halfWidth : image.naturalWidth - halfWidth;
+          const processedUrl = this.cropImage(image, sourceX, width);
+          this.processedDisplayPageUrls.set(pageIndex, processedUrl);
+          this.pageFlipUrls[pageIndex] = processedUrl;
+        })
       );
+    }
+
+    await Promise.all(pending);
+  }
+
+  private loadImage(pageUrl: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('Unable to load comic page.'));
+      image.src = pageUrl;
     });
+  }
+
+  private cropImage(image: HTMLImageElement, sourceX: number, width: number): string {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = image.naturalHeight;
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Unable to split comic page.');
+    }
+
+    context.drawImage(image, sourceX, 0, width, image.naturalHeight, 0, 0, width, image.naturalHeight);
+    this.replaceOuterWhiteWithBlack(context, canvas.width, canvas.height);
+    return canvas.toDataURL('image/jpeg', 0.92);
+  }
+
+  private preparePageImage(image: HTMLImageElement): string {
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Unable to prepare comic page.');
+    }
+
+    context.drawImage(image, 0, 0);
+    this.replaceOuterWhiteWithBlack(context, canvas.width, canvas.height);
+    return canvas.toDataURL('image/jpeg', 0.92);
+  }
+
+  private replaceOuterWhiteWithBlack(context: CanvasRenderingContext2D, width: number, height: number): void {
+    const imageData = context.getImageData(0, 0, width, height);
+    const pixels = imageData.data;
+    let contentLeft = width;
+    let contentTop = height;
+    let contentRight = -1;
+    let contentBottom = -1;
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const offset = (y * width + x) * 4;
+        if (pixels[offset] < 245 || pixels[offset + 1] < 245 || pixels[offset + 2] < 245) {
+          contentLeft = Math.min(contentLeft, x);
+          contentTop = Math.min(contentTop, y);
+          contentRight = Math.max(contentRight, x);
+          contentBottom = Math.max(contentBottom, y);
+        }
+      }
+    }
+
+    if (contentRight < 0) {
+      return;
+    }
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        if (x >= contentLeft && x <= contentRight && y >= contentTop && y <= contentBottom) {
+          continue;
+        }
+
+        const offset = (y * width + x) * 4;
+        pixels[offset] = 8;
+        pixels[offset + 1] = 11;
+        pixels[offset + 2] = 13;
+      }
+    }
+
+    context.putImageData(imageData, 0, 0);
+  }
+
+  private setOrientationDefaults(pageRatio: number): void {
+    const isLandscape = pageRatio > 1;
+    this.canSplit.set(isLandscape);
+    this.splitSpreads.set(isLandscape);
+    this.setAutomaticPageMode();
+  }
+
+  private setAutomaticPageMode(): void {
+    const isLandscapeViewport = window.innerWidth > window.innerHeight;
+    this.twoPageMode.set(isLandscapeViewport);
+    this.fittedForPages = null;
+  }
+
+  private prefetchPages(sourcePages: string[], startPage: number, count: number): void {
+    for (let pageIndex = startPage; pageIndex < startPage + count && pageIndex < sourcePages.length; pageIndex++) {
+      const pageUrl = sourcePages[pageIndex];
+      if (!pageUrl || this.prefetchedPageUrls.has(pageUrl)) {
+        continue;
+      }
+
+      this.prefetchedPageUrls.add(pageUrl);
+      const image = new Image();
+      image.src = pageUrl;
+    }
   }
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "build": "npm run write:env -s && ng build",
-    "build:production": "npm run write:env -s && ng build --configuration=production  --base-href=/comic-stack/",
+    "build:production": "npm run write:env -s && ng build --configuration=production --base-href=/comic-stack/",
     "deploy": "ng deploy --base-href=https://markostruna.github.io/comic-stack/",
     "start": "npm run write:env -s && ng serve --proxy-config proxy.conf.js",
     "serve:sw": "npm run build -s && npx http-server ./dist -p 4200",
@@ -23,7 +23,7 @@
     "generate": "ng generate"
   },
   "dependencies": {
-    "@angular/animations": "~21.2.22",
+    "@angular/animations": "21.2.22",
     "@angular/cdk": "^21.2.14",
     "@angular/common": "~21.2.22",
     "@angular/compiler": "~21.2.22",
@@ -32,12 +32,10 @@
     "@angular/localize": "~21.2.22",
     "@angular/material": "^21.2.14",
     "@angular/platform-browser": "~21.2.22",
-    "@angular/platform-browser-dynamic": "~21.2.22",
     "@angular/router": "~21.2.22",
     "@angular/service-worker": "~21.2.22",
     "@ngx-translate/core": "^14.0.0",
     "@vendure/ngx-translate-extract": "^10.2.0",
-    "libarchive.js": "^2.0.2",
     "lodash": "^4.17.20",
     "material-design-icons-iconfont": "^6.1.0",
     "moment": "^2.29.4",
@@ -67,10 +65,10 @@
     "@types/page-flip": "^2.0.4",
     "@typescript-eslint/eslint-plugin": "^8.69.0",
     "@typescript-eslint/parser": "^8.69.0",
+    "@vitest/browser-playwright": "^4.1.11",
     "@vitest/coverage-v8": "^4.0.8",
     "angular-cli-ghpages": "^2.0.0-beta.2",
-    "eslint": "^8.57.0",
-    "eslint-plugin-import": "latest",
+    "eslint": "^9.39.5",
     "eslint-plugin-jsdoc": "^64.3.5",
     "eslint-plugin-prefer-arrow": "latest",
     "hads": "^3.0.0",
@@ -98,5 +96,8 @@
         }
       }
     ]
+  },
+  "overrides": {
+    "multer": "^2.0.0"
   }
 }

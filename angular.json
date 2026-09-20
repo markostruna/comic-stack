@@ -33,16 +33,6 @@
               "src/robots.txt",
               "src/manifest.webmanifest",
               "src/assets",
-              {
-                "glob": "worker-bundle.js",
-                "input": "node_modules/libarchive.js/dist",
-                "output": "assets"
-              },
-              {
-                "glob": "libarchive.wasm",
-                "input": "node_modules/libarchive.js/dist",
-                "output": "assets"
-              },
               "src/.htaccess",
               "src/config.json"
             ],

@@ -21,6 +21,16 @@ npm install
 npm start
 ```
 
+## ASP.NET Core backend
+
+The active development backend is in `api-dotnet/`. It targets .NET 10 and preserves the Angular `/api/` contract. Configure the MySQL connection, library path, and JWT secret in `api-dotnet/appsettings.Local.json`, then run:
+
+```powershell
+dotnet run --project api-dotnet/api-dotnet.csproj --urls http://localhost:5000
+```
+
+The Angular development proxy forwards `/api` to this server. The original PHP backend remains in `api/` as a migration reference while RAR/CBR extraction, page caching, thumbnails, and the remaining scanner behavior are ported.
+
 # Project structure
 
 ```

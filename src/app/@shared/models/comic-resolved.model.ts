@@ -18,12 +18,12 @@ export interface ComicResolved extends Comic {
   currentBackgroundImage: string;
   coverPath: string;
   comicMissing: boolean | null;
-  thumbnailMissing: boolean | null;
-  coverMissing: boolean | null;
   backgroundImageUrl: string;
   class: string;
   loaded: boolean;
   fakeEntry: boolean;
   publisherResolved: string;
+  readingProgress?: { pageIndex: number; totalPages: number };
+  bookmarked?: boolean;
   [key: string]: any;
 }

@@ -3,9 +3,11 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { HelperService } from '@app/@shared/helper.service';
 import { PublisherService } from '../publisher.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { PublisherComponent } from './publisher.component';
 import { vi } from 'vitest';
+import { UserStateService } from '@app/@shared/user-state.service';
 
 describe('PublisherComponent', () => {
   let component: PublisherComponent;
@@ -13,7 +15,7 @@ describe('PublisherComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PublisherComponent],
+      imports: [TranslateModule.forRoot(), PublisherComponent],
       providers: [
         {
           provide: Router,
@@ -22,6 +24,10 @@ describe('PublisherComponent', () => {
         {
           provide: PublisherService,
           useValue: { getPublishers: () => of([]) },
+        },
+        {
+          provide: UserStateService,
+          useValue: { readContinueReading: () => of([]), readBookmarks: () => of([]) },
         },
         {
           provide: HelperService,

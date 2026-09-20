@@ -1,7 +1,9 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
+import { MatButton } from '@angular/material/button';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import {
   MatTableDataSource,
@@ -18,11 +20,12 @@ import {
 } from '@angular/material/table';
 import { CatalogService } from '@app/@shared/catalog.service';
 import { ComicResolved, PublisherResolved } from '@app/@shared/models';
-import { PublisherService } from '@app/publisher/publisher.service';
 import { marker } from '@biesbjerg/ngx-translate-extract-marker';
 import { TranslateModule } from '@ngx-translate/core';
-import { Observable, forkJoin } from 'rxjs';
-import { ComicEditDialogComponent } from '../comic-edit-dialog.component';
+import { forkJoin } from 'rxjs';
+import { ComicDetailsDialogComponent } from '../comic-details-dialog.component';
+import { environment } from '@env/environment';
+import { interval, startWith, switchMap, takeWhile } from 'rxjs';
 
 @Component({
   selector: 'app-parse-folders',
@@ -44,6 +47,7 @@ import { ComicEditDialogComponent } from '../comic-edit-dialog.component';
     MatPaginator,
     MatDialogModule,
     MatIcon,
+    MatButton,
     TranslateModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,28 +56,30 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
   @ViewChild('empTbSort') empTbSort = new MatSort();
   @ViewChild('paginator') paginator!: MatPaginator;
 
-  readonly publishersFolder = 'Publishers/';
   readonly publishers = signal<PublisherResolved[]>([]);
   readonly comics = signal<ComicResolved[]>([]);
 
-  readonly previewColumns: string[] = [
+  readonly storedColumns: string[] = [
     marker('publisherResolved'),
     marker('numberResolved'),
     marker('heroesResolved'),
+    marker('collection'),
     marker('titlesResolved'),
-    marker('filename'),
+    marker('originalFilename'),
+    marker('missingInformation'),
+    marker('actions'),
   ];
-  readonly storedColumns: string[] = [...this.previewColumns, marker('missingInformation'), marker('actions')];
 
   readonly dataSource = signal(new MatTableDataSource<ComicResolved>());
-  readonly isPreview = signal(false);
   readonly isBusy = signal(false);
+  readonly scanStatus = signal('');
+  readonly scanRunId = signal<number | null>(null);
 
   readonly pageSizes = [5, 10, 25, 50, 100];
 
-  private readonly publisherService = inject(PublisherService);
   private readonly catalogService = inject(CatalogService);
   private readonly dialog = inject(MatDialog);
+  private readonly http = inject(HttpClient);
 
   ngOnInit(): void {
     this.loadStoredData();
@@ -94,121 +100,49 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
   }
 
   importData() {
+    this.dialog.closeAll();
     this.isBusy.set(true);
-    this.publisherService.importPublishers(this.publishersFolder).subscribe({
-      next: (publishers) => this.importComics(publishers),
-      error: () => this.isBusy.set(false),
-    });
-  }
-
-  private importComics(publishers: PublisherResolved[]) {
-    const requests: Observable<ComicResolved[]>[] = [];
-
-    publishers.forEach((publisher) => {
-      const comicsPath = this.publishersFolder + publisher.name + '/';
-      requests.push(this.publisherService.importComics(comicsPath, publisher.name));
-    });
-
-    forkJoin(requests).subscribe((data) => {
-      const comics: ComicResolved[] = [];
-
-      data.forEach((resolvedComics) => {
-        comics.push(...resolvedComics);
-      });
-
-      this.publishers.set(publishers);
-      this.isPreview.set(true);
-      this.isBusy.set(false);
-      this.setComics(comics);
-    });
-  }
-
-  storeData() {
-    if (!this.isPreview()) {
-      return;
-    }
-
-    this.isBusy.set(true);
-    this.catalogService.replaceCatalog(this.publishers(), this.comics()).subscribe({
-      next: () => {
-        this.isPreview.set(false);
-        this.isBusy.set(false);
-        this.loadStoredData();
+    this.http.post<{ scanRunId: number }>(`${environment.apiUrl}admin/scan`, {}).subscribe({
+      next: ({ scanRunId }) => {
+        this.scanRunId.set(scanRunId);
+        this.scanStatus.set('queued');
+        interval(5000)
+          .pipe(
+            startWith(0),
+            switchMap(() => this.http.get<{ status: string }>(`${environment.apiUrl}admin/scan/${scanRunId}`)),
+            takeWhile((run) => run.status === 'queued' || run.status === 'running', true)
+          )
+          .subscribe({
+            next: (run) => this.scanStatus.set(run.status),
+            complete: () => {
+              this.isBusy.set(false);
+              this.loadStoredData();
+            },
+            error: () => {
+              this.scanStatus.set('failed');
+              this.isBusy.set(false);
+            },
+          });
       },
-      error: () => this.isBusy.set(false),
-    });
-  }
-
-  resetMissingInformation() {
-    this.isBusy.set(true);
-    this.catalogService.resetAvailability().subscribe({
-      next: () => {
-        this.isPreview.set(false);
+      error: () => {
+        this.scanStatus.set('failed');
         this.isBusy.set(false);
-        this.loadStoredData();
       },
-      error: () => this.isBusy.set(false),
     });
   }
 
-  editComic(comic: ComicResolved) {
-    this.dialog
-      .open(ComicEditDialogComponent, {
-        width: 'min(900px, 96vw)',
-        maxHeight: '90vh',
-        data: comic,
-      })
-      .afterClosed()
-      .subscribe((updated?: ComicResolved) => {
-        if (!updated) {
-          return;
-        }
-        this.comics.update((comics) => comics.map((item) => (item.path === updated.path ? updated : item)));
-        this.setComics(this.comics());
-      });
+  showDetails(comic: ComicResolved) {
+    this.dialog.open(ComicDetailsDialogComponent, {
+      width: 'min(900px, 96vw)',
+      maxHeight: '90vh',
+      data: comic,
+    });
   }
 
   missingInformation(comic: ComicResolved): string[] {
     const missing: string[] = [];
     if (comic.comicMissing === true) missing.push('comic');
-    if (comic.thumbnailMissing === true) missing.push('thumbnail');
-    if (comic.coverMissing === true) missing.push('cover');
     return missing;
-  }
-
-  updateComic(index: number, field: string, value: string | boolean) {
-    this.comics.update((comics) =>
-      comics.map((comic, comicIndex) => {
-        if (comicIndex !== index) {
-          return comic;
-        }
-
-        const updated = { ...comic, [field]: value } as ComicResolved;
-        if (field === 'comicMissing') {
-          updated.missing = value as boolean;
-        }
-        if (field === 'titlesResolved') {
-          updated.titles = String(value).split(' / ').filter(Boolean);
-        }
-        if (field === 'heroesResolved') {
-          updated.heroes = String(value)
-            .split(',')
-            .map((name) => name.trim())
-            .filter(Boolean)
-            .map((name) => ({ name, imagePath: '' }));
-        }
-        if (field === 'publisherResolved') {
-          updated.publisher = String(value).split(' / ')[0];
-        }
-        if (field === 'numberResolved') {
-          const [number, sequence] = String(value).split('-');
-          updated.number = number ? Number(number) : undefined;
-          updated.seqNumber = sequence ? Number(sequence) : undefined;
-        }
-        return updated;
-      })
-    );
-    this.setComics(this.comics());
   }
 
   comicIndex(comic: ComicResolved): number {

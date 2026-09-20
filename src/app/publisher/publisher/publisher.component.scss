@@ -33,13 +33,12 @@
 }
 
 .search-control button {
-  display: grid;
   width: 48px;
-  place-items: center;
-  border: 0;
+  height: 48px;
+  min-height: 48px;
+  border-radius: 0 4px 4px 0;
   color: #111;
   background: #f1c40f;
-  cursor: pointer;
 }
 
 .publisher-sections {
@@ -76,34 +75,48 @@
 .section-heading a,
 .see-all-link {
   flex: 0 0 auto;
-  padding: 0;
-  border: 0;
-  color: #f1c40f;
+  color: #b0bec5;
   background: transparent;
   font-size: 0.85rem;
   text-decoration: none;
-  cursor: pointer;
+}
+
+.see-all-link .mdc-button__label {
+  color: #b0bec5;
+}
+
+.see-all-link {
+  --mdc-text-button-label-text-color: #b0bec5;
 }
 
 .section-heading a:hover,
 .section-heading a:focus-visible,
 .see-all-link:hover,
 .see-all-link:focus-visible {
-  color: white;
-  text-decoration: underline;
+  color: #f1c40f;
+  text-decoration: none;
+}
+
+.see-all-link:hover,
+.see-all-link:focus-visible {
+  --mdc-text-button-label-text-color: #f1c40f;
+}
+
+.see-all-link:hover .mdc-button__label,
+.see-all-link:focus-visible .mdc-button__label {
+  color: #f1c40f;
 }
 
 .swiper-control {
-  display: grid;
+  display: inline-flex;
   width: 28px;
   height: 28px;
-  place-items: center;
+  min-width: 28px;
+  align-items: center;
+  justify-content: center;
   padding: 0;
-  border: 1px solid rgb(255 255 255 / 28%);
-  border-radius: 3px;
   color: white;
   background: rgb(255 255 255 / 8%);
-  cursor: pointer;
 }
 
 .swiper-control:hover,
@@ -122,7 +135,10 @@
 }
 
 .swiper-control mat-icon {
+  display: block;
+  margin: 0;
   font-size: 20px;
+  line-height: 20px;
 }
 
 .comic-swiper {

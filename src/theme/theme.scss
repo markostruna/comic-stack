@@ -155,6 +155,22 @@ body {
   height: var(--mat-form-field-container-height);
 }
 
+.mat-mdc-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-icon-button {
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0;
+  transition: box-shadow 140ms ease;
+}
+
+.mat-mdc-unelevated-button:not(:disabled),
+.mat-mdc-raised-button:not(:disabled) {
+  box-shadow: 0 3px 10px rgb(0 0 0 / 18%);
+}
+
 .mat-mdc-text-field-wrapper {
   height: var(--mat-form-field-container-height) !important;
   background: white !important;

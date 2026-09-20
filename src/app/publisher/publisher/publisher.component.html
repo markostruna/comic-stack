@@ -9,7 +9,7 @@
         [placeholder]="'Search by title' | translate"
         autocomplete="off"
       />
-      <button type="button" aria-label="Search" (click)="submitSearch()">
+      <button mat-icon-button type="button" aria-label="Search" (click)="submitSearch()">
         <mat-icon>search</mat-icon>
       </button>
     </div>
@@ -26,10 +26,13 @@
       <div class="section-heading">
         <h2 [id]="'publisher-' + $index">{{ section.name }}</h2>
         <div class="section-actions">
-          <button type="button" class="see-all-link" (click)="searchPublisher(section.name)">
+          @if (section.path !== 'continue-reading' && section.path !== 'bookmarks') {
+          <button mat-button type="button" class="see-all-link" (click)="searchPublisher(section.name)">
             {{ 'See all' | translate }} ({{ section.total }})
           </button>
+          }
           <button
+            mat-icon-button
             type="button"
             class="swiper-control"
             [disabled]="swiperNavigation()[section.path]?.isBeginning ?? true"
@@ -39,6 +42,7 @@
             <mat-icon>chevron_left</mat-icon>
           </button>
           <button
+            mat-icon-button
             type="button"
             class="swiper-control"
             [disabled]="swiperNavigation()[section.path]?.isEnd ?? true"

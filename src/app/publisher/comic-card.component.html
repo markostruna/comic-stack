@@ -1,7 +1,7 @@
 <article class="comic-card">
   <div class="cover-frame">
     <img
-      [class.missing]="comic().thumbnailMissing === true || comic().missing"
+      [class.missing]="comic().missing"
       [src]="comic().thumbnailPath"
       [alt]="comic().titlesResolved || comic().filename"
       [attr.title]="comic().path"
@@ -11,14 +11,31 @@
     <div class="comic-publisher">{{ comic().publisher }}</div>
     } @if (comic().collection) {
     <div class="comic-collection">{{ comic().collection }}</div>
+    } @if (comic().readingProgress; as progress) {
+    <div class="reading-badge" title="In progress"><mat-icon>menu_book</mat-icon></div>
+    <div
+      class="reading-progress"
+      [attr.aria-label]="'Reading progress: ' + progress.pageIndex + ' of ' + progress.totalPages"
+    >
+      <span [style.width.%]="progress.totalPages > 0 ? (progress.pageIndex / progress.totalPages) * 100 : 0"></span>
+    </div>
+    } @if (comic().bookmarked) {
+    <div class="bookmark-badge" title="Bookmarked"><mat-icon>bookmark</mat-icon></div>
     }
     <div class="hero-container">
       @for (hero of comic().heroes; track hero.name) {
-      <div class="hero-circle" [attr.title]="hero.name" [style.background-image]="hero.imagePath">?</div>
+      <div class="hero-circle" [attr.title]="hero.name" [style.background-image]="hero.imagePath"></div>
       }
     </div>
     @if (comic().comicMissing !== true) {
-    <button class="reader-button" type="button" aria-label="Open reader" (click)="openReader($event)">
+    <button
+      mat-icon-button
+      color="accent"
+      class="reader-button"
+      type="button"
+      aria-label="Open reader"
+      (click)="openReader($event)"
+    >
       <mat-icon>menu_book</mat-icon>
     </button>
     }
@@ -32,7 +49,7 @@
       }
     </div>
     @for (title of comic().titles; track title) {
-    <div class="title">{{ comic().titles.length > 1 ? '• ' : '' }}{{ title }}</div>
+    <div class="title" [attr.title]="title">{{ comic().titles.length > 1 ? '• ' : '' }}{{ title }}</div>
     }
   </div>
 </article>

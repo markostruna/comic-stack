@@ -56,7 +56,9 @@
 }
 
 .search-title-input ::ng-deep .mat-mdc-input-element {
-  color: white;
+  color: white !important;
+  -webkit-text-fill-color: white;
+  caret-color: white;
   font-size: 14px;
 }
 
@@ -219,13 +221,8 @@
 
 .search-form button {
   min-height: 39px;
-  padding: 0 18px;
-  border: 0;
-  border-radius: 3px;
   color: #111;
-  background: #f1c40f;
   font-weight: 700;
-  cursor: pointer;
 }
 
 .results-heading {
@@ -252,6 +249,34 @@
   padding: 64px 16px;
   color: rgb(255 255 255 / 70%);
   text-align: center;
+}
+
+.search-paginator {
+  --mat-paginator-container-background-color: transparent;
+  --mat-paginator-container-text-color: #b0bec5;
+  --mat-paginator-enabled-icon-color: #b0bec5;
+  --mat-paginator-disabled-icon-color: rgb(176 190 197 / 35%);
+  margin-top: 20px;
+  color: #b0bec5;
+  background: transparent;
+}
+
+.search-paginator .mat-mdc-icon-button {
+  --mat-icon-button-icon-color: #b0bec5;
+  --mdc-icon-button-icon-color: #b0bec5;
+  --mat-ripple-color: #f1c40f;
+  color: #b0bec5;
+}
+
+.search-paginator .mat-mdc-icon-button:hover:not(:disabled) {
+  --mat-icon-button-icon-color: #111;
+  --mdc-icon-button-icon-color: #111;
+  color: #111;
+  background: #f1c40f;
+}
+
+.search-paginator .mat-mdc-icon-button:hover:not(:disabled) .mat-icon {
+  color: #111;
 }
 
 @media (max-width: 900px) {

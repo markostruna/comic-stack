@@ -1,59 +1,140 @@
 <div class="reader-page" #readerContainer>
   <header class="reader-header">
-    <a routerLink="/publisher">Back to comics</a>
-    <h1>{{ title() }}</h1>
-    @if (downloadUrl()) {
-    <a class="download-link" [href]="downloadUrl()" download>Download</a>
-    }
+    <div class="reader-header-start">
+      <button
+        mat-icon-button
+        type="button"
+        class="menu-toggle"
+        (click)="toggleControls()"
+        [attr.aria-expanded]="isControlsOpen()"
+        aria-label="Toggle reader options"
+      >
+        <mat-icon>{{ isControlsOpen() ? 'menu_open' : 'menu' }}</mat-icon>
+      </button>
+      <a class="reader-back-link" routerLink="/publisher" aria-label="Back to comics">
+        <mat-icon>arrow_back</mat-icon>
+        <span>Back to comics</span>
+      </a>
+    </div>
+    <h1>
+      {{ title() }} <span class="page-indicator">{{ currentPage() + 1 }} / {{ pages().length }}</span>
+    </h1>
   </header>
 
-  <div class="reader-toolbar">
-    <button type="button" (click)="previousPage()" [disabled]="!canGoPrevious() || isLoading()">
+  <button
+    mat-icon-button
+    type="button"
+    class="floating-fullscreen"
+    (click)="toggleFullscreen(readerContainer)"
+    aria-label="Toggle fullscreen"
+  >
+    <mat-icon>{{ isFullscreen() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+  </button>
+
+  <div class="reader-layout">
+    <aside class="reader-options" [class.open]="isControlsOpen()" aria-label="Reader options">
+      <div class="portrait-navigation" aria-label="Page navigation">
+        <button
+          mat-icon-button
+          type="button"
+          (click)="previousPage()"
+          [disabled]="!canGoPrevious() || isLoading()"
+          aria-label="Previous page"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          type="button"
+          (click)="nextPage()"
+          [disabled]="!canGoNext() || isLoading()"
+          aria-label="Next page"
+        >
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+      <button
+        type="button"
+        mat-stroked-button
+        class="toggle-button"
+        [class.active]="twoPageMode()"
+        [attr.aria-pressed]="twoPageMode()"
+        (click)="toggleTwoPageMode()"
+      >
+        <mat-icon>chrome_reader_mode</mat-icon>
+        <span class="control-label">Pages</span>
+        <span class="toggle-state">{{ twoPageMode() ? 'On' : 'Off' }}</span>
+      </button>
+      <button
+        type="button"
+        mat-stroked-button
+        class="toggle-button"
+        [class.active]="splitSpreads()"
+        [attr.aria-pressed]="splitSpreads()"
+        [disabled]="!canSplit() || isLoading()"
+        (click)="toggleSplitSpreads()"
+        title="Split wide images into two pages"
+      >
+        <mat-icon>call_split</mat-icon>
+        <span class="control-label">Split</span>
+        <span class="toggle-state">{{ splitSpreads() ? 'On' : 'Off' }}</span>
+      </button>
+      <div class="reader-control-group reader-zoom-controls">
+        <button mat-icon-button type="button" (click)="changeZoom(-0.1)" aria-label="Zoom out">
+          <mat-icon>zoom_out</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="changeZoom(0.1)" aria-label="Zoom in">
+          <mat-icon>zoom_in</mat-icon>
+        </button>
+      </div>
+      <div class="reader-control-group reader-action-controls">
+        <button
+          mat-icon-button
+          type="button"
+          (click)="saveBookmark()"
+          [disabled]="isSavingBookmark() || isLoading()"
+          title="Bookmark this page"
+        >
+          <mat-icon>bookmark_add</mat-icon>
+        </button>
+        @if (bookmarkMessage()) {
+        <span class="bookmark-message" aria-live="polite">{{ bookmarkMessage() }}</span>
+        }
+      </div>
+    </aside>
+
+    <button
+      mat-icon-button
+      type="button"
+      class="edge-navigation previous-navigation"
+      (click)="previousPage()"
+      [disabled]="!canGoPrevious() || isLoading()"
+      aria-label="Previous page"
+    >
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <span>{{ currentPage() + 1 }} / {{ pages().length }}</span>
-    <button type="button" (click)="nextPage()" [disabled]="!canGoNext() || isLoading()">
+
+    <section class="reader-content">
+      @if (isLoading()) {
+      <p class="reader-empty">Loading comic pages...</p>
+      } @else if (error()) {
+      <p class="reader-empty">{{ error() }}</p>
+      } @else {
+      <main class="reader-frame" [style.--reader-zoom]="zoom()">
+        <div class="page-flip-container" #pageFlipContainer></div>
+      </main>
+      }
+    </section>
+
+    <button
+      mat-icon-button
+      type="button"
+      class="edge-navigation next-navigation"
+      (click)="nextPage()"
+      [disabled]="!canGoNext() || isLoading()"
+      aria-label="Next page"
+    >
       <mat-icon>arrow_forward</mat-icon>
     </button>
-    <button
-      type="button"
-      class="toggle-button"
-      [class.active]="twoPageMode()"
-      [attr.aria-pressed]="twoPageMode()"
-      (click)="toggleTwoPageMode()"
-    >
-      <mat-icon>chrome_reader_mode</mat-icon>
-      <span>Pages</span>
-      <span class="toggle-state">{{ twoPageMode() ? 'On' : 'Off' }}</span>
-    </button>
-    <button
-      type="button"
-      class="toggle-button"
-      [class.active]="splitSpreads()"
-      [attr.aria-pressed]="splitSpreads()"
-      [disabled]="!canSplit() || isLoading()"
-      (click)="toggleSplitSpreads()"
-      title="Split wide images into two pages"
-    >
-      <mat-icon>call_split</mat-icon>
-      <span>Split</span>
-      <span class="toggle-state">{{ splitSpreads() ? 'On' : 'Off' }}</span>
-    </button>
-    <button type="button" (click)="changeZoom(-0.1)"><mat-icon>zoom_out</mat-icon></button>
-    <span>{{ zoom() * 100 }}%</span>
-    <button type="button" (click)="changeZoom(0.1)"><mat-icon>zoom_in</mat-icon></button>
-    <button type="button" (click)="toggleFullscreen(readerContainer)">
-      <mat-icon>{{ isFullscreen() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
-    </button>
   </div>
-
-  @if (isLoading()) {
-  <p class="reader-empty">Loading comic pages...</p>
-  } @else if (error()) {
-  <p class="reader-empty">{{ error() }}</p>
-  } @else {
-  <main class="reader-frame" [style.--reader-zoom]="zoom()">
-    <div class="page-flip-container" #pageFlipContainer></div>
-  </main>
-  }
 </div>

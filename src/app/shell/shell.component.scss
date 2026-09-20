@@ -49,6 +49,32 @@
   padding: 0;
 }
 
+@media (orientation: landscape) and (pointer: coarse) {
+  .shell-shell {
+    height: 100vh;
+  }
+
+  .shell-main.reader-shell,
+  .shell-main.reader-shell .shell-content {
+    height: 100%;
+  }
+
+  .shell-main.reader-shell {
+    min-height: 100vh;
+  }
+}
+
+@media (orientation: portrait) and (pointer: coarse) {
+  .shell-shell {
+    height: 100vh;
+  }
+
+  .shell-main.reader-shell,
+  .shell-main.reader-shell .shell-content {
+    height: 100%;
+  }
+}
+
 .shell-content router-outlet {
   display: block;
   min-width: 0;
@@ -70,7 +96,7 @@
   padding: 0 0.5rem;
   gap: 16px;
   background: black !important;
-  color: white;
+  color: rgb(255 255 255 / 86%);
   border-bottom: none;
 }
 
@@ -126,12 +152,24 @@
 }
 
 .nav-link:hover {
+  color: #f1c40f;
   background: rgb(63, 68, 68);
 }
 
 .nav-link.active {
   background: #2196f3;
   color: white;
+}
+
+.shell-brand,
+.shell-toolbar a {
+  color: white;
+}
+
+.shell-brand:hover,
+.shell-toolbar a:hover,
+.shell-toolbar a:focus-visible {
+  color: #f1c40f;
 }
 
 .info-item {
@@ -169,5 +207,35 @@
 
   .shell-content {
     padding: 0.5rem;
+  }
+}
+
+@media (max-width: 700px) and (orientation: landscape) {
+  .shell-main.reader-shell .shell-toolbar {
+    display: none;
+  }
+
+  .shell-main.reader-shell .shell-content {
+    padding: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .shell-main.reader-shell .shell-toolbar {
+    display: none;
+  }
+
+  .shell-main.reader-shell .shell-content {
+    padding: 0;
+  }
+}
+
+@media (orientation: landscape) and (pointer: coarse) {
+  .shell-main.reader-shell .shell-toolbar {
+    display: none;
+  }
+
+  .shell-main.reader-shell .shell-content {
+    padding: 0;
   }
 }

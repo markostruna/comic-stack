@@ -14,6 +14,7 @@ export const environment = {
   production: false,
   version: env['npm_package_version'] + '-dev',
   serverUrl: 'proxy/',
+  apiUrl: '/api/',
   jokeServerUrl: 'api/',
   defaultLanguage: 'en-US',
   supportedLanguages: ['en-US'],

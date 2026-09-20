@@ -1,18 +1,16 @@
 <div class="page">
   <div class="actions">
-    <button type="button" (click)="importData()" [disabled]="isBusy()">{{ 'Import' | translate }}</button>
-    <button type="button" (click)="resetMissingInformation()" [disabled]="isBusy()">
-      {{ 'Reset missing information' | translate }}
+    <button mat-flat-button color="primary" type="button" (click)="importData()" [disabled]="isBusy()">
+      {{ 'Scan library' | translate }}
     </button>
-    @if (isPreview()) {
-    <span>{{ 'Preview' | translate }}</span>
-    } @else {
-    <span>{{ 'Stored data' | translate }}</span>
+    @if (scanStatus()) {
+    <span>{{ scanStatus() }} ({{ scanRunId() }})</span>
     }
+    <span>{{ 'Stored data' | translate }}</span>
   </div>
   <div class="table-wrapper">
     <table mat-table [dataSource]="dataSource()" class="my-table mat-elevation-z8" matSort #empTbSort="matSort">
-      @for (column of (isPreview() ? previewColumns : storedColumns); track column) {
+      @for (column of storedColumns; track column) {
       <ng-container [matColumnDef]="column">
         <th mat-header-cell *matHeaderCellDef mat-sort-header="{{ column }}">{{ column | translate }}</th>
         <td mat-cell *matCellDef="let emp">
@@ -21,11 +19,11 @@
           } @else {
           <span class="missing-icons" [attr.title]="missingInformation(emp).join(', ')">
             @for (missing of missingInformation(emp); track missing) {
-            <mat-icon>{{ missing === 'comic' ? 'description' : missing === 'thumbnail' ? 'image' : 'photo' }}</mat-icon>
+            <mat-icon>description</mat-icon>
             }
           </span>
           } } @else if (column === 'actions') {
-          <button type="button" (click)="editComic(emp)">{{ 'Edit' | translate }}</button>
+          <button mat-button type="button" (click)="showDetails(emp)">{{ 'Details' | translate }}</button>
           } @else {
           {{ emp[column] ?? '' }}
           }
@@ -33,8 +31,8 @@
       </ng-container>
       }
 
-      <tr mat-header-row *matHeaderRowDef="isPreview() ? previewColumns : storedColumns"></tr>
-      <tr mat-row *matRowDef="let emprow; columns: isPreview() ? previewColumns : storedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="storedColumns"></tr>
+      <tr mat-row *matRowDef="let emprow; columns: storedColumns"></tr>
     </table>
   </div>
   <mat-paginator
@@ -44,7 +42,5 @@
     showFirstLastButtons
     class="table-paginator"
   ></mat-paginator>
-  <div class="actions actions-bottom">
-    <button type="button" (click)="storeData()" [disabled]="!isPreview() || isBusy()">{{ 'Store' | translate }}</button>
-  </div>
+  <div class="actions actions-bottom"></div>
 </div>

@@ -12,7 +12,7 @@ import { provideRouter } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { apiPrefixInterceptor, errorHandlerInterceptor } from '@shared';
+import { apiPrefixInterceptor, authInterceptor, errorHandlerInterceptor } from '@shared';
 import { AppComponent } from '@app/app.component';
 import { routes } from '@app/app-routing.module';
 import { environment } from '@env/environment';
@@ -28,7 +28,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([apiPrefixInterceptor, errorHandlerInterceptor])),
+    provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor, errorHandlerInterceptor])),
     provideNoopAnimations(),
     importProvidersFrom(TranslateModule.forRoot()),
     importProvidersFrom(ServiceWorkerModule.register('./ngsw-worker.js', { enabled: environment.production })),
