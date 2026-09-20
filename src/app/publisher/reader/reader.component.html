@@ -21,6 +21,16 @@
     </h1>
   </header>
 
+  <button
+    mat-icon-button
+    type="button"
+    class="floating-fullscreen"
+    (click)="toggleFullscreen(readerContainer)"
+    aria-label="Toggle fullscreen"
+  >
+    <mat-icon>{{ isFullscreen() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+  </button>
+
   <div class="reader-layout">
     <aside class="reader-options" [class.open]="isControlsOpen()" aria-label="Reader options">
       <div class="portrait-navigation" aria-label="Page navigation">
@@ -90,14 +100,6 @@
         @if (bookmarkMessage()) {
         <span class="bookmark-message" aria-live="polite">{{ bookmarkMessage() }}</span>
         }
-        <button
-          mat-icon-button
-          type="button"
-          (click)="toggleFullscreen(readerContainer)"
-          aria-label="Toggle fullscreen"
-        >
-          <mat-icon>{{ isFullscreen() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
-        </button>
       </div>
     </aside>
 

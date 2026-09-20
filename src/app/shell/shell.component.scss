@@ -49,6 +49,32 @@
   padding: 0;
 }
 
+@media (orientation: landscape) and (pointer: coarse) {
+  .shell-shell {
+    height: 100vh;
+  }
+
+  .shell-main.reader-shell,
+  .shell-main.reader-shell .shell-content {
+    height: 100%;
+  }
+
+  .shell-main.reader-shell {
+    min-height: 100vh;
+  }
+}
+
+@media (orientation: portrait) and (pointer: coarse) {
+  .shell-shell {
+    height: 100vh;
+  }
+
+  .shell-main.reader-shell,
+  .shell-main.reader-shell .shell-content {
+    height: 100%;
+  }
+}
+
 .shell-content router-outlet {
   display: block;
   min-width: 0;
