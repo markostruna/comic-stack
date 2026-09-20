@@ -27,7 +27,7 @@ const proxyConfig = {
     proxyTimeout: 10000,
   },
   '/api': {
-    target: 'http://localhost:5000',
+    target: 'http://tusvob.ddns.net',
     changeOrigin: true,
     secure: false,
     timeout: 10000,

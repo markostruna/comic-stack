@@ -59,13 +59,11 @@ describe('AuthenticationService', () => {
           password: '123',
         })
       );
-      http
-        .expectOne(`${environment.apiUrl}auth/login`)
-        .flush({
-          accessToken: 'access-token',
-          refreshToken: 'refresh-token',
-          user: { id: 1, username: 'toto', role: 'user' },
-        });
+      http.expectOne(`${environment.apiUrl}auth/login`).flush({
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+        user: { id: 1, username: 'toto', role: 'user' },
+      });
       await request;
       expect(credentialsService.isAuthenticated()).toBe(true);
       expect((credentialsService.credentials as Credentials).token).toBe('access-token');
@@ -78,13 +76,11 @@ describe('AuthenticationService', () => {
           password: '123',
         })
       );
-      http
-        .expectOne(`${environment.apiUrl}auth/login`)
-        .flush({
-          accessToken: 'access-token',
-          refreshToken: 'refresh-token',
-          user: { id: 1, username: 'toto', role: 'user' },
-        });
+      http.expectOne(`${environment.apiUrl}auth/login`).flush({
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+        user: { id: 1, username: 'toto', role: 'user' },
+      });
       await request;
       expect(credentialsService.setCredentials).toHaveBeenCalled();
       expect(vi.mocked(credentialsService.setCredentials).mock.lastCall?.[1]).toBe(undefined);
@@ -98,13 +94,11 @@ describe('AuthenticationService', () => {
           remember: true,
         })
       );
-      http
-        .expectOne(`${environment.apiUrl}auth/login`)
-        .flush({
-          accessToken: 'access-token',
-          refreshToken: 'refresh-token',
-          user: { id: 1, username: 'toto', role: 'user' },
-        });
+      http.expectOne(`${environment.apiUrl}auth/login`).flush({
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+        user: { id: 1, username: 'toto', role: 'user' },
+      });
       await request;
       expect(credentialsService.setCredentials).toHaveBeenCalled();
       expect(vi.mocked(credentialsService.setCredentials).mock.lastCall?.[1]).toBe(true);
@@ -120,13 +114,11 @@ describe('AuthenticationService', () => {
           password: '123',
         })
       );
-      http
-        .expectOne(`${environment.apiUrl}auth/login`)
-        .flush({
-          accessToken: 'access-token',
-          refreshToken: 'refresh-token',
-          user: { id: 1, username: 'toto', role: 'user' },
-        });
+      http.expectOne(`${environment.apiUrl}auth/login`).flush({
+        accessToken: 'access-token',
+        refreshToken: 'refresh-token',
+        user: { id: 1, username: 'toto', role: 'user' },
+      });
       await loginRequest;
       expect(credentialsService.isAuthenticated()).toBe(true);
       const logoutRequest = firstValueFrom(authenticationService.logout());
