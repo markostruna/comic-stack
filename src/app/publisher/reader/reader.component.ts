@@ -70,6 +70,8 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
   private readonly unloadedPagePlaceholder = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
   private progressTimeoutId?: number;
   private resizeTimeoutId?: number;
+  private refreshTimeoutId?: number;
+  private refreshToken = 0;
 
   ngAfterViewInit(): void {
     this.refreshPageFlip();
@@ -88,10 +90,12 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.refreshToken++;
     this.pageFlip?.destroy();
     this.revokePageFlipUrls();
     window.clearTimeout(this.resizeTimeoutId);
     window.clearTimeout(this.progressTimeoutId);
+    window.clearTimeout(this.refreshTimeoutId);
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -363,10 +367,13 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
       return;
     }
 
-    window.setTimeout(async () => {
+    const token = ++this.refreshToken;
+    window.clearTimeout(this.refreshTimeoutId);
+    this.refreshTimeoutId = window.setTimeout(async () => {
+      this.refreshTimeoutId = undefined;
       const container = this.pageFlipContainer;
       const sourcePages = this.pages();
-      if (!container || sourcePages.length === 0) {
+      if (token !== this.refreshToken || !container || sourcePages.length === 0) {
         return;
       }
 
@@ -377,6 +384,9 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
           if (sourcePages !== this.pageAspectRatioPages) {
             const orientationPage = sourcePages[Math.min(3, sourcePages.length - 1)];
             const detectedRatio = await this.detectPageAspectRatio(orientationPage);
+            if (token !== this.refreshToken) {
+              return;
+            }
             if (detectedRatio) {
               pageRatio = detectedRatio;
               this.sourcePageAspectRatio = detectedRatio;
@@ -436,6 +446,9 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
         );
         this.pageFlipUrls = displayPages.map(() => this.unloadedPagePlaceholder);
         await this.processDisplayPageWindow(displayPages);
+        if (token !== this.refreshToken) {
+          return;
+        }
 
         const frameWidth = Math.max(1, container.nativeElement.clientWidth);
         const frameHeight = Math.max(1, container.nativeElement.clientHeight);
@@ -465,7 +478,7 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
           this.pageFlipUrls.length - 1
         );
 
-        if (sourcePages !== this.pages()) {
+        if (token !== this.refreshToken || sourcePages !== this.pages()) {
           return;
         }
 
