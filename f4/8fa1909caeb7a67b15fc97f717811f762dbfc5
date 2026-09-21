@@ -1,0 +1,24 @@
+.npmrc
+  s_a9bb78f51fdce8::t_55de340abdaeb8 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "f48fa1909caeb7a67b15fc97f717811f762dbfc5",
+  "prompts": {},
+  "humans": {
+    "h_38f866ca952a62": {
+      "author": "Marko Struna <marko.struna@comtradegaming.com>"
+    }
+  },
+  "sessions": {
+    "s_a9bb78f51fdce8": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "cfbbb236-36e1-462e-bc03-5dabb6847add",
+        "model": "unknown"
+      },
+      "human_author": "Marko Struna <marko.struna@comtradegaming.com>"
+    }
+  }
+}
