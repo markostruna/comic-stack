@@ -1,0 +1,43 @@
+package.json
+  s_a9bb78f51fdce8::t_a607ec676a317c 54
+  s_a9bb78f51fdce8::t_9d63dfbbfb7f5a 71
+.npmrc
+  s_a9bb78f51fdce8::t_ae5ede51157932 1-2
+  s_a9bb78f51fdce8::t_d9e6f7693fe46b 3
+src/app/search/search/search.component.scss
+  h_38f866ca952a62 259
+  h_38f866ca952a62 269,276
+src/app/tools/comic-details-dialog.component.scss
+  s_e4ad47fa22b51c::t_95bba0f392b465 8,65,91
+package-lock.json
+  h_38f866ca952a62 45,57,910-911,2931-2954,3639-3641,3645,3647,3650,3654-3656,3660,3663,3667-3669,3676,3783-3785,3789,3793-3795,3799,3803,4387-4410,8529-8542,9990-9992,9995-9997,10000-10004,10013-10016,10019,10026,10034,10171-10173,10177,10184-10186,10190,10210-10212,10216-10218,11188-11200,11232-11238,12152-12154,12158,15114-15133,18587-18588,19856-19877,20200-20202,20205,20207,20211-20213,20216,20220-20222,20302-20304,20308-20310,20313,20663-20678,23241-23253,24301-24303,24307-24311,24320-24323,24326,24333,24357-24359,24363-24365,24368,24382-24384,24387-24389,25155-25163,25185-25190,25820-25822,25825,27781-27797
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "e5f22d217010b19bb0347bcddfc5ee0d666f4332",
+  "prompts": {},
+  "humans": {
+    "h_38f866ca952a62": {
+      "author": "Marko Struna <marko.struna@comtradegaming.com>"
+    }
+  },
+  "sessions": {
+    "s_a9bb78f51fdce8": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "cfbbb236-36e1-462e-bc03-5dabb6847add",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Marko Struna <marko.struna@comtradegaming.com>"
+    },
+    "s_e4ad47fa22b51c": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "d987b3d0-4ae4-4291-839a-4a3869dc73d5",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Marko Struna <marko.struna@comtradegaming.com>"
+    }
+  }
+}
