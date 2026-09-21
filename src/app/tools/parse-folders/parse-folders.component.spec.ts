@@ -1,12 +1,13 @@
+import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { of } from 'rxjs';
-import { CatalogService } from '@app/@shared/catalog.service';
-import { provideHttpClient } from '@angular/common/http';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
+import { of } from 'rxjs';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { CatalogService } from '../../@shared/catalog.service';
 
 import { ParseFoldersComponent } from './parse-folders.component';
 

@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { CatalogService } from '@app/@shared/catalog.service';
 import { HelperService } from '@app/@shared/helper.service';
-import { Comic, ComicResolved, Publisher, PublisherResolved } from '@app/@shared/models';
+import { Comic, ComicResolved, PublisherResolved } from '@app/@shared/models';
 import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { shareReplay } from 'rxjs/operators';
 
 export type AvailabilityFilter = 'All' | 'Available' | 'Missing';
 

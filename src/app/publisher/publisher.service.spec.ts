@@ -1,8 +1,9 @@
-import { TestBed } from '@angular/core/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-import { PublisherService } from './publisher.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { PublisherService } from './publisher.service';
 
 describe('PublisherService', () => {
   let service: PublisherService;

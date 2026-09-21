@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { merge } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 
+import { I18nService } from '@app/i18n';
 import { environment } from '@env/environment';
 import { Logger, UntilDestroy, untilDestroyed } from '@shared';
-import { I18nService } from '@app/i18n';
 
 const log = new Logger('App');
 

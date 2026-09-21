@@ -1,22 +1,22 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { MatButton } from '@angular/material/button';
 import { MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { ComicComponent } from '@app/publisher/comic/comic.component';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ComicResolved } from '@app/@shared/models';
+import { ComicComponent } from '@app/publisher/comic/comic.component';
 import {
   AvailabilityFilter,
   ComicSearchFilters,
   ComicSearchOptions,
   PublisherService,
 } from '@app/publisher/publisher.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 @Component({
   selector: 'app-search',

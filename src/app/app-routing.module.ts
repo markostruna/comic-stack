@@ -1,16 +1,15 @@
 import { Routes } from '@angular/router';
-import { marker } from '@biesbjerg/ngx-translate-extract-marker';
-import { Shell } from '@app/shell/shell.service';
-import { LoginComponent } from '@app/auth/login.component';
-import { HomeComponent } from '@app/home/home.component';
-import { SearchComponent } from '@app/search/search/search.component';
-import { ParseFoldersComponent } from '@app/tools/parse-folders/parse-folders.component';
-import { PublisherComponent } from '@app/publisher/publisher/publisher.component';
-import { ComicComponent } from '@app/publisher/comic/comic.component';
-import { ReaderComponent } from '@app/publisher/reader/reader.component';
 import { AboutComponent } from '@app/about/about.component';
 import { AdminGuard } from '@app/auth/admin.guard';
+import { LoginComponent } from '@app/auth/login.component';
+import { ComicComponent } from '@app/publisher/comic/comic.component';
+import { PublisherComponent } from '@app/publisher/publisher/publisher.component';
+import { ReaderComponent } from '@app/publisher/reader/reader.component';
+import { SearchComponent } from '@app/search/search/search.component';
+import { Shell } from '@app/shell/shell.service';
+import { ParseFoldersComponent } from '@app/tools/parse-folders/parse-folders.component';
 import { BookmarksComponent } from '@app/user/bookmarks.component';
+import { marker } from '@biesbjerg/ngx-translate-extract-marker';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, data: { title: marker('Login') } },

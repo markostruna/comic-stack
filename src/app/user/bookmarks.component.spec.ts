@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { Bookmark, UserStateService } from '@app/@shared/user-state.service';
+import { Bookmark, UserStateService } from '../@shared/user-state.service';
 import { BookmarksComponent } from './bookmarks.component';
 
 describe('BookmarksComponent', () => {

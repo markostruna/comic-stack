@@ -11,8 +11,8 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ComicResolved } from '@app/@shared/models';
-import { PublisherService } from '../publisher.service';
 import { ComicCardComponent } from '../comic-card.component';
+import { PublisherService } from '../publisher.service';
 
 @Component({
   selector: 'app-comic',

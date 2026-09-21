@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { beforeEach, describe, it } from 'vitest';
 
-import { AuthenticationService, CredentialsService } from '@app/auth';
-import { MockAuthenticationService } from '@app/auth/authentication.service.mock';
-import { MockCredentialsService } from '@app/auth/credentials.service.mock';
+import { AuthenticationService, CredentialsService } from '../auth';
+import { MockAuthenticationService } from '../auth/authentication.service.mock';
+import { MockCredentialsService } from '../auth/credentials.service.mock';
 
 import { ShellComponent } from './shell.component';
 
@@ -15,7 +15,7 @@ describe('ShellComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot(), BrowserAnimationsModule, ShellComponent],
+      imports: [TranslateModule.forRoot(), ShellComponent],
       providers: [
         { provide: AuthenticationService, useClass: MockAuthenticationService },
         { provide: CredentialsService, useClass: MockCredentialsService },

@@ -7,7 +7,6 @@
 import { enableProdMode, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { TranslateModule } from '@ngx-translate/core';
@@ -29,7 +28,6 @@ bootstrapApplication(AppComponent, {
     provideZoneChangeDetection(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor, errorHandlerInterceptor])),
-    provideNoopAnimations(),
     importProvidersFrom(TranslateModule.forRoot()),
     importProvidersFrom(ServiceWorkerModule.register('./ngsw-worker.js', { enabled: environment.production })),
   ],

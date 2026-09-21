@@ -1,12 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
-import { CatalogService } from '@app/@shared/catalog.service';
-import { PublisherService } from '@app/publisher/publisher.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { vi } from 'vitest';
-
+import { of } from 'rxjs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { CatalogService } from '../../@shared/catalog.service';
+import { PublisherService } from '../../publisher/publisher.service';
 import { SearchComponent } from './search.component';
 
 describe('SearchComponent', () => {

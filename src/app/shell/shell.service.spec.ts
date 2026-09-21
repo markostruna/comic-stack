@@ -1,7 +1,8 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-import { AuthenticationGuard, AuthenticationService } from '@app/auth';
-import { MockAuthenticationService } from '@app/auth/authentication.service.mock';
+import { AuthenticationGuard, AuthenticationService } from '../auth';
+import { MockAuthenticationService } from '../auth/authentication.service.mock';
 import { ShellComponent } from './shell.component';
 import { Shell } from './shell.service';
 

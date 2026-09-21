@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { LoaderComponent } from './loader.component';
 
@@ -9,7 +9,7 @@ describe('LoaderComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [BrowserAnimationsModule, LoaderComponent],
+      imports: [LoaderComponent],
     }).compileComponents();
   });
 

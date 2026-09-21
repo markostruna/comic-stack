@@ -1,5 +1,5 @@
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Logger, LogLevel, LogOutput } from './logger.service';
-import { vi } from 'vitest';
 
 const logMethods = ['log', 'info', 'warn', 'error'];
 const consoleRef = console as unknown as Record<string, (...args: unknown[]) => void>;

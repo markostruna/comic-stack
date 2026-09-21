@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -10,16 +11,14 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { MatIcon } from '@angular/material/icon';
 import { MatButton, MatIconButton } from '@angular/material/button';
-import { environment } from '@env/environment';
+import { MatIcon } from '@angular/material/icon';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { UserStateService } from '@app/@shared/user-state.service';
-import { PageFlip } from 'page-flip';
+import { environment } from '@env/environment';
 import type { Page, SizeType } from 'page-flip';
+import { PageFlip } from 'page-flip';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-reader',

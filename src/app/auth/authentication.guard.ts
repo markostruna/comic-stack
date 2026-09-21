@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 
 import { Logger } from '@shared';
 import { CredentialsService } from './credentials.service';

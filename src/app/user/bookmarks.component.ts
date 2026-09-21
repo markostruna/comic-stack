@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 import { Bookmark, UserStateService } from '@app/@shared/user-state.service';
 
 @Component({

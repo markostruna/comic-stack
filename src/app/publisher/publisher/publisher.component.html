@@ -35,7 +35,7 @@
             mat-icon-button
             type="button"
             class="swiper-control"
-            [disabled]="swiperNavigation()[section.path]?.isBeginning ?? true"
+            [disabled]="swiperNavigation()[section.path]?.isBeginning"
             [attr.aria-label]="'Previous comics' | translate"
             (click)="slidePrevious(section.path, sectionSwiper)"
           >
@@ -45,7 +45,7 @@
             mat-icon-button
             type="button"
             class="swiper-control"
-            [disabled]="swiperNavigation()[section.path]?.isEnd ?? true"
+            [disabled]="swiperNavigation()[section.path]?.isEnd"
             [attr.aria-label]="'Next comics' | translate"
             (click)="slideNext(section.path, sectionSwiper)"
           >

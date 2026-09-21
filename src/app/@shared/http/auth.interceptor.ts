@@ -3,9 +3,9 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
 
-import { environment } from '@env/environment';
 import { AuthenticationService } from '@app/auth/authentication.service';
 import { CredentialsService } from '@app/auth/credentials.service';
+import { environment } from '@env/environment';
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const credentialsService = inject(CredentialsService);

@@ -2,9 +2,16 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
+    "baseUrl": "./",
+    "paths": {
+      "@app/*": ["src/app/*"],
+      "@shared": ["src/app/@shared"],
+      "@shared/*": ["src/app/@shared/*"],
+      "@env/*": ["src/environments/*"]
+    },
     "types": ["node"]
   },
   "exclude": [],
-  "files": ["src/test.ts", "src/polyfills.ts"],
+  "files": ["src/test.ts", "src/polyfills.ts", "src/vitest-globals.d.ts"],
   "include": ["src/**/*.spec.ts", "src/**/*.mock.ts", "src/**/*.d.ts"]
 }

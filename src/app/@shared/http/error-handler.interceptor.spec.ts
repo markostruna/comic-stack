@@ -1,10 +1,11 @@
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { errorHandlerInterceptor } from './error-handler.interceptor';
 import { vi } from 'vitest';
+import { errorHandlerInterceptor } from './error-handler.interceptor';
 
 describe('ErrorHandlerInterceptor', () => {
   let http: HttpClient;

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { I18nService } from './i18n.service';
 import { LanguageSelectorComponent } from './language-selector.component';
@@ -11,7 +11,7 @@ describe('LanguageSelectorComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [BrowserAnimationsModule, TranslateModule.forRoot(), LanguageSelectorComponent],
+      imports: [TranslateModule.forRoot(), LanguageSelectorComponent],
       providers: [I18nService],
     }).compileComponents();
   });

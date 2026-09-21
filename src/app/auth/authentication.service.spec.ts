@@ -1,13 +1,13 @@
-import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { environment } from '../../environments/environment';
 import { AuthenticationService } from './authentication.service';
-import { CredentialsService, Credentials } from './credentials.service';
+import { Credentials, CredentialsService } from './credentials.service';
 import { MockCredentialsService } from './credentials.service.mock';
-import { vi } from 'vitest';
-import { environment } from '@env/environment';
 
 describe('AuthenticationService', () => {
   let authenticationService: AuthenticationService;

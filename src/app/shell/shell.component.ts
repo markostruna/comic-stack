@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 
-import { AuthenticationService, CredentialsService } from '@app/auth';
-import { TranslateModule } from '@ngx-translate/core';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { AuthenticationService, CredentialsService } from '@app/auth';
+import { TranslateModule } from '@ngx-translate/core';
 import { LanguageSelectorComponent } from '../i18n/language-selector.component';
 
 @Component({

@@ -1,9 +1,10 @@
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { afterEach, beforeEach, describe, it } from 'vitest';
 
-import { environment } from '@env/environment';
+import { environment } from '../../../environments/environment';
 import { apiPrefixInterceptor } from './api-prefix.interceptor';
 
 describe('ApiPrefixInterceptor', () => {

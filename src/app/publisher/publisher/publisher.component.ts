@@ -4,22 +4,22 @@ import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
   ElementRef,
+  inject,
   OnInit,
   QueryList,
-  ViewChildren,
-  inject,
   signal,
+  ViewChildren,
 } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { ComicResolved, PublisherResolved } from '@app/@shared/models';
-import { PublisherService } from '../publisher.service';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatIcon } from '@angular/material/icon';
-import { MatButton, MatIconButton } from '@angular/material/button';
+import { UserStateService } from '@app/@shared/user-state.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { forkJoin } from 'rxjs';
 import { ComicCardComponent } from '../comic-card.component';
-import { UserStateService } from '@app/@shared/user-state.service';
+import { PublisherService } from '../publisher.service';
 
 export interface PublisherSection {
   name: string;
@@ -213,7 +213,6 @@ export class PublisherComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    swiper.update?.();
     if (swiper.slides && section && swiper.slides.length < section.comics.length) {
       return;
     }

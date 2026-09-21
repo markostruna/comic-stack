@@ -1,8 +1,8 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Injectable, inject } from '@angular/core';
 import { environment } from '@env/environment';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 const routes = {
   quote: (c: RandomQuoteContext) => `jokes/random?category=${c.category}`,

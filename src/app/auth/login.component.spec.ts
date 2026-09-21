@@ -1,12 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
-import { provideRouter } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-import { AuthenticationService, CredentialsService } from '@app/auth';
-import { MockAuthenticationService } from '@app/auth/authentication.service.mock';
-import { MockCredentialsService } from '@app/auth/credentials.service.mock';
 import { LoginComponent } from './login.component';
 
 describe('LoginComponent', () => {
@@ -15,7 +12,7 @@ describe('LoginComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [BrowserAnimationsModule, TranslateModule.forRoot(), ReactiveFormsModule, LoginComponent],
+      imports: [TranslateModule.forRoot(), ReactiveFormsModule, LoginComponent],
       providers: [provideRouter([])],
     }).compileComponents();
   });

@@ -1,14 +1,15 @@
-import { Type } from '@angular/core';
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { environment } from '@env/environment';
-import { AuthenticationService } from '@app/auth/authentication.service';
-import { CredentialsService } from '@app/auth/credentials.service';
-import { MockCredentialsService } from '@app/auth/credentials.service.mock';
+import { environment } from '../../../environments/environment';
+import { AuthenticationService } from '../../auth/authentication.service';
+import { CredentialsService } from '../../auth/credentials.service';
+import { MockCredentialsService } from '../../auth/credentials.service.mock';
 import { authInterceptor } from './auth.interceptor';
 
 describe('AuthInterceptor', () => {

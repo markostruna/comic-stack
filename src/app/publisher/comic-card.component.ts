@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
-import { Router } from '@angular/router';
-import { MatIcon } from '@angular/material/icon';
 import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { Router } from '@angular/router';
 import { ComicResolved } from '@app/@shared/models';
 
 @Component({

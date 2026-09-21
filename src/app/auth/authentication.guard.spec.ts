@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import { Router, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
+import { beforeEach, describe, expect, it } from 'vitest';
 
+import { vi } from 'vitest';
+import { AuthenticationGuard } from './authentication.guard';
 import { CredentialsService } from './credentials.service';
 import { MockCredentialsService } from './credentials.service.mock';
-import { AuthenticationGuard } from './authentication.guard';
-import { vi } from 'vitest';
 
 describe('AuthenticationGuard', () => {
   let authenticationGuard: AuthenticationGuard;

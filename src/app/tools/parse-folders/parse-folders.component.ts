@@ -1,31 +1,30 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { MatPaginator } from '@angular/material/paginator';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { MatButton } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
-import { MatButton } from '@angular/material/button';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import {
-  MatTableDataSource,
-  MatTable,
-  MatColumnDef,
-  MatHeaderCellDef,
-  MatHeaderCell,
-  MatCellDef,
   MatCell,
-  MatHeaderRowDef,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
   MatHeaderRow,
-  MatRowDef,
+  MatHeaderRowDef,
   MatRow,
+  MatRowDef,
+  MatTable,
+  MatTableDataSource,
 } from '@angular/material/table';
 import { CatalogService } from '@app/@shared/catalog.service';
 import { ComicResolved, PublisherResolved } from '@app/@shared/models';
 import { marker } from '@biesbjerg/ngx-translate-extract-marker';
-import { TranslateModule } from '@ngx-translate/core';
-import { forkJoin } from 'rxjs';
-import { ComicDetailsDialogComponent } from '../comic-details-dialog.component';
 import { environment } from '@env/environment';
-import { interval, startWith, switchMap, takeWhile } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
+import { forkJoin, interval, startWith, switchMap, takeWhile } from 'rxjs';
+import { ComicDetailsDialogComponent } from '../comic-details-dialog.component';
 
 @Component({
   selector: 'app-parse-folders',

@@ -1,13 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
-import { HelperService } from '@app/@shared/helper.service';
-import { PublisherService } from '../publisher.service';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { of } from 'rxjs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { HelperService } from '../../@shared/helper.service';
+import { UserStateService } from '../../@shared/user-state.service';
+import { PublisherService } from '../publisher.service';
 import { PublisherComponent } from './publisher.component';
-import { vi } from 'vitest';
-import { UserStateService } from '@app/@shared/user-state.service';
 
 describe('PublisherComponent', () => {
   let component: PublisherComponent;
@@ -43,5 +42,17 @@ describe('PublisherComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should update navigation state without recursively updating Swiper', () => {
+    const update = vi.fn();
+    const swiper = { isBeginning: false, isEnd: true, slides: [{}, {}], update };
+
+    (
+      component as unknown as { updateSwiperNavigation: (path: string, target: { swiper: unknown }) => void }
+    ).updateSwiperNavigation('publisher-path', { swiper });
+
+    expect(update).not.toHaveBeenCalled();
+    expect(component.swiperNavigation()['publisher-path']).toEqual({ isBeginning: false, isEnd: true });
   });
 });

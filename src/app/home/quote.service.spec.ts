@@ -1,9 +1,10 @@
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { QuoteService } from './quote.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { QuoteService } from './quote.service';
 
 describe('QuoteService', () => {
   let quoteService: QuoteService;

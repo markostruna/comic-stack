@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 
-import { QuoteService } from './quote.service';
-import { MatCard, MatCardContent, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
+import { MatCard, MatCardContent, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
 import { TranslateModule } from '@ngx-translate/core';
 import { LoaderComponent } from '../@shared/loader/loader.component';
+import { QuoteService } from './quote.service';
 
 @Component({
   selector: 'app-home',

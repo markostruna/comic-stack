@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit, input, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 
-import { I18nService } from './i18n.service';
-import { MatIconButton, MatButton } from '@angular/material/button';
-import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { I18nService } from './i18n.service';
 
 @Component({
   selector: 'app-language-selector',

@@ -1,19 +1,19 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 
-import { environment } from '@env/environment';
-import { Logger, UntilDestroy, untilDestroyed } from '@shared';
-import { AuthenticationService } from './authentication.service';
-import { TranslateModule } from '@ngx-translate/core';
-import { LanguageSelectorComponent } from '../i18n/language-selector.component';
+import { MatButton } from '@angular/material/button';
 import { MatCard } from '@angular/material/card';
-import { MatFormField, MatError } from '@angular/material/form-field';
+import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
-import { MatButton } from '@angular/material/button';
+import { environment } from '@env/environment';
+import { TranslateModule } from '@ngx-translate/core';
+import { Logger, UntilDestroy, untilDestroyed } from '@shared';
 import { LoaderComponent } from '../@shared/loader/loader.component';
+import { LanguageSelectorComponent } from '../i18n/language-selector.component';
+import { AuthenticationService } from './authentication.service';
 
 const log = new Logger('Login');
 

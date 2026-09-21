@@ -1,9 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
-
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18nService } from './i18n.service';
-import { vi } from 'vitest';
 
 const defaultLanguage = 'en-US';
 const supportedLanguages = ['eo', 'en-US', 'fr-FR'];
