@@ -5,7 +5,7 @@
 
 .images {
   display: grid;
-  grid-template-columns: 140px 140px minmax(180px, 1fr);
+  grid-template-columns: 140px 140px minmax(180px, calc(100% - 324px));
   gap: 22px;
   align-items: start;
   margin-bottom: 28px;
@@ -62,7 +62,7 @@
 
 .fields {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, calc(50% - 14px)));
   gap: 20px 28px;
 }
 
@@ -88,6 +88,6 @@
 @media (max-width: 650px) {
   .images,
   .fields {
-    grid-template-columns: 1fr;
+    grid-template-columns: 100%;
   }
 }

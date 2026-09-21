@@ -256,6 +256,7 @@
   --mat-paginator-container-text-color: #b0bec5;
   --mat-paginator-enabled-icon-color: #b0bec5;
   --mat-paginator-disabled-icon-color: rgb(176 190 197 / 35%);
+
   margin-top: 20px;
   color: #b0bec5;
   background: transparent;
@@ -265,12 +266,14 @@
   --mat-icon-button-icon-color: #b0bec5;
   --mdc-icon-button-icon-color: #b0bec5;
   --mat-ripple-color: #f1c40f;
+
   color: #b0bec5;
 }
 
 .search-paginator .mat-mdc-icon-button:hover:not(:disabled) {
   --mat-icon-button-icon-color: #111;
   --mdc-icon-button-icon-color: #111;
+
   color: #111;
   background: #f1c40f;
 }
