@@ -1,5 +1,5 @@
 <article class="comic-card">
-  <div class="cover-frame">
+  <div class="cover-frame" [class.info-visible]="isInfoVisible()" (click)="openCard($event)">
     <img
       [class.missing]="comic().missing"
       [src]="comic().thumbnailPath"
@@ -12,7 +12,6 @@
     } @if (comic().collection) {
     <div class="comic-collection">{{ comic().collection }}</div>
     } @if (comic().readingProgress; as progress) {
-    <div class="reading-badge" title="In progress"><mat-icon>menu_book</mat-icon></div>
     <div
       class="reading-progress"
       [attr.aria-label]="'Reading progress: ' + progress.pageIndex + ' of ' + progress.totalPages"
@@ -23,22 +22,27 @@
     <div class="bookmark-badge" title="Bookmarked"><mat-icon>bookmark</mat-icon></div>
     }
     <div class="hero-container">
-      @for (hero of comic().heroes; track hero.name) {
+      @for (hero of comic().heroes; track hero.name) { @if (hero.imagePath) {
       <div class="hero-circle" [attr.title]="hero.name" [style.background-image]="hero.imagePath"></div>
-      }
+      } }
     </div>
-    @if (comic().comicMissing !== true) {
     <button
       mat-icon-button
-      color="accent"
-      class="reader-button"
+      class="info-toggle"
       type="button"
-      aria-label="Open reader"
-      (click)="openReader($event)"
+      aria-label="Toggle comic information"
+      (click)="toggleInfo($event)"
     >
-      <mat-icon>menu_book</mat-icon>
+      <mat-icon>info_outline</mat-icon>
     </button>
-    }
+    <div class="tile-actions">
+      <button mat-button class="info-button" type="button" (click)="openDetails($event)">Info</button>
+      @if (comic().comicMissing !== true) {
+      <button mat-button class="reader-button" type="button" aria-label="Open reader" (click)="openReader($event)">
+        <mat-icon>menu_book</mat-icon>
+      </button>
+      }
+    </div>
   </div>
   <div class="comic-info">
     <div class="comic-number-row">

@@ -8,6 +8,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ComicResolved } from '@app/@shared/models';
+import { UserStateService } from '@app/@shared/user-state.service';
 import { ComicComponent } from '@app/publisher/comic/comic.component';
 import {
   AvailabilityFilter,
@@ -17,6 +18,7 @@ import {
 } from '@app/publisher/publisher.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-search',
@@ -39,6 +41,7 @@ export class SearchComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly publisherService = inject(PublisherService);
+  private readonly userState = inject(UserStateService);
 
   readonly options = signal<ComicSearchOptions>({ heroes: [], publishers: [], collections: [] });
   readonly results = signal<ComicSearchFilters & { comics: ComicResolved[] }>({
@@ -82,21 +85,17 @@ export class SearchComponent implements OnInit {
       const filters = this.filtersFromParams(params);
       this.form.patchValue(filters, { emitEvent: false });
       this.isLoading.set(true);
-      this.publisherService.getSearchOptionsFromApi().subscribe({
-        next: (options) => {
+      forkJoin({
+        options: this.publisherService.getSearchOptionsFromApi(),
+        comics: this.publisherService.searchComics(filters),
+        continueReading: this.userState.readContinueReading(),
+        bookmarks: this.userState.readBookmarks(),
+      }).subscribe({
+        next: ({ options, comics, continueReading, bookmarks }) => {
           this.options.set(options);
-          this.publisherService.searchComics(filters).subscribe({
-            next: (comics) => {
-              this.results.set({ ...filters, comics });
-              this.pageIndex.set(0);
-              this.isLoading.set(false);
-            },
-            error: () => {
-              this.results.set({ ...filters, comics: [] });
-              this.pageIndex.set(0);
-              this.isLoading.set(false);
-            },
-          });
+          this.results.set({ ...filters, comics: this.decorateComics(comics, continueReading, bookmarks) });
+          this.pageIndex.set(0);
+          this.isLoading.set(false);
         },
         error: () => {
           this.results.set({ ...filters, comics: [] });
@@ -139,6 +138,27 @@ export class SearchComponent implements OnInit {
 
   resetFilter(control: FormControl<string>): void {
     control.reset();
+  }
+
+  private decorateComics(
+    comics: ComicResolved[],
+    continueReading: Array<{ id: number; pageIndex: number; totalPages: number }>,
+    bookmarks: Array<{ comicId: number }>
+  ): ComicResolved[] {
+    const progressById = new Map(
+      continueReading.filter((entry) => entry.pageIndex > 0).map((entry) => [entry.id, entry])
+    );
+    const bookmarkedIds = new Set(bookmarks.map((bookmark) => bookmark.comicId));
+
+    return comics.map((comic) => {
+      const id = (comic as ComicResolved & { id?: number }).id;
+      const progress = id === undefined ? undefined : progressById.get(id);
+      return {
+        ...comic,
+        readingProgress: progress ? { pageIndex: progress.pageIndex, totalPages: progress.totalPages } : undefined,
+        bookmarked: id !== undefined && bookmarkedIds.has(id),
+      };
+    });
   }
 
   private filterOptions(options: string[], searchTerm: string): string[] {

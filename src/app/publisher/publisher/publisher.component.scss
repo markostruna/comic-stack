@@ -75,19 +75,23 @@
 .section-heading a,
 .see-all-link {
   flex: 0 0 auto;
-  color: #b0bec5;
+  color: white;
   background: transparent;
   font-size: 0.85rem;
   text-decoration: none;
 }
 
-.see-all-link .mdc-button__label {
-  color: #b0bec5;
+:host ::ng-deep .see-all-link.mat-mdc-button {
+  --mdc-text-button-label-text-color: white;
 }
 
-.see-all-link {
-  --mdc-text-button-label-text-color: #b0bec5;
+/* stylelint-disable selector-max-compound-selectors */
+:host ::ng-deep .see-all-link .mdc-button__label {
+  /* Material's generated label rule otherwise keeps this text dark. */
+  /* stylelint-disable-next-line declaration-no-important */
+  color: #b0bec5 !important;
 }
+/* stylelint-enable selector-max-compound-selectors */
 
 .section-heading a:hover,
 .section-heading a:focus-visible,
@@ -102,10 +106,13 @@
   --mdc-text-button-label-text-color: #f1c40f;
 }
 
-.see-all-link:hover .mdc-button__label,
-.see-all-link:focus-visible .mdc-button__label {
-  color: #f1c40f;
+/* stylelint-disable selector-max-compound-selectors, selector-max-specificity */
+:host ::ng-deep .see-all-link:hover .mdc-button__label,
+:host ::ng-deep .see-all-link:focus-visible .mdc-button__label {
+  /* stylelint-disable-next-line declaration-no-important */
+  color: #f1c40f !important;
 }
+/* stylelint-enable selector-max-compound-selectors, selector-max-specificity */
 
 .swiper-control {
   display: inline-flex;
@@ -144,6 +151,11 @@
 .comic-swiper {
   width: 100%;
   padding: 3px 2px 8px;
+  overflow: visible;
+}
+
+.comic-swiper app-comic-card {
+  display: block;
 }
 
 .comic-preview {

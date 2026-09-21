@@ -7,6 +7,8 @@
   position: relative;
   width: 150px;
   height: 230px;
+  margin-top: 16px;
+  overflow: visible;
   background: #111;
 }
 
@@ -41,6 +43,9 @@
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.16s ease, visibility 0.16s ease;
 }
 
 .comic-publisher {
@@ -53,30 +58,46 @@
   background: rgb(128 255 0 / 80%);
 }
 
-.reading-badge,
+.hero-container {
+  position: absolute;
+  top: -5px;
+  left: 2px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.16s ease, visibility 0.16s ease;
+}
+
+.cover-frame:hover .comic-publisher,
+.cover-frame:hover .comic-collection,
+.cover-frame:hover .hero-container {
+  opacity: 1;
+  visibility: visible;
+}
+
+.info-toggle {
+  display: none;
+}
+
 .bookmark-badge {
   position: absolute;
-  top: 6px;
   display: grid;
-  width: 25px;
-  height: 25px;
+  top: -16px;
+  right: 2px;
+  z-index: 2;
+  width: 24px;
+  height: 30px;
   place-items: center;
-  color: #111;
-  background: #f1c40f;
+  color: #f1c40f;
+  background: transparent;
 }
 
-.reading-badge {
-  right: 6px;
-}
-
-.bookmark-badge {
-  right: 35px;
-  background: #7ec8c8;
-}
-
-.reading-badge mat-icon,
 .bookmark-badge mat-icon {
-  font-size: 17px;
+  font-size: 24px;
+  line-height: 30px;
+  overflow: visible;
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 85%));
 }
 
 .reading-progress {
@@ -94,14 +115,6 @@
   background: #f1c40f;
 }
 
-.hero-container {
-  position: absolute;
-  bottom: -5px;
-  left: -5px;
-  display: flex;
-  gap: 4px;
-}
-
 .hero-circle {
   display: grid;
   width: 34px;
@@ -117,17 +130,145 @@
   font-size: 20px;
 }
 
-.reader-button {
+.tile-actions {
   position: absolute;
-  right: -4px;
-  bottom: -5px;
-  display: grid;
+  right: 0;
+  bottom: 15px;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.16s ease, visibility 0.16s ease;
+}
+
+.cover-frame:hover .tile-actions {
+  opacity: 1;
+  visibility: visible;
+}
+
+.info-button,
+.reader-button {
+  min-width: 48px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 2px;
   color: white;
-  background: cadetblue;
+  background: rgb(49 107 109 / 95%);
+
+  --mdc-text-button-label-text-color: white;
+
+  line-height: 26px;
+}
+
+:host ::ng-deep .info-button.mat-mdc-button,
+:host ::ng-deep .reader-button.mat-mdc-button {
+  background: rgb(49 107 109 / 95%);
+
+  --mdc-text-button-label-text-color: white;
+}
+
+/* stylelint-disable selector-max-compound-selectors */
+:host ::ng-deep .info-button .mdc-button__label,
+:host ::ng-deep .reader-button .mat-icon {
+  color: white;
+}
+
+/* stylelint-disable selector-max-specificity */
+:host ::ng-deep .info-button:hover .mdc-button__label,
+:host ::ng-deep .info-button:focus-visible .mdc-button__label {
+  /* stylelint-disable-next-line declaration-no-important */
+  color: yellow !important;
+}
+/* stylelint-enable selector-max-specificity */
+/* stylelint-enable selector-max-compound-selectors */
+
+@media (hover: none) {
+  .cover-frame {
+    cursor: pointer;
+  }
+
+  .info-toggle {
+    position: absolute;
+    right: 4px;
+    bottom: 18px;
+    z-index: 4;
+    display: grid;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    place-items: center;
+    color: white;
+    background: rgb(17 17 17 / 78%);
+    border: 1px solid rgb(255 255 255 / 75%);
+    border-radius: 50%;
+  }
+
+  .info-toggle:hover,
+  .info-toggle:focus-visible {
+    color: yellow;
+  }
+
+  .info-toggle .mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
+
+  .cover-frame.info-visible .comic-publisher,
+  .cover-frame.info-visible .comic-collection,
+  .cover-frame.info-visible .hero-container,
+  .cover-frame.info-visible .tile-actions {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .cover-frame:not(.info-visible) .comic-publisher,
+  .cover-frame:not(.info-visible) .comic-collection,
+  .cover-frame:not(.info-visible) .hero-container,
+  .cover-frame:not(.info-visible) .tile-actions {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@media (hover: hover) {
+  .cover-frame:focus-within .comic-publisher,
+  .cover-frame:focus-within .comic-collection,
+  .cover-frame:focus-within .hero-container,
+  .cover-frame:focus-within .tile-actions {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.reader-button {
+  display: grid;
+  place-items: center;
+  padding: 0 7px;
 }
 
 .reader-button mat-icon {
-  font-size: 21px;
+  width: 19px;
+  height: 19px;
+  font-size: 19px;
+  line-height: 19px;
+}
+
+.info-button:hover,
+.reader-button:hover {
+  color: yellow;
+
+  --mdc-text-button-label-text-color: yellow;
+}
+
+.reader-button:hover mat-icon,
+.reader-button:focus-visible mat-icon {
+  color: yellow;
 }
 
 .comic-info {
@@ -164,4 +305,5 @@
   line-height: 1.4;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: #b0bec5;
 }
