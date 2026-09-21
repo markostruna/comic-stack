@@ -25,6 +25,66 @@
 
 // Theme customization
 
+.comic-details-dialog-panel {
+  --mdc-dialog-container-color: #242424;
+  --mdc-dialog-subhead-color: white;
+  --mat-dialog-container-color: #242424;
+  --mat-dialog-headline-color: white;
+
+  border: 1px solid #626262;
+  border-radius: 3px;
+  background: #242424;
+  color: white;
+}
+
+.comic-details-dialog-panel .mat-mdc-dialog-container,
+.comic-details-dialog-panel .mdc-dialog__surface {
+  --mdc-dialog-container-color: #242424;
+  --mdc-dialog-subhead-color: white;
+  --mat-dialog-container-color: #242424;
+  --mat-dialog-headline-color: white;
+
+  background-color: #242424;
+  color: white;
+}
+
+.comic-details-dialog-panel .mat-mdc-dialog-title,
+.comic-details-dialog-panel .mat-mdc-dialog-content,
+.comic-details-dialog-panel .mat-mdc-dialog-actions {
+  color: white;
+}
+
+/* Material's generated title rule can override the dialog headline token. */
+/* stylelint-disable declaration-no-important */
+.comic-details-dialog-panel [mat-dialog-title] {
+  color: white !important;
+}
+/* stylelint-enable declaration-no-important */
+
+@media (max-width: 599px), (max-height: 599px) and (orientation: landscape) {
+  /* Angular Material applies the desktop dialog width as an inline style. */
+  /* stylelint-disable declaration-no-important */
+  .comic-details-dialog-panel {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh;
+    max-height: 100vh !important;
+    border: 0;
+    border-radius: 0;
+  }
+  /* stylelint-enable declaration-no-important */
+}
+
+@media (max-width: 599px) and (orientation: portrait), (max-height: 599px) and (orientation: landscape) {
+  /* Let the content fill the space between the title and action bar. */
+  /* stylelint-disable declaration-no-important */
+  .comic-details-dialog-panel .mat-mdc-dialog-content {
+    max-height: none !important;
+    flex: 1 1 auto;
+  }
+  /* stylelint-enable declaration-no-important */
+}
+
 .cdk-overlay-pane .mat-mdc-select-panel {
   --mat-menu-container-color: #252525;
   --mdc-menu-container-color: #252525;

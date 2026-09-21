@@ -134,6 +134,7 @@ export class ParseFoldersComponent implements OnInit, AfterViewInit {
     this.dialog.open(ComicDetailsDialogComponent, {
       width: 'min(900px, 96vw)',
       maxHeight: '90vh',
+      panelClass: 'comic-details-dialog-panel',
       data: comic,
     });
   }

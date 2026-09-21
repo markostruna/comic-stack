@@ -1,59 +1,42 @@
 <h2 mat-dialog-title>{{ 'Comic details' | translate }}</h2>
 <div mat-dialog-content class="dialog-content">
-  <div class="images">
-    <div class="image-panel">
-      <span>{{ 'Thumbnail' | translate }}</span>
+  <div class="dialog-layout">
+    <div class="thumbnail-panel">
+      <span class="section-label">{{ 'Thumbnail' | translate }}</span>
       <img [src]="comic.thumbnailPath" [alt]="comic.titlesResolved || comic.filename" />
-    </div>
-    <div class="image-panel">
-      <span>{{ 'Cover' | translate }}</span>
-      <img [src]="comic.coverPath" [alt]="comic.titlesResolved || comic.filename" />
-    </div>
-    <div class="availability">
-      <span class="section-label">{{ 'Availability' | translate }}</span>
       <span class="availability-value" [class.missing-value]="comic.comicMissing">
         <span class="availability-dot"></span>
         {{ comic.comicMissing ? ('Missing' | translate) : ('Available' | translate) }}
       </span>
     </div>
-  </div>
 
-  <div class="fields">
-    <div class="detail-field">
-      <span class="field-label">{{ 'Publisher' | translate }}</span
-      ><span class="field-value">{{ comic.publisher }}</span>
-    </div>
-    <div class="detail-field">
-      <span class="field-label">{{ 'Filename' | translate }}</span
-      ><span class="field-value">{{ comic.filename }}</span>
-    </div>
-    <div class="detail-field">
-      <span class="field-label">{{ 'Original filename' | translate }}</span
-      ><span class="field-value">{{ comic.originalFilename }}</span>
-    </div>
-    <div class="detail-field">
-      <span class="field-label">{{ 'Extension' | translate }}</span
-      ><span class="field-value">{{ comic.extension }}</span>
-    </div>
-    <div class="detail-field">
-      <span class="field-label">{{ 'Path' | translate }}</span
-      ><span class="field-value">{{ comic.path }}</span>
-    </div>
-    <div class="detail-field">
-      <span class="field-label">{{ 'Number' | translate }}</span
-      ><span class="field-value">{{ comic.numberResolved }}</span>
-    </div>
-    <div class="detail-field">
-      <span class="field-label">{{ 'Collection' | translate }}</span
-      ><span class="field-value">{{ comic.collection || ' ' }}</span>
-    </div>
-    <div class="detail-field">
-      <span class="field-label">{{ 'Hero' | translate }}</span
-      ><span class="field-value multiline">{{ comic.heroesResolved || ' ' }}</span>
-    </div>
-    <div class="detail-field">
-      <span class="field-label">{{ 'Titles' | translate }}</span
-      ><span class="field-value multiline">{{ comic.titlesResolved }}</span>
+    <div class="fields primary-fields">
+      <div class="detail-field">
+        <span class="field-label">{{ 'Titles' | translate }}</span>
+        <span class="field-value multiline">{{ comic.titlesResolved }}</span>
+      </div>
+      <div class="detail-field">
+        <span class="field-label">{{ 'Hero' | translate }}</span>
+        <span class="field-value multiline">{{ comic.heroesResolved || ' ' }}</span>
+      </div>
+      <div class="detail-field">
+        <span class="field-label">{{ 'Number' | translate }}</span>
+        <span class="field-value">{{ comic.numberResolved }}</span>
+      </div>
+      <div class="detail-field">
+        <span class="field-label">{{ 'Publisher' | translate }}</span>
+        <span class="field-value">{{ comic.publisher }}</span>
+      </div>
+      @if (comic.collection) {
+      <div class="detail-field">
+        <span class="field-label">{{ 'Collection' | translate }}</span>
+        <span class="field-value">{{ comic.collection }}</span>
+      </div>
+      }
+      <div class="detail-field">
+        <span class="field-label">{{ 'Original filename' | translate }}</span>
+        <span class="field-value">{{ comic.originalFilename }}</span>
+      </div>
     </div>
   </div>
 </div>
