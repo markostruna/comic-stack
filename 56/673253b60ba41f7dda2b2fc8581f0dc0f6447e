@@ -1,0 +1,154 @@
+src/app/shell/shell.service.spec.ts
+  s_0936680bcae9aa::t_47115f86c8b78a 4-5
+  h_38f866ca952a62 1
+  s_0936680bcae9aa::t_f32f11019eb5ab 2
+src/app/home/home.component.ts
+  h_38f866ca952a62 1,4,7
+src/app/publisher/publisher.service.spec.ts
+  h_38f866ca952a62 6
+  s_0936680bcae9aa::t_f32f11019eb5ab 3
+  s_0936680bcae9aa::t_fdbf92aa8fd1cb 2
+src/app/search/search/search.component.spec.ts
+  h_38f866ca952a62 3,6
+  s_0936680bcae9aa::t_47115f86c8b78a 7-8
+  h_38f866ca952a62 5
+src/app/i18n/language-selector.component.spec.ts
+  h_38f866ca952a62 3
+  s_0936680bcae9aa::t_cd582de4c2f560 14
+src/app/auth/login.component.ts
+  h_38f866ca952a62 1-3,6,8,11-13,15-16
+src/app/auth/authentication.guard.spec.ts
+  h_38f866ca952a62 2,5-6
+  s_0936680bcae9aa::t_f32f11019eb5ab 3
+src/app/i18n/language-selector.component.ts
+  h_38f866ca952a62 1,3,5-6
+src/app/tools/comic-details-dialog.component.ts
+  h_38f866ca952a62 3,5
+src/app/@shared/helper.service.spec.ts
+  s_0936680bcae9aa::t_f32f11019eb5ab 2
+src/app/publisher/comic/comic.component.spec.ts
+  h_38f866ca952a62 3-4
+src/app/i18n/i18n.service.ts
+  h_38f866ca952a62 2
+eslint.config.js
+  s_0936680bcae9aa::t_684ee6d25f7c6d 1-5
+src/app/publisher/reader/reader.component.ts
+  h_38f866ca952a62 1,15-16,18,20-21
+src/app/auth/login.component.spec.ts
+  s_0936680bcae9aa::t_cd582de4c2f560 15
+  h_38f866ca952a62 3-5
+src/app/app.component.spec.ts
+  s_0936680bcae9aa::t_98069fc585c1a8 4
+src/app/app-routing.module.ts
+  h_38f866ca952a62 2-3,6,8-10,12
+src/app/@shared/user-state.service.spec.ts
+  s_0936680bcae9aa::t_77adec38467d1a 7
+  h_38f866ca952a62 5
+  s_0936680bcae9aa::t_f32f11019eb5ab 1
+src/app/auth/credentials.service.spec.ts
+  h_38f866ca952a62 1-2,4
+src/app/i18n/i18n.service.spec.ts
+  h_38f866ca952a62 2,4
+src/app/publisher/publisher/publisher.component.spec.ts
+  h_38f866ca952a62 3,5
+  s_0936680bcae9aa::t_7e3daa3289d1c3 46-50,54-57
+  s_0936680bcae9aa::t_f95b9b877268f9 51-53
+  s_0936680bcae9aa::t_47115f86c8b78a 6-7
+src/app/@shared/loader/loader.component.spec.ts
+  s_0936680bcae9aa::t_26a5fd073da3e8 12
+  s_0936680bcae9aa::t_f32f11019eb5ab 2
+src/app/@shared/catalog.service.ts
+  h_38f866ca952a62 3
+src/app/@shared/http/auth.interceptor.spec.ts
+  h_38f866ca952a62 3,7,9
+  s_0936680bcae9aa::t_47115f86c8b78a 10-12
+tsconfig.spec.json
+  s_0936680bcae9aa::t_820c876c8bc1a4 5-11
+  s_0936680bcae9aa::t_584af49ce0ca4c 15
+src/app/@shared/index.ts
+  h_38f866ca952a62 1,7
+src/app/home/quote.service.ts
+  h_38f866ca952a62 2,4-5
+src/app/publisher/publisher.service.ts
+  h_38f866ca952a62 4,7
+src/app/home/home.component.spec.ts
+  s_0936680bcae9aa::t_cd582de4c2f560 16
+  h_38f866ca952a62 2,4,6
+src/app/publisher/comic/comic.component.ts
+  h_38f866ca952a62 15
+src/app/publisher/publisher/publisher.component.ts
+  h_38f866ca952a62 7,11,15-18,22
+src/app/shell/shell.component.spec.ts
+  s_0936680bcae9aa::t_cd582de4c2f560 18
+  h_38f866ca952a62 4
+  s_0936680bcae9aa::t_47115f86c8b78a 6-8
+src/app/auth/authentication.service.spec.ts
+  h_38f866ca952a62 3,5,9
+  s_0936680bcae9aa::t_77adec38467d1a 7
+src/app/about/about.component.spec.ts
+  s_0936680bcae9aa::t_cd582de4c2f560 13
+  s_0936680bcae9aa::t_f32f11019eb5ab 2
+src/app/auth/authentication.guard.ts
+  h_38f866ca952a62 2
+src/app/search/search/search.component.ts
+  h_38f866ca952a62 2,4,9,11,18-19
+src/app/tools/parse-folders/parse-folders.component.ts
+  h_38f866ca952a62 2-3,6,9-10,13,15,17-19,24,26
+src/app/home/quote.service.spec.ts
+  h_38f866ca952a62 1,4,7
+src/app/app.component.ts
+  h_38f866ca952a62 3,8
+src/app/@shared/user-state.service.ts
+  h_38f866ca952a62 4
+tsconfig.app.json
+  s_0936680bcae9aa::t_584af49ce0ca4c 8
+src/app/user/bookmarks.component.spec.ts
+  h_38f866ca952a62 4
+  s_0936680bcae9aa::t_47115f86c8b78a 6
+src/app/@shared/configuration.mock.service.spec.ts
+  s_0936680bcae9aa::t_f32f11019eb5ab 2
+src/app/tools/parse-folders/parse-folders.component.spec.ts
+  h_38f866ca952a62 1,6,9
+  s_0936680bcae9aa::t_47115f86c8b78a 10
+  h_38f866ca952a62 8
+src/app/@shared/http/api-prefix.interceptor.spec.ts
+  h_38f866ca952a62 1-2,5
+  s_0936680bcae9aa::t_77adec38467d1a 7
+src/app/@shared/logger.service.spec.ts
+  s_0936680bcae9aa::t_8a92be56f0d516 1
+src/app/auth/index.ts
+  h_38f866ca952a62 1-2
+src/app/publisher/publisher/publisher.component.html
+  h_38f866ca952a62 38,48
+src/app/shell/shell.component.ts
+  h_38f866ca952a62 3,9-10
+src/app/@shared/http/error-handler.interceptor.spec.ts
+  h_38f866ca952a62 1-2,5,8
+src/app/@shared/http/auth.interceptor.ts
+  h_38f866ca952a62 8
+src/app/publisher/comic-card.component.ts
+  h_38f866ca952a62 3-4
+src/app/user/bookmarks.component.ts
+  h_38f866ca952a62 3-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "56673253b60ba41f7dda2b2fc8581f0dc0f6447e",
+  "prompts": {},
+  "humans": {
+    "h_38f866ca952a62": {
+      "author": "Marko Struna <marko.struna@comtradegaming.com>"
+    }
+  },
+  "sessions": {
+    "s_0936680bcae9aa": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "574d6865-ddbc-476a-a3e4-54d608ba5c12",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "Marko Struna <marko.struna@comtradegaming.com>"
+    }
+  }
+}
