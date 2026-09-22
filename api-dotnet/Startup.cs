@@ -33,6 +33,7 @@ namespace api_dotnet
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => options.TokenValidationParameters = jwt.ValidationParameters);
             services.AddAuthorization();
+            services.AddResponseCompression(options => options.EnableForHttps = true);
             services.AddControllers();
         }
 
@@ -41,6 +42,7 @@ namespace api_dotnet
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
+            app.UseResponseCompression();
             app.UseRouting();
 
             app.UseAuthentication();

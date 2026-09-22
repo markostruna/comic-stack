@@ -21,7 +21,7 @@
   <div class="portal-state">{{ 'No stored catalog' | translate }}</div>
   } @else {
   <div class="publisher-sections">
-    @for (section of sections(); track trackByPublisher($index, section)) {
+    @for (section of sections(); track trackByPublisher($index, section); let sectionIndex = $index) {
     <section class="publisher-section" [attr.aria-labelledby]="'publisher-' + $index">
       <div class="section-heading">
         <h2 [id]="'publisher-' + $index">{{ section.name }}</h2>
@@ -65,9 +65,9 @@
         (swiperslidechange)="onSwiperStateChange(section.path, $event)"
         breakpoints='{"600":{"slidesPerView":3.5},"900":{"slidesPerView":5.5},"1200":{"slidesPerView":7.5}}'
       >
-        @for (comic of section.comics; track trackByComic($index, comic)) {
+        @for (comic of section.comics; track trackByComic($index, comic); let comicIndex = $index) {
         <swiper-slide>
-          <app-comic-card [comic]="comic"></app-comic-card>
+          <app-comic-card [comic]="comic" [priority]="sectionIndex === 0 && comicIndex === 0"></app-comic-card>
         </swiper-slide>
         }
       </swiper-container>

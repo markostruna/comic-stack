@@ -17,7 +17,8 @@ import { Router } from '@angular/router';
 import { ComicResolved, PublisherResolved } from '@app/@shared/models';
 import { UserStateService } from '@app/@shared/user-state.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { ComicCardComponent } from '../comic-card.component';
 import { PublisherService } from '../publisher.service';
 
@@ -67,50 +68,49 @@ export class PublisherComponent implements OnInit, AfterViewInit {
   }
 
   loadData() {
-    this.publisherService.getPublishers(this.publishersFolder).subscribe({
-      next: (publishers) => {
+    forkJoin({
+      publishers: this.publisherService.getPublishers(this.publishersFolder),
+      comics: this.publisherService.getAllComics(),
+      continueReading: this.userState.readContinueReading().pipe(catchError(() => of([]))),
+      bookmarks: this.userState.readBookmarks().pipe(catchError(() => of([]))),
+    }).subscribe({
+      next: ({ publishers, comics, continueReading, bookmarks }) => {
         if (publishers.length === 0) {
           this.sections.set([]);
           this.isLoading.set(false);
           return;
         }
 
-        forkJoin({
-          comicGroups: forkJoin(
-            publishers.map((publisher) =>
-              this.publisherService.getComics(`${this.publishersFolder}${publisher.name}/`, publisher.name)
-            )
-          ),
-          continueReading: this.userState.readContinueReading(),
-          bookmarks: this.userState.readBookmarks(),
-        }).subscribe({
-          next: ({ comicGroups, continueReading, bookmarks }) => {
-            const markedComics = this.decorateComics(comicGroups, continueReading, bookmarks);
-            const specialSections = [
-              this.createSpecialSection('Continue reading', 'continue-reading', markedComics.continueReading),
-              this.createSpecialSection('Bookmarks', 'bookmarks', markedComics.bookmarks),
-            ].filter((section): section is PublisherSection => section !== undefined);
-            this.sections.set([
-              ...specialSections,
-              ...publishers
-                .map((publisher, index) => this.createSection(publisher, markedComics.allByPublisher[index]))
-                .filter((section): section is PublisherSection => section !== undefined),
-            ]);
-            this.initializeSwiperNavigation(this.sections());
-            this.isLoading.set(false);
-            queueMicrotask(() => this.refreshSwiperNavigation());
-          },
-          error: () => {
-            this.sections.set([]);
-            this.isLoading.set(false);
-          },
-        });
+        const comicGroups = publishers.map((publisher) => comics.filter((comic) => comic.publisher === publisher.name));
+        this.updateSections(publishers, comicGroups, continueReading, bookmarks);
+        this.isLoading.set(false);
       },
       error: () => {
         this.sections.set([]);
         this.isLoading.set(false);
       },
     });
+  }
+
+  private updateSections(
+    publishers: PublisherResolved[],
+    comicGroups: ComicResolved[][],
+    continueReading: Array<{ id: number; pageIndex: number; totalPages: number }>,
+    bookmarks: Array<{ comicId: number }>
+  ): void {
+    const markedComics = this.decorateComics(comicGroups, continueReading, bookmarks);
+    const specialSections = [
+      this.createSpecialSection('Continue reading', 'continue-reading', markedComics.continueReading),
+      this.createSpecialSection('Bookmarks', 'bookmarks', markedComics.bookmarks),
+    ].filter((section): section is PublisherSection => section !== undefined);
+    this.sections.set([
+      ...specialSections,
+      ...publishers
+        .map((publisher, index) => this.createSection(publisher, markedComics.allByPublisher[index]))
+        .filter((section): section is PublisherSection => section !== undefined),
+    ]);
+    this.initializeSwiperNavigation(this.sections());
+    queueMicrotask(() => this.refreshSwiperNavigation());
   }
 
   submitSearch(): void {

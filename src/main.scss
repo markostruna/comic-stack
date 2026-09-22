@@ -10,7 +10,31 @@
 @use "theme/theme-variables" as *;
 
 // 3rd party libraries
-@use "material-design-icons-iconfont/dist/material-design-icons.css";
+@font-face {
+  font-family: "Material Icons";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("material-design-icons-iconfont/dist/fonts/MaterialIcons-Regular.woff2") format("woff2");
+}
+
+.material-icons,
+.mat-icon {
+  font-family: "Material Icons", sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizelegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "liga";
+}
 
 // Include the common styles for Angular Material. We include this here so you
 // have to load a single css file for Angular Material in your app.

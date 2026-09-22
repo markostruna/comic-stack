@@ -16,6 +16,7 @@ import { ComicDetailsDialogComponent } from '../tools/comic-details-dialog.compo
 export class ComicCardComponent {
   readonly comic = input.required<ComicResolved>();
   readonly displayPublisher = input(false);
+  readonly priority = input(false);
   readonly isInfoVisible = signal(false);
 
   private readonly router = inject(Router);

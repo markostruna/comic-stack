@@ -5,7 +5,10 @@
       [src]="comic().thumbnailPath"
       [alt]="comic().titlesResolved || comic().filename"
       [attr.title]="comic().path"
-      loading="lazy"
+      width="150"
+      height="230"
+      [attr.loading]="priority() ? 'eager' : 'lazy'"
+      [attr.fetchpriority]="priority() ? 'high' : 'auto'"
     />
     @if (displayPublisher()) {
     <div class="comic-publisher">{{ comic().publisher }}</div>
