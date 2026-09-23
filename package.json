@@ -105,12 +105,6 @@
     "mermaid": {
       "dompurify": "^3.4.15",
       "uuid": "^14.0.2"
-    },
-    "angular-cli-ghpages": {
-      "@angular-devkit/core": {
-        "ajv": "^8.18.0",
-        "picomatch": "^4.0.4"
-      }
     }
   },
   "allowScripts": {

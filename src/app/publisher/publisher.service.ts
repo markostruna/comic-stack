@@ -187,8 +187,8 @@ export class PublisherService {
   resolveComic(comic: Comic, parentPath: string): ComicResolved {
     const resolved: ComicResolved = {
       ...comic,
-      thumbnailPath: environment.serverUrl + parentPath + 'Thumbnails/' + comic.originalFilename + '.jpg',
-      coverPath: environment.serverUrl + parentPath + 'Covers/' + comic.originalFilename + '.jpg',
+      thumbnailPath: environment.serverUrl + parentPath + 'Thumbnails/' + comic.originalFilename + '.webp',
+      coverPath: environment.serverUrl + parentPath + 'Covers/' + comic.originalFilename + '.webp',
       currentBackgroundImage: 'assets/preset-light.png',
       backgroundImageUrl: 'url("assets/preset-light.png")',
       class: 'thumb' + (comic.missing ? ' missing' : ''),

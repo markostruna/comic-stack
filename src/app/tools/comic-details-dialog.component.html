@@ -1,13 +1,21 @@
-<h2 mat-dialog-title>{{ 'Comic details' | translate }}</h2>
+<h2 mat-dialog-title class="dialog-title">
+  <span>{{ 'Comic details' | translate }}</span>
+  <span class="availability-value" [class.missing-value]="comic.comicMissing === true">
+    <span class="availability-dot"></span>
+    {{ comic.comicMissing === true ? ('Missing' | translate) : ('Available' | translate) }}
+  </span>
+</h2>
 <div mat-dialog-content class="dialog-content">
   <div class="dialog-layout">
     <div class="thumbnail-panel">
-      <span class="section-label">{{ 'Thumbnail' | translate }}</span>
-      <img [src]="comic.thumbnailPath" [alt]="comic.titlesResolved || comic.filename" />
-      <span class="availability-value" [class.missing-value]="comic.comicMissing">
-        <span class="availability-dot"></span>
-        {{ comic.comicMissing ? ('Missing' | translate) : ('Available' | translate) }}
-      </span>
+      <img
+        [src]="comic.coverPath"
+        (error)="
+          $any($event.target).src.endsWith('.webp') &&
+            ($any($event.target).src = comic.coverPath.replace('.webp', '.jpg'))
+        "
+        [alt]="comic.titlesResolved || comic.filename"
+      />
     </div>
 
     <div class="fields primary-fields">

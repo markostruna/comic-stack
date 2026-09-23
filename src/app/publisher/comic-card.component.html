@@ -3,6 +3,10 @@
     <img
       [class.missing]="comic().missing"
       [src]="comic().thumbnailPath"
+      (error)="
+        $any($event.target).src.endsWith('.webp') &&
+          ($any($event.target).src = comic().thumbnailPath.replace('.webp', '.jpg'))
+      "
       [alt]="comic().titlesResolved || comic().filename"
       [attr.title]="comic().path"
       width="150"

@@ -53,7 +53,7 @@ Implemented:
 - Continue reading
 - Indexed ZIP/CBZ page listing and image streaming
 - RAR/CBR page listing and image streaming through 7-Zip
-- Publisher thumbnail files from `thumbnails/<archive-name>.jpg`
+- Publisher thumbnail files from `thumbnails/<archive-name>.webp` or the existing `.jpg` equivalent; WebP is preferred when both exist
 - Filename metadata parsing for number, sequence number, heroes, collection, and title
 - Library scanning reads only files directly inside each publisher folder; nested folders such as `covers`, `covers-original`, `missing`, `missing-original`, and `thumbnails` are ignored
 

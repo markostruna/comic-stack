@@ -333,7 +333,7 @@ namespace api_dotnet.Controllers
             var thumbnailPath = FindArtworkPath(comics[0], "thumbnails");
             if (thumbnailPath == null) return NotFound(new { error = "Thumbnail not found" });
 
-            return PhysicalFile(thumbnailPath, "image/jpeg");
+            return PhysicalFile(thumbnailPath, ArtworkContentType(thumbnailPath));
         }
 
         [AllowAnonymous]
@@ -355,7 +355,7 @@ namespace api_dotnet.Controllers
             var folder = kind.Equals("cover", StringComparison.OrdinalIgnoreCase) ? "covers" : "thumbnails";
             var artworkPath = FindArtworkPath(comic, folder);
             if (artworkPath == null) return NotFound(new { error = "Artwork not found" });
-            return PhysicalFile(artworkPath, "image/jpeg");
+            return PhysicalFile(artworkPath, ArtworkContentType(artworkPath));
         }
 
         [AllowAnonymous]
@@ -367,7 +367,7 @@ namespace api_dotnet.Controllers
 
             var coverPath = FindArtworkPath(comics[0], "covers");
             if (coverPath == null) return NotFound(new { error = "Cover not found" });
-            return PhysicalFile(coverPath, "image/jpeg");
+            return PhysicalFile(coverPath, ArtworkContentType(coverPath));
         }
 
         private long UserId() => long.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -433,14 +433,26 @@ namespace api_dotnet.Controllers
 
             var names = new[]
             {
+                originalFilename + ".webp",
+                Path.GetFileNameWithoutExtension(originalFilename) + ".webp",
                 originalFilename + ".jpg",
                 Path.GetFileNameWithoutExtension(originalFilename) + ".jpg",
             };
-            var artworkFiles = Directory.EnumerateFiles(artworkFolder, "*.jpg")
+            var artworkFiles = Directory.EnumerateFiles(artworkFolder)
+                .Where(path => string.Equals(Path.GetExtension(path), ".webp", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(Path.GetExtension(path), ".jpg", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(Path.GetExtension(path), ".jpeg", StringComparison.OrdinalIgnoreCase))
                 .ToDictionary(Path.GetFileName, StringComparer.OrdinalIgnoreCase);
             return names
                 .Select(name => artworkFiles.TryGetValue(name, out var path) ? path : null)
                 .FirstOrDefault(path => path != null);
+        }
+
+        private static string ArtworkContentType(string path)
+        {
+            return string.Equals(Path.GetExtension(path), ".webp", StringComparison.OrdinalIgnoreCase)
+                ? "image/webp"
+                : "image/jpeg";
         }
 
         private async Task ScanAsync(long scanRunId)
