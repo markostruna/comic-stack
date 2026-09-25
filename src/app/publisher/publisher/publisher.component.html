@@ -21,7 +21,8 @@
   <div class="portal-state">{{ 'No stored catalog' | translate }}</div>
   } @else {
   <div class="publisher-sections">
-    @for (section of sections(); track trackByPublisher($index, section); let sectionIndex = $index) {
+    @for (section of sections(); track trackByPublisher($index, section); let sectionIndex = $index) { @defer (on
+    viewport(sectionPlaceholder)) {
     <section class="publisher-section" [attr.aria-labelledby]="'publisher-' + $index">
       <div class="section-heading">
         <h2 [id]="'publisher-' + $index">{{ section.name }}</h2>
@@ -58,6 +59,7 @@
         class="comic-swiper"
         slides-per-view="2.2"
         space-between="12"
+        [modules]="swiperModules"
         keyboard="true"
         grab-cursor="true"
         [grid]="{ rows: section.rows, fill: 'row' }"
@@ -72,7 +74,19 @@
         }
       </swiper-container>
     </section>
-    }
+    } @placeholder {
+    <section
+      #sectionPlaceholder
+      class="publisher-section publisher-section-placeholder"
+      [attr.aria-labelledby]="'publisher-' + $index"
+    >
+      <div class="section-heading">
+        <h2 [id]="'publisher-' + $index">{{ section.name }}</h2>
+        <span class="section-controls-placeholder" aria-hidden="true"></span>
+      </div>
+      <div class="publisher-section-placeholder-track" [style.height.px]="section.rows * 310"></div>
+    </section>
+    } }
   </div>
   }
 </div>

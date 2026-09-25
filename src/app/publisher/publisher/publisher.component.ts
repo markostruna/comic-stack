@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 import { ComicResolved, PublisherResolved } from '@app/@shared/models';
 import { UserStateService } from '@app/@shared/user-state.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { Grid, Keyboard } from 'swiper/modules';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ComicCardComponent } from '../comic-card.component';
@@ -53,6 +54,7 @@ export class PublisherComponent implements OnInit, AfterViewInit {
   readonly swiperNavigation = signal<Record<string, SwiperNavigationState>>({});
   readonly isLoading = signal(true);
   readonly search = new FormControl('', { nonNullable: true });
+  readonly swiperModules = [Grid, Keyboard];
 
   @ViewChildren('sectionSwiper', { read: ElementRef })
   private readonly swiperElements!: QueryList<ElementRef<HTMLElement & { swiper?: unknown }>>;
@@ -64,7 +66,6 @@ export class PublisherComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.swiperElements.changes.subscribe(() => this.refreshSwiperNavigation());
     this.refreshSwiperNavigation();
-    setTimeout(() => this.refreshSwiperNavigation());
   }
 
   loadData() {
@@ -119,7 +120,6 @@ export class PublisherComponent implements OnInit, AfterViewInit {
         .filter((section): section is PublisherSection => section !== undefined),
     ]);
     this.initializeSwiperNavigation(this.sections());
-    queueMicrotask(() => this.refreshSwiperNavigation());
   }
 
   submitSearch(): void {
@@ -252,8 +252,6 @@ export class PublisherComponent implements OnInit, AfterViewInit {
     this.swiperElements?.forEach((element, index) => {
       const section = this.sections()[index];
       if (section) {
-        const swiper = element.nativeElement.swiper as { update?: () => void } | undefined;
-        swiper?.update?.();
         this.updateSwiperNavigation(section.path, element.nativeElement);
       }
     });

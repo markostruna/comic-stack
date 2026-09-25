@@ -15,7 +15,7 @@ import { apiPrefixInterceptor, authInterceptor, errorHandlerInterceptor } from '
 import { AppComponent } from '@app/app.component';
 import { routes } from '@app/app-routing.module';
 import { environment } from '@env/environment';
-import { register } from 'swiper/element/bundle';
+import { register } from 'swiper/element';
 
 register();
 
