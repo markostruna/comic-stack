@@ -320,6 +320,7 @@ namespace api_dotnet.Controllers
             }
 
             var provider = new FileExtensionContentTypeProvider();
+            Response.Headers.CacheControl = "public, max-age=2592000";
             return File(content, provider.TryGetContentType(entryName, out var contentType) ? contentType : "application/octet-stream");
         }
 
@@ -333,6 +334,7 @@ namespace api_dotnet.Controllers
             var thumbnailPath = FindArtworkPath(comics[0], "thumbnails");
             if (thumbnailPath == null) return NotFound(new { error = "Thumbnail not found" });
 
+            Response.Headers.CacheControl = "public, max-age=2592000";
             return PhysicalFile(thumbnailPath, ArtworkContentType(thumbnailPath));
         }
 
@@ -355,6 +357,7 @@ namespace api_dotnet.Controllers
             var folder = kind.Equals("cover", StringComparison.OrdinalIgnoreCase) ? "covers" : "thumbnails";
             var artworkPath = FindArtworkPath(comic, folder);
             if (artworkPath == null) return NotFound(new { error = "Artwork not found" });
+            Response.Headers.CacheControl = "public, max-age=2592000";
             return PhysicalFile(artworkPath, ArtworkContentType(artworkPath));
         }
 
@@ -367,6 +370,7 @@ namespace api_dotnet.Controllers
 
             var coverPath = FindArtworkPath(comics[0], "covers");
             if (coverPath == null) return NotFound(new { error = "Cover not found" });
+            Response.Headers.CacheControl = "public, max-age=2592000";
             return PhysicalFile(coverPath, ArtworkContentType(coverPath));
         }
 

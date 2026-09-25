@@ -714,7 +714,10 @@ export class ReaderComponent implements AfterViewInit, OnInit, OnDestroy {
         pending.push(
           this.loadImage(pageUrl).then((image) => {
             if (token !== this.refreshToken) return;
-            const processedUrl = this.preparePageImage(image);
+            const processedUrl =
+              Math.max(image.naturalWidth, image.naturalHeight) <= this.maxProcessedImageDimension
+                ? pageUrl
+                : this.preparePageImage(image);
             this.processedDisplayPageUrls.set(pageIndex, processedUrl);
             this.pageFlipUrls[pageIndex] = processedUrl;
             updated = true;

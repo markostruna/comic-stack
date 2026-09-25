@@ -81,7 +81,16 @@ export class PublisherComponent implements OnInit, AfterViewInit {
           return;
         }
 
-        const comicGroups = publishers.map((publisher) => comics.filter((comic) => comic.publisher === publisher.name));
+        const comicsByPublisher = new Map<string, ComicResolved[]>();
+        for (const comic of comics) {
+          const group = comicsByPublisher.get(comic.publisher);
+          if (group) {
+            group.push(comic);
+          } else {
+            comicsByPublisher.set(comic.publisher, [comic]);
+          }
+        }
+        const comicGroups = publishers.map((publisher) => comicsByPublisher.get(publisher.name) ?? []);
         this.updateSections(publishers, comicGroups, continueReading, bookmarks);
         this.isLoading.set(false);
       },
@@ -194,11 +203,10 @@ export class PublisherComponent implements OnInit, AfterViewInit {
         bookmarked: id !== undefined && bookmarkedIds.has(id),
       };
     });
+    const decoratedByComic = new Map(comics.map((comic, index) => [comic, decorated[index]]));
 
     return {
-      allByPublisher: comicGroups.map((group) =>
-        group.map((groupComic) => decorated.find((comic) => comic.path === groupComic.path)!)
-      ),
+      allByPublisher: comicGroups.map((group) => group.map((comic) => decoratedByComic.get(comic)!)),
       continueReading: decorated.filter((comic) => comic.readingProgress !== undefined),
       bookmarks: decorated.filter((comic) => comic.bookmarked === true),
     };
