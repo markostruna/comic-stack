@@ -38,7 +38,7 @@
           mat-icon-button
           type="button"
           (click)="previousPage()"
-          [disabled]="!canGoPrevious() || isLoading()"
+          [disabled]="!canGoPrevious() || isLoading() || isPreparingNavigation()"
           aria-label="Previous page"
         >
           <mat-icon>arrow_back</mat-icon>
@@ -47,7 +47,7 @@
           mat-icon-button
           type="button"
           (click)="nextPage()"
-          [disabled]="!canGoNext() || isLoading()"
+          [disabled]="!canGoNext() || isLoading() || isPreparingNavigation()"
           aria-label="Next page"
         >
           <mat-icon>arrow_forward</mat-icon>
@@ -108,7 +108,7 @@
       type="button"
       class="edge-navigation previous-navigation"
       (click)="previousPage()"
-      [disabled]="!canGoPrevious() || isLoading()"
+      [disabled]="!canGoPrevious() || isLoading() || isPreparingNavigation()"
       aria-label="Previous page"
     >
       <mat-icon>arrow_back</mat-icon>
@@ -131,7 +131,7 @@
       type="button"
       class="edge-navigation next-navigation"
       (click)="nextPage()"
-      [disabled]="!canGoNext() || isLoading()"
+      [disabled]="!canGoNext() || isLoading() || isPreparingNavigation()"
       aria-label="Next page"
     >
       <mat-icon>arrow_forward</mat-icon>

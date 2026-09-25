@@ -239,3 +239,15 @@
     padding: 0;
   }
 }
+
+.shell-main.reader-shell {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+}
+
+.shell-main.reader-shell .shell-content {
+  height: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
