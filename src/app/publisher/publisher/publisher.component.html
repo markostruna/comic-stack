@@ -21,72 +21,87 @@
   <div class="portal-state">{{ 'No stored catalog' | translate }}</div>
   } @else {
   <div class="publisher-sections">
-    @for (section of sections(); track trackByPublisher($index, section); let sectionIndex = $index) { @defer (on
-    viewport(sectionPlaceholder)) {
-    <section class="publisher-section" [attr.aria-labelledby]="'publisher-' + $index">
-      <div class="section-heading">
-        <h2 [id]="'publisher-' + $index">{{ section.name }}</h2>
-        <div class="section-actions">
-          @if (section.path !== 'continue-reading' && section.path !== 'bookmarks') {
-          <button mat-button type="button" class="see-all-link" (click)="searchPublisher(section.name)">
-            {{ 'See all' | translate }} ({{ section.total }})
-          </button>
-          }
-          <button
-            mat-icon-button
-            type="button"
-            class="swiper-control"
-            [disabled]="swiperNavigation()[section.path]?.isBeginning"
-            [attr.aria-label]="'Previous comics' | translate"
-            (click)="slidePrevious(section.path, sectionSwiper)"
-          >
-            <mat-icon>chevron_left</mat-icon>
-          </button>
-          <button
-            mat-icon-button
-            type="button"
-            class="swiper-control"
-            [disabled]="swiperNavigation()[section.path]?.isEnd"
-            [attr.aria-label]="'Next comics' | translate"
-            (click)="slideNext(section.path, sectionSwiper)"
-          >
-            <mat-icon>chevron_right</mat-icon>
-          </button>
+    <ng-template #publisherSectionTemplate let-section let-sectionIndex="sectionIndex">
+      <section class="publisher-section" [attr.aria-labelledby]="'publisher-' + sectionIndex">
+        <div class="section-heading">
+          <h2 [id]="'publisher-' + sectionIndex">{{ section.name }}</h2>
+          <div class="section-actions">
+            @if (section.path !== 'continue-reading' && section.path !== 'bookmarks') {
+            <button mat-button type="button" class="see-all-link" (click)="searchPublisher(section.name)">
+              {{ 'See all' | translate }} ({{ section.total }})
+            </button>
+            }
+            <button
+              mat-icon-button
+              type="button"
+              class="swiper-control"
+              [disabled]="swiperNavigation()[section.path]?.isBeginning"
+              [attr.aria-label]="'Previous comics' | translate"
+              (click)="slidePrevious(section.path, sectionSwiper)"
+            >
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              type="button"
+              class="swiper-control"
+              [disabled]="swiperNavigation()[section.path]?.isEnd"
+              [attr.aria-label]="'Next comics' | translate"
+              (click)="slideNext(section.path, sectionSwiper)"
+            >
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
         </div>
-      </div>
-      <swiper-container
-        #sectionSwiper
-        class="comic-swiper"
-        slides-per-view="2.2"
-        space-between="12"
-        [modules]="swiperModules"
-        keyboard="true"
-        grab-cursor="true"
-        [grid]="{ rows: section.rows, fill: 'row' }"
-        (swiperinit)="onSwiperStateChange(section.path, $event)"
-        (swiperslidechange)="onSwiperStateChange(section.path, $event)"
-        breakpoints='{"600":{"slidesPerView":3.5},"900":{"slidesPerView":5.5},"1200":{"slidesPerView":7.5}}'
-      >
-        @for (comic of section.comics; track trackByComic($index, comic); let comicIndex = $index) {
-        <swiper-slide>
-          <app-comic-card [comic]="comic" [priority]="sectionIndex === 0 && comicIndex === 0"></app-comic-card>
-        </swiper-slide>
-        }
-      </swiper-container>
-    </section>
+        <swiper-container
+          #sectionSwiper
+          class="comic-swiper"
+          [init]="false"
+          slides-per-view="2.2"
+          space-between="12"
+          [modules]="swiperModules"
+          keyboard="true"
+          grab-cursor="true"
+          [grid]="{ rows: section.rows, fill: 'row' }"
+          (swiperinit)="onSwiperStateChange(section.path, $event)"
+          (swiperslidechange)="onSwiperStateChange(section.path, $event)"
+          breakpoints='{"600":{"slidesPerView":3.5},"900":{"slidesPerView":5.5},"1200":{"slidesPerView":7.5}}'
+        >
+          @for (comic of section.comics; track trackByComic($index, comic); let comicIndex = $index) {
+          <swiper-slide>
+            <app-comic-card
+              [comic]="comic"
+              [priority]="isInitialViewportComic(sectionIndex, comicIndex, section.rows)"
+            ></app-comic-card>
+          </swiper-slide>
+          }
+        </swiper-container>
+      </section>
+    </ng-template>
+    @for (section of sections(); track trackByPublisher($index, section); let sectionIndex = $index) { @if (sectionIndex
+    === 0) {
+    <ng-container
+      [ngTemplateOutlet]="publisherSectionTemplate"
+      [ngTemplateOutletContext]="{ $implicit: section, sectionIndex: sectionIndex }"
+    ></ng-container>
+    } @else { @defer (on viewport(sectionPlaceholder)) {
+    <ng-container
+      [ngTemplateOutlet]="publisherSectionTemplate"
+      [ngTemplateOutletContext]="{ $implicit: section, sectionIndex: sectionIndex }"
+    ></ng-container>
     } @placeholder {
     <section
       #sectionPlaceholder
       class="publisher-section publisher-section-placeholder"
-      [attr.aria-labelledby]="'publisher-' + $index"
+      [attr.aria-labelledby]="'publisher-' + sectionIndex"
     >
       <div class="section-heading">
-        <h2 [id]="'publisher-' + $index">{{ section.name }}</h2>
+        <h2 [id]="'publisher-' + sectionIndex">{{ section.name }}</h2>
         <span class="section-controls-placeholder" aria-hidden="true"></span>
       </div>
       <div class="publisher-section-placeholder-track" [style.height.px]="section.rows * 310"></div>
     </section>
-    } }
+    } } }
   </div>
   }
 </div>

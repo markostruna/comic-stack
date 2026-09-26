@@ -44,6 +44,19 @@ describe('PublisherComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should prioritize the initially visible comics in the first section', () => {
+    const viewportWidth = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1280 });
+
+    try {
+      expect(component.isInitialViewportComic(0, 7, 1)).toBe(true);
+      expect(component.isInitialViewportComic(0, 8, 1)).toBe(false);
+      expect(component.isInitialViewportComic(1, 0, 1)).toBe(false);
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: viewportWidth });
+    }
+  });
+
   it('should update navigation state without recursively updating Swiper', () => {
     const update = vi.fn();
     const swiper = { isBeginning: false, isEnd: true, slides: [{}, {}], update };

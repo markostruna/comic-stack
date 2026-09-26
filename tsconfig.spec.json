@@ -12,6 +12,6 @@
     "types": ["node"]
   },
   "exclude": [],
-  "files": ["src/test.ts", "src/polyfills.ts", "src/vitest-globals.d.ts"],
+  "files": ["src/test.ts", "src/vitest-globals.d.ts"],
   "include": ["src/**/*.spec.ts", "src/**/*.mock.ts", "src/**/*.d.ts"]
 }

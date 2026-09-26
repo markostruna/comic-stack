@@ -1,11 +1,11 @@
 # Comic Stack ASP.NET Core API
 
-This is the ASP.NET Core replacement for the PHP API. It preserves the Angular client's `/api/` route contract.
+This is the ASP.NET Core API. It preserves the Angular client's `/api/` route contract.
 
 ## Requirements
 
 - .NET 10 SDK
-- MariaDB/MySQL with the Comic Stack schema from `../api/db/`
+- MariaDB/MySQL with the Comic Stack schema from `../database/`
 - The `comic_stack` database configured in `appsettings.Local.json`
 
 The project targets `net10.0`.
@@ -59,7 +59,7 @@ Implemented:
 
 ## Filename metadata migration
 
-For an existing database, run `../api/db/006_filename_metadata.sql` in phpMyAdmin before starting a new scan. The scanner then applies the same ordered filename patterns as the legacy PHP `FilenameParser`, including multiple heroes and combined titles.
+For an existing database, run `../database/006_filename_metadata.sql` in phpMyAdmin before starting a new scan. The scanner applies the ordered filename patterns, including multiple heroes and combined titles.
 
 Still to migrate:
 
@@ -67,4 +67,4 @@ Still to migrate:
 - Page image processing and filesystem cache
 - Cover image processing and filesystem cache
 
-The original PHP API remains in `../api/` until those remaining capabilities are migrated and runtime-tested.
+The legacy PHP API has been removed. Database schema and migrations remain in `../database/` for the .NET API.

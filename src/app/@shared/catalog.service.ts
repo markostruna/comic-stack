@@ -22,6 +22,12 @@ export class CatalogService {
       .pipe(map((response) => (Array.isArray(response) ? response : response.items)));
   }
 
+  readPublisherPreviewComics(): Observable<ComicResolved[]> {
+    return this.http
+      .get<{ items: ComicResolved[] }>(`${environment.apiUrl}comics/publisher-preview`)
+      .pipe(map((response) => response.items));
+  }
+
   searchComics(filters: object): Observable<ComicResolved[]> {
     let params = new HttpParams().set('pageSize', '10000');
     Object.entries(filters).forEach(([key, value]) => {

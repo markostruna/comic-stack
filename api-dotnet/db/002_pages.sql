@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS comic_page (
+  comic_id BIGINT UNSIGNED NOT NULL,
+  idx INT UNSIGNED NOT NULL,
+  entry_raw VARBINARY(1024) NOT NULL,
+  entry_name VARCHAR(512) NOT NULL,
+  width INT NULL,
+  height INT NULL,
+  uncompressed_size BIGINT UNSIGNED NULL,
+  is_spread BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (comic_id, idx),
+  CONSTRAINT comic_page_comic_fk FOREIGN KEY (comic_id) REFERENCES comic(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

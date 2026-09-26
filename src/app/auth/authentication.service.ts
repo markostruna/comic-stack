@@ -12,7 +12,7 @@ export interface LoginContext {
 }
 
 /**
- * Handles access and refresh tokens issued by the PHP API.
+ * Handles access and refresh tokens issued by the API.
  */
 @Injectable({
   providedIn: 'root',

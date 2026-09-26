@@ -24,7 +24,7 @@
               "base": "dist"
             },
             "index": "src/index.html",
-            "polyfills": ["src/polyfills.ts", "@angular/localize/init"],
+            "polyfills": ["@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [

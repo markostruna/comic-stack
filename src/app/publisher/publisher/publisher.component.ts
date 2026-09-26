@@ -10,6 +10,7 @@ import {
   signal,
   ViewChildren,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -41,7 +42,15 @@ interface SwiperNavigationState {
   templateUrl: './publisher.component.html',
   styleUrls: ['./publisher.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MatIcon, MatButton, MatIconButton, TranslateModule, ComicCardComponent],
+  imports: [
+    NgTemplateOutlet,
+    ReactiveFormsModule,
+    MatIcon,
+    MatButton,
+    MatIconButton,
+    TranslateModule,
+    ComicCardComponent,
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class PublisherComponent implements OnInit, AfterViewInit {
@@ -64,14 +73,18 @@ export class PublisherComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.swiperElements.changes.subscribe(() => this.refreshSwiperNavigation());
+    this.swiperElements.changes.subscribe(() => {
+      this.initializeSwipers();
+      this.refreshSwiperNavigation();
+    });
+    this.initializeSwipers();
     this.refreshSwiperNavigation();
   }
 
   loadData() {
     forkJoin({
       publishers: this.publisherService.getPublishers(this.publishersFolder),
-      comics: this.publisherService.getAllComics(),
+      comics: this.publisherService.getPublisherPreviewComics(),
       continueReading: this.userState.readContinueReading().pipe(catchError(() => of([]))),
       bookmarks: this.userState.readBookmarks().pipe(catchError(() => of([]))),
     }).subscribe({
@@ -137,6 +150,16 @@ export class PublisherComponent implements OnInit, AfterViewInit {
 
   trackByComic(_index: number, item: ComicResolved): string {
     return item.path;
+  }
+
+  isInitialViewportComic(sectionIndex: number, comicIndex: number, rows: number): boolean {
+    if (sectionIndex !== 0) {
+      return false;
+    }
+
+    const viewportWidth = window.innerWidth;
+    const slidesPerView = viewportWidth >= 1200 ? 7.5 : viewportWidth >= 900 ? 5.5 : viewportWidth >= 600 ? 3.5 : 2.2;
+    return comicIndex < Math.ceil(slidesPerView) * rows;
   }
 
   slidePrevious(sectionPath: string, swiper: HTMLElement): void {
@@ -254,6 +277,20 @@ export class PublisherComponent implements OnInit, AfterViewInit {
       if (section) {
         this.updateSwiperNavigation(section.path, element.nativeElement);
       }
+    });
+  }
+
+  private initializeSwipers(): void {
+    requestAnimationFrame(() => {
+      this.swiperElements?.forEach((element) => {
+        const swiperElement = element.nativeElement as HTMLElement & {
+          initialize?: () => void;
+          swiper?: unknown;
+        };
+        if (!swiperElement.swiper) {
+          swiperElement.initialize?.();
+        }
+      });
     });
   }
 }

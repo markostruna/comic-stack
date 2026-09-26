@@ -138,6 +138,13 @@ namespace api_dotnet.Controllers
             return Ok(rows.Select(ComicDto));
         }
 
+        [HttpGet("comics/publisher-preview")]
+        public async Task<IActionResult> PublisherPreviewComics()
+        {
+            var items = await Query("WITH ranked_comics AS (SELECT c.*, p.name AS publisher, p.sort_order AS publisher_sort_order, ROW_NUMBER() OVER (PARTITION BY c.publisher_id ORDER BY c.original_filename, c.id) AS publisher_rank, COUNT(*) OVER (PARTITION BY c.publisher_id) AS available_count FROM comic c JOIN publisher p ON p.id = c.publisher_id WHERE c.is_available = 1) SELECT * FROM ranked_comics WHERE available_count > 3 AND publisher_rank <= 20 ORDER BY publisher_sort_order, publisher, original_filename");
+            return Ok(new { items = items.Select(ComicDto), total = items.Count, page = 1, pageSize = items.Count });
+        }
+
         [HttpGet("comics")]
         public async Task<IActionResult> Comics([FromQuery] ComicFilter filter)
         {

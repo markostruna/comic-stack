@@ -29,7 +29,7 @@ The active development backend is in `api-dotnet/`. It targets .NET 10 and prese
 dotnet run --project api-dotnet/api-dotnet.csproj --urls http://localhost:5000
 ```
 
-The Angular development proxy forwards `/api` to this server. The original PHP backend remains in `api/` as a migration reference while RAR/CBR extraction, page caching, thumbnails, and the remaining scanner behavior are ported.
+The Angular development proxy forwards `/api` to this server. Database schema and migration scripts are in `database/`.
 
 # Project structure
 
