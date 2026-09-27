@@ -44,13 +44,14 @@ export class SearchComponent implements OnInit {
   private readonly userState = inject(UserStateService);
 
   readonly options = signal<ComicSearchOptions>({ heroes: [], publishers: [], collections: [] });
-  readonly results = signal<ComicSearchFilters & { comics: ComicResolved[] }>({
+  readonly results = signal<ComicSearchFilters & { comics: ComicResolved[]; total: number }>({
     title: '',
     hero: 'All',
     publisher: 'All',
     collection: 'All',
     availability: 'All',
     comics: [],
+    total: 0,
   });
   readonly isLoading = signal(true);
   readonly pageIndex = signal(0);
@@ -64,10 +65,6 @@ export class SearchComponent implements OnInit {
   readonly filteredCollections = computed(() =>
     this.filterOptions(this.options().collections, this.collectionFilter())
   );
-  readonly pagedComics = computed(() => {
-    const start = this.pageIndex() * this.pageSize;
-    return this.results().comics.slice(start, start + this.pageSize);
-  });
   readonly form = new FormGroup({
     title: new FormControl('', { nonNullable: true }),
     hero: new FormControl('All', { nonNullable: true }),
@@ -87,18 +84,22 @@ export class SearchComponent implements OnInit {
       this.isLoading.set(true);
       forkJoin({
         options: this.publisherService.getSearchOptionsFromApi(),
-        comics: this.publisherService.searchComics(filters),
+        comics: this.publisherService.searchComics(filters, 1, this.pageSize),
         continueReading: this.userState.readContinueReading(),
         bookmarks: this.userState.readBookmarks(),
       }).subscribe({
         next: ({ options, comics, continueReading, bookmarks }) => {
           this.options.set(options);
-          this.results.set({ ...filters, comics: this.decorateComics(comics, continueReading, bookmarks) });
+          this.results.set({
+            ...filters,
+            comics: this.decorateComics(comics.items, continueReading, bookmarks),
+            total: comics.total,
+          });
           this.pageIndex.set(0);
           this.isLoading.set(false);
         },
         error: () => {
-          this.results.set({ ...filters, comics: [] });
+          this.results.set({ ...filters, comics: [], total: 0 });
           this.pageIndex.set(0);
           this.isLoading.set(false);
         },
@@ -118,6 +119,26 @@ export class SearchComponent implements OnInit {
 
   onPageChange(event: PageEvent): void {
     this.pageIndex.set(event.pageIndex);
+    const filters = this.form.getRawValue();
+    this.isLoading.set(true);
+    forkJoin({
+      comics: this.publisherService.searchComics(filters, event.pageIndex + 1, this.pageSize),
+      continueReading: this.userState.readContinueReading(),
+      bookmarks: this.userState.readBookmarks(),
+    }).subscribe({
+      next: ({ comics, continueReading, bookmarks }) => {
+        this.results.set({
+          ...filters,
+          comics: this.decorateComics(comics.items, continueReading, bookmarks),
+          total: comics.total,
+        });
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.results.set({ ...filters, comics: [], total: 0 });
+        this.isLoading.set(false);
+      },
+    });
   }
 
   searchComics(): void {

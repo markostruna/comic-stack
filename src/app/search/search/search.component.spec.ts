@@ -12,8 +12,26 @@ import { SearchComponent } from './search.component';
 describe('SearchComponent', () => {
   let component: SearchComponent;
   let fixture: ComponentFixture<SearchComponent>;
+  const searchComics = vi.fn();
+  const navigate = vi.fn();
 
   beforeEach(async () => {
+    searchComics.mockReset();
+    navigate.mockReset();
+    searchComics.mockReturnValue(
+      of({
+        items: [
+          {
+            id: 7,
+            path: 'comic.cbz',
+            titles: ['Comic'],
+            titlesResolved: 'Comic',
+          },
+        ],
+        total: 1,
+      })
+    );
+
     await TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), SearchComponent],
       providers: [
@@ -23,7 +41,7 @@ describe('SearchComponent', () => {
         },
         {
           provide: Router,
-          useValue: { navigate: vi.fn() },
+          useValue: { navigate },
         },
         {
           provide: PublisherService,
@@ -31,15 +49,7 @@ describe('SearchComponent', () => {
             getAllComics: () => of([]),
             getSearchOptions: () => ({ heroes: [], publishers: [], collections: [] }),
             getSearchOptionsFromApi: () => of({ heroes: [], publishers: [], collections: [] }),
-            searchComics: () =>
-              of([
-                {
-                  id: 7,
-                  path: 'comic.cbz',
-                  titles: ['Comic'],
-                  titlesResolved: 'Comic',
-                },
-              ]),
+            searchComics,
             searchComicsFromList: () => [],
           },
         },
@@ -75,5 +85,22 @@ describe('SearchComponent', () => {
       readingProgress: { pageIndex: 12, totalPages: 100 },
       bookmarked: true,
     });
+  });
+
+  it('requests the selected page from the server', () => {
+    component.onPageChange({ pageIndex: 1, previousPageIndex: 0, pageSize: 50, length: 100 });
+
+    expect(searchComics).toHaveBeenLastCalledWith(
+      expect.objectContaining({ title: '', hero: 'All', publisher: 'All' }),
+      2,
+      50
+    );
+  });
+
+  it('submits the selected Options value through the availability query parameter', () => {
+    component.form.patchValue({ availability: 'InProgress' });
+    component.searchComics();
+
+    expect(navigate).toHaveBeenCalledWith(['/search'], { queryParams: { availability: 'InProgress' } });
   });
 });

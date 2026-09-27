@@ -154,6 +154,16 @@ namespace api_dotnet.Controllers
             var parameters = new Dictionary<string, object>();
             if (filter.Availability == "Available") clauses.Add("c.is_available = 1");
             if (filter.Availability == "Missing") clauses.Add("c.is_available = 0");
+            if (filter.Availability == "InProgress")
+            {
+                clauses.Add("EXISTS (SELECT 1 FROM reading_progress rp WHERE rp.comic_id = c.id AND rp.user_id = @userId AND rp.page_index > 0 AND rp.completed = 0)");
+                parameters["@userId"] = UserId();
+            }
+            if (filter.Availability == "Bookmarked")
+            {
+                clauses.Add("EXISTS (SELECT 1 FROM bookmark b WHERE b.comic_id = c.id AND b.user_id = @userId)");
+                parameters["@userId"] = UserId();
+            }
             if (!string.IsNullOrWhiteSpace(filter.Title)) { clauses.Add("c.title_resolved LIKE @title"); parameters["@title"] = "%" + filter.Title + "%"; }
             if (!string.IsNullOrWhiteSpace(filter.Publisher)) { clauses.Add("p.name = @publisher"); parameters["@publisher"] = filter.Publisher.Trim(); }
             if (!string.IsNullOrWhiteSpace(filter.Hero))

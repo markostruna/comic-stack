@@ -5,6 +5,7 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   ElementRef,
   inject,
+  OnDestroy,
   OnInit,
   QueryList,
   signal,
@@ -22,7 +23,7 @@ import { Grid, Keyboard } from 'swiper/modules';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ComicCardComponent } from '../comic-card.component';
-import { PublisherService } from '../publisher.service';
+import { AvailabilityFilter, ComicSearchFilters, PublisherService } from '../publisher.service';
 
 export interface PublisherSection {
   name: string;
@@ -53,7 +54,7 @@ interface SwiperNavigationState {
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class PublisherComponent implements OnInit, AfterViewInit {
+export class PublisherComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly publisherService = inject(PublisherService);
   private readonly userState = inject(UserStateService);
@@ -61,15 +62,30 @@ export class PublisherComponent implements OnInit, AfterViewInit {
   readonly publishersFolder = 'Publishers/';
   readonly sections = signal<PublisherSection[]>([]);
   readonly swiperNavigation = signal<Record<string, SwiperNavigationState>>({});
+  readonly isMobile = signal(false);
   readonly isLoading = signal(true);
   readonly search = new FormControl('', { nonNullable: true });
   readonly swiperModules = [Grid, Keyboard];
+  private initialSlidesPerView = 2.2;
+  private mobileQuery?: MediaQueryList;
+
+  private readonly updateMobileLayout = (event: MediaQueryListEvent): void => {
+    this.isMobile.set(event.matches);
+  };
 
   @ViewChildren('sectionSwiper', { read: ElementRef })
   private readonly swiperElements!: QueryList<ElementRef<HTMLElement & { swiper?: unknown }>>;
 
   ngOnInit(): void {
+    this.initialSlidesPerView = this.getSlidesPerView(window.innerWidth);
+    this.mobileQuery = window.matchMedia?.('(max-width: 599px)');
+    this.isMobile.set(this.mobileQuery?.matches ?? window.innerWidth < 600);
+    this.mobileQuery?.addEventListener('change', this.updateMobileLayout);
     this.loadData();
+  }
+
+  ngOnDestroy(): void {
+    this.mobileQuery?.removeEventListener('change', this.updateMobileLayout);
   }
 
   ngAfterViewInit(): void {
@@ -85,10 +101,12 @@ export class PublisherComponent implements OnInit, AfterViewInit {
     forkJoin({
       publishers: this.publisherService.getPublishers(this.publishersFolder),
       comics: this.publisherService.getPublisherPreviewComics(),
+      continueReadingComics: this.publisherService.searchComics(this.filtersFor('InProgress'), 1, 20),
+      bookmarkedComics: this.publisherService.searchComics(this.filtersFor('Bookmarked'), 1, 20),
       continueReading: this.userState.readContinueReading().pipe(catchError(() => of([]))),
       bookmarks: this.userState.readBookmarks().pipe(catchError(() => of([]))),
     }).subscribe({
-      next: ({ publishers, comics, continueReading, bookmarks }) => {
+      next: ({ publishers, comics, continueReadingComics, bookmarkedComics, continueReading, bookmarks }) => {
         if (publishers.length === 0) {
           this.sections.set([]);
           this.isLoading.set(false);
@@ -105,7 +123,22 @@ export class PublisherComponent implements OnInit, AfterViewInit {
           }
         }
         const comicGroups = publishers.map((publisher) => comicsByPublisher.get(publisher.name) ?? []);
-        this.updateSections(publishers, comicGroups, continueReading, bookmarks);
+        const markedContinueReading = this.decorateComics(
+          [continueReadingComics.items],
+          continueReading,
+          bookmarks
+        ).continueReading;
+        const markedBookmarks = this.decorateComics([bookmarkedComics.items], continueReading, bookmarks).bookmarks;
+        this.updateSections(
+          publishers,
+          comicGroups,
+          continueReading,
+          bookmarks,
+          markedContinueReading,
+          continueReadingComics.total,
+          markedBookmarks,
+          bookmarkedComics.total
+        );
         this.isLoading.set(false);
       },
       error: () => {
@@ -119,12 +152,21 @@ export class PublisherComponent implements OnInit, AfterViewInit {
     publishers: PublisherResolved[],
     comicGroups: ComicResolved[][],
     continueReading: Array<{ id: number; pageIndex: number; totalPages: number }>,
-    bookmarks: Array<{ comicId: number }>
+    bookmarks: Array<{ comicId: number }>,
+    continueReadingComics: ComicResolved[],
+    continueReadingTotal: number,
+    bookmarkedComics: ComicResolved[],
+    bookmarkedTotal: number
   ): void {
     const markedComics = this.decorateComics(comicGroups, continueReading, bookmarks);
     const specialSections = [
-      this.createSpecialSection('Continue reading', 'continue-reading', markedComics.continueReading),
-      this.createSpecialSection('Bookmarks', 'bookmarks', markedComics.bookmarks),
+      this.createSpecialSection('Continue reading', 'continue-reading', continueReadingComics, continueReadingTotal),
+      this.createSpecialSection(
+        'Bookmarks',
+        'bookmarks',
+        bookmarkedComics,
+        bookmarkedTotal
+      ),
     ].filter((section): section is PublisherSection => section !== undefined);
     this.sections.set([
       ...specialSections,
@@ -144,6 +186,15 @@ export class PublisherComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/search'], { queryParams: { publisher } });
   }
 
+  searchSpecialSection(sectionPath: string): void {
+    const availability = sectionPath === 'continue-reading' ? 'InProgress' : 'Bookmarked';
+    this.router.navigate(['/search'], { queryParams: { availability } });
+  }
+
+  private filtersFor(availability: AvailabilityFilter): ComicSearchFilters {
+    return { title: '', hero: 'All', publisher: 'All', collection: 'All', availability };
+  }
+
   trackByPublisher(_index: number, item: PublisherSection): string {
     return item.path;
   }
@@ -157,19 +208,27 @@ export class PublisherComponent implements OnInit, AfterViewInit {
       return false;
     }
 
-    const viewportWidth = window.innerWidth;
-    const slidesPerView = viewportWidth >= 1200 ? 7.5 : viewportWidth >= 900 ? 5.5 : viewportWidth >= 600 ? 3.5 : 2.2;
-    return comicIndex < Math.ceil(slidesPerView) * rows;
+    return comicIndex < Math.ceil(this.initialSlidesPerView) * rows;
   }
 
-  slidePrevious(sectionPath: string, swiper: HTMLElement): void {
-    (swiper as HTMLElement & { swiper?: { slidePrev: () => void } }).swiper?.slidePrev();
-    setTimeout(() => this.updateSwiperNavigation(sectionPath, swiper as HTMLElement & { swiper?: unknown }));
+  private getSlidesPerView(viewportWidth: number): number {
+    return viewportWidth >= 1200 ? 7.5 : viewportWidth >= 900 ? 5.5 : viewportWidth >= 600 ? 3.5 : 2.2;
   }
 
-  slideNext(sectionPath: string, swiper: HTMLElement): void {
-    (swiper as HTMLElement & { swiper?: { slideNext: () => void } }).swiper?.slideNext();
-    setTimeout(() => this.updateSwiperNavigation(sectionPath, swiper as HTMLElement & { swiper?: unknown }));
+  slidePrevious(sectionPath: string): void {
+    const swiper = this.getSectionSwiper(sectionPath);
+    (swiper as (HTMLElement & { swiper?: { slidePrev: () => void } }) | undefined)?.swiper?.slidePrev();
+    if (swiper) {
+      setTimeout(() => this.updateSwiperNavigation(sectionPath, swiper));
+    }
+  }
+
+  slideNext(sectionPath: string): void {
+    const swiper = this.getSectionSwiper(sectionPath);
+    (swiper as (HTMLElement & { swiper?: { slideNext: () => void } }) | undefined)?.swiper?.slideNext();
+    if (swiper) {
+      setTimeout(() => this.updateSwiperNavigation(sectionPath, swiper));
+    }
   }
 
   onSwiperStateChange(sectionPath: string, event: Event): void {
@@ -195,12 +254,17 @@ export class PublisherComponent implements OnInit, AfterViewInit {
     };
   }
 
-  private createSpecialSection(name: string, path: string, comics: ComicResolved[]): PublisherSection | undefined {
+  private createSpecialSection(
+    name: string,
+    path: string,
+    comics: ComicResolved[],
+    total = comics.length
+  ): PublisherSection | undefined {
     if (comics.length === 0) {
       return undefined;
     }
 
-    return { name, path, comics, total: comics.length, rows: comics.length >= 10 ? 2 : 1 };
+    return { name, path, comics, total, rows: comics.length >= 10 ? 2 : 1 };
   }
 
   private decorateComics(
@@ -278,6 +342,12 @@ export class PublisherComponent implements OnInit, AfterViewInit {
         this.updateSwiperNavigation(section.path, element.nativeElement);
       }
     });
+  }
+
+  private getSectionSwiper(sectionPath: string): HTMLElement & { swiper?: unknown } | undefined {
+    return this.swiperElements
+      ?.find((element) => element.nativeElement.dataset['sectionPath'] === sectionPath)
+      ?.nativeElement as (HTMLElement & { swiper?: unknown }) | undefined;
   }
 
   private initializeSwipers(): void {

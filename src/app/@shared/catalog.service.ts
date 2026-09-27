@@ -28,14 +28,12 @@ export class CatalogService {
       .pipe(map((response) => response.items));
   }
 
-  searchComics(filters: object): Observable<ComicResolved[]> {
-    let params = new HttpParams().set('pageSize', '10000');
+  searchComics(filters: object, page: number, pageSize: number): Observable<{ items: ComicResolved[]; total: number }> {
+    let params = new HttpParams().set('page', page.toString()).set('pageSize', pageSize.toString());
     Object.entries(filters).forEach(([key, value]) => {
       if (value && value !== 'All') params = params.set(key, value);
     });
-    return this.http
-      .get<{ items: ComicResolved[] }>(`${environment.apiUrl}comics`, { params })
-      .pipe(map((response) => response.items));
+    return this.http.get<{ items: ComicResolved[]; total: number }>(`${environment.apiUrl}comics`, { params });
   }
 
   readSearchOptions(): Observable<{ heroes: string[]; publishers: string[]; collections: string[] }> {

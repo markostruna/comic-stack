@@ -9,22 +9,22 @@
   display: block;
   width: 100%;
   min-height: 100vh;
+  overflow-x: clip;
 }
 
 .shell-main {
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
 }
 
 .shell-content {
   box-sizing: border-box;
-  flex: 1;
-  min-height: 0;
+  flex: 1 0 auto;
   min-width: 0;
-  overflow: auto;
+  overflow-x: clip;
   padding: 0.5rem;
   width: 100%;
   max-width: 1280px;
@@ -50,10 +50,6 @@
 }
 
 @media (orientation: landscape) and (pointer: coarse) {
-  .shell-shell {
-    height: 100vh;
-  }
-
   .shell-main.reader-shell,
   .shell-main.reader-shell .shell-content {
     height: 100%;
@@ -65,10 +61,6 @@
 }
 
 @media (orientation: portrait) and (pointer: coarse) {
-  .shell-shell {
-    height: 100vh;
-  }
-
   .shell-main.reader-shell,
   .shell-main.reader-shell .shell-content {
     height: 100%;
@@ -250,4 +242,5 @@
   height: auto;
   flex: 1 1 auto;
   min-height: 0;
+  overflow: hidden;
 }

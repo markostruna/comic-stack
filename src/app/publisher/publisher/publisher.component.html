@@ -26,18 +26,23 @@
         <div class="section-heading">
           <h2 [id]="'publisher-' + sectionIndex">{{ section.name }}</h2>
           <div class="section-actions">
-            @if (section.path !== 'continue-reading' && section.path !== 'bookmarks') {
+            @if (section.path === 'continue-reading' || section.path === 'bookmarks') {
+            <button mat-button type="button" class="see-all-link" (click)="searchSpecialSection(section.path)">
+              {{ 'See all' | translate }} ({{ section.total }})
+            </button>
+            } @else {
             <button mat-button type="button" class="see-all-link" (click)="searchPublisher(section.name)">
               {{ 'See all' | translate }} ({{ section.total }})
             </button>
             }
+            @if (!isMobile()) {
             <button
               mat-icon-button
               type="button"
               class="swiper-control"
               [disabled]="swiperNavigation()[section.path]?.isBeginning"
               [attr.aria-label]="'Previous comics' | translate"
-              (click)="slidePrevious(section.path, sectionSwiper)"
+              (click)="slidePrevious(section.path)"
             >
               <mat-icon>chevron_left</mat-icon>
             </button>
@@ -47,15 +52,27 @@
               class="swiper-control"
               [disabled]="swiperNavigation()[section.path]?.isEnd"
               [attr.aria-label]="'Next comics' | translate"
-              (click)="slideNext(section.path, sectionSwiper)"
+              (click)="slideNext(section.path)"
             >
               <mat-icon>chevron_right</mat-icon>
             </button>
+            }
           </div>
         </div>
+        @if (isMobile()) {
+        <div class="mobile-comic-grid">
+          @for (comic of section.comics.slice(0, 6); track trackByComic($index, comic); let comicIndex = $index) {
+          <app-comic-card
+            [comic]="comic"
+            [priority]="isInitialViewportComic(sectionIndex, comicIndex, section.rows)"
+          ></app-comic-card>
+          }
+        </div>
+        } @else {
         <swiper-container
           #sectionSwiper
           class="comic-swiper"
+          [attr.data-section-path]="section.path"
           [init]="false"
           slides-per-view="2.2"
           space-between="12"
@@ -76,6 +93,7 @@
           </swiper-slide>
           }
         </swiper-container>
+        }
       </section>
     </ng-template>
     @for (section of sections(); track trackByPublisher($index, section); let sectionIndex = $index) { @if (sectionIndex

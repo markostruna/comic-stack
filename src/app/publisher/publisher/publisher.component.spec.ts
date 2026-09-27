@@ -11,18 +11,24 @@ import { PublisherComponent } from './publisher.component';
 describe('PublisherComponent', () => {
   let component: PublisherComponent;
   let fixture: ComponentFixture<PublisherComponent>;
+  const navigate = vi.fn();
 
   beforeEach(async () => {
+    navigate.mockReset();
     await TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), PublisherComponent],
       providers: [
         {
           provide: Router,
-          useValue: { navigate: vi.fn() },
+          useValue: { navigate },
         },
         {
           provide: PublisherService,
-          useValue: { getPublishers: () => of([]) },
+          useValue: {
+            getPublishers: () => of([]),
+            getPublisherPreviewComics: () => of([]),
+            searchComics: () => of({ items: [], total: 0 }),
+          },
         },
         {
           provide: UserStateService,
@@ -37,10 +43,10 @@ describe('PublisherComponent', () => {
 
     fixture = TestBed.createComponent(PublisherComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
@@ -49,12 +55,34 @@ describe('PublisherComponent', () => {
     Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1280 });
 
     try {
+      fixture.detectChanges();
       expect(component.isInitialViewportComic(0, 7, 1)).toBe(true);
       expect(component.isInitialViewportComic(0, 8, 1)).toBe(false);
       expect(component.isInitialViewportComic(1, 0, 1)).toBe(false);
     } finally {
       Object.defineProperty(window, 'innerWidth', { configurable: true, value: viewportWidth });
     }
+  });
+
+  it('should prioritize the initially visible comics on a mobile viewport', () => {
+    const viewportWidth = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 390 });
+
+    try {
+      fixture.detectChanges();
+      expect(component.isInitialViewportComic(0, 5, 2)).toBe(true);
+      expect(component.isInitialViewportComic(0, 6, 2)).toBe(false);
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: viewportWidth });
+    }
+  });
+
+  it('should route Continue reading and Bookmarks links to their matching search options', () => {
+    component.searchSpecialSection('continue-reading');
+    component.searchSpecialSection('bookmarks');
+
+    expect(navigate).toHaveBeenNthCalledWith(1, ['/search'], { queryParams: { availability: 'InProgress' } });
+    expect(navigate).toHaveBeenNthCalledWith(2, ['/search'], { queryParams: { availability: 'Bookmarked' } });
   });
 
   it('should update navigation state without recursively updating Swiper', () => {

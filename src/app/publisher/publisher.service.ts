@@ -6,7 +6,7 @@ import { environment } from '@env/environment';
 import { Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 
-export type AvailabilityFilter = 'All' | 'Available' | 'Missing';
+export type AvailabilityFilter = 'All' | 'Available' | 'Missing' | 'InProgress' | 'Bookmarked';
 
 export interface ComicSearchFilters {
   title: string;
@@ -147,8 +147,12 @@ export class PublisherService {
     };
   }
 
-  searchComics(filters: ComicSearchFilters): Observable<ComicResolved[]> {
-    return this.catalogService.searchComics(filters);
+  searchComics(
+    filters: ComicSearchFilters,
+    page: number,
+    pageSize: number
+  ): Observable<{ items: ComicResolved[]; total: number }> {
+    return this.catalogService.searchComics(filters, page, pageSize);
   }
 
   getSearchOptionsFromApi(): Observable<ComicSearchOptions> {
