@@ -22,9 +22,11 @@ export class CatalogService {
       .pipe(map((response) => (Array.isArray(response) ? response : response.items)));
   }
 
-  readPublisherPreviewComics(): Observable<ComicResolved[]> {
+  readPublisherPreviewComics(perPublisher = 20): Observable<ComicResolved[]> {
     return this.http
-      .get<{ items: ComicResolved[] }>(`${environment.apiUrl}comics/publisher-preview`)
+      .get<{ items: ComicResolved[] }>(`${environment.apiUrl}comics/publisher-preview`, {
+        params: new HttpParams().set('perPublisher', perPublisher),
+      })
       .pipe(map((response) => response.items));
   }
 

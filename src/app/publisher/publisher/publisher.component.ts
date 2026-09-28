@@ -19,8 +19,7 @@ import { Router } from '@angular/router';
 import { ComicResolved, PublisherResolved } from '@app/@shared/models';
 import { UserStateService } from '@app/@shared/user-state.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { Grid, Keyboard } from 'swiper/modules';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, of, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ComicCardComponent } from '../comic-card.component';
 import { AvailabilityFilter, ComicSearchFilters, PublisherService } from '../publisher.service';
@@ -36,6 +35,16 @@ export interface PublisherSection {
 interface SwiperNavigationState {
   isBeginning: boolean;
   isEnd: boolean;
+}
+
+interface PublisherPageData {
+  publishers: PublisherResolved[];
+  continueReadingComics: ComicResolved[];
+  continueReading: Array<{ id: number; pageIndex: number; totalPages: number }>;
+  continueReadingTotal: number;
+  bookmarkedComics: ComicResolved[];
+  bookmarkedTotal: number;
+  bookmarks: Array<{ comicId: number }>;
 }
 
 @Component({
@@ -65,12 +74,23 @@ export class PublisherComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly isMobile = signal(false);
   readonly isLoading = signal(true);
   readonly search = new FormControl('', { nonNullable: true });
-  readonly swiperModules = [Grid, Keyboard];
+  readonly swiperModules = signal<unknown[]>([]);
   private initialSlidesPerView = 2.2;
   private mobileQuery?: MediaQueryList;
+  private swiperModulesLoad?: Promise<void>;
+  private publisherPageData?: PublisherPageData;
+  private previewRequest?: Subscription;
+  private previewLimit?: number;
 
   private readonly updateMobileLayout = (event: MediaQueryListEvent): void => {
+    const layoutChanged = this.isMobile() !== event.matches;
     this.isMobile.set(event.matches);
+    if (layoutChanged) {
+      this.loadPublisherPreview();
+    }
+    if (!event.matches) {
+      this.loadSwiperModules();
+    }
   };
 
   @ViewChildren('sectionSwiper', { read: ElementRef })
@@ -81,11 +101,15 @@ export class PublisherComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mobileQuery = window.matchMedia?.('(max-width: 599px)');
     this.isMobile.set(this.mobileQuery?.matches ?? window.innerWidth < 600);
     this.mobileQuery?.addEventListener('change', this.updateMobileLayout);
+    if (!this.isMobile()) {
+      this.loadSwiperModules();
+    }
     this.loadData();
   }
 
   ngOnDestroy(): void {
     this.mobileQuery?.removeEventListener('change', this.updateMobileLayout);
+    this.previewRequest?.unsubscribe();
   }
 
   ngAfterViewInit(): void {
@@ -100,16 +124,52 @@ export class PublisherComponent implements OnInit, AfterViewInit, OnDestroy {
   loadData() {
     forkJoin({
       publishers: this.publisherService.getPublishers(this.publishersFolder),
-      comics: this.publisherService.getPublisherPreviewComics(),
       continueReadingComics: this.publisherService.searchComics(this.filtersFor('InProgress'), 1, 20),
       bookmarkedComics: this.publisherService.searchComics(this.filtersFor('Bookmarked'), 1, 20),
       continueReading: this.userState.readContinueReading().pipe(catchError(() => of([]))),
       bookmarks: this.userState.readBookmarks().pipe(catchError(() => of([]))),
     }).subscribe({
-      next: ({ publishers, comics, continueReadingComics, bookmarkedComics, continueReading, bookmarks }) => {
+      next: ({ publishers, continueReadingComics, bookmarkedComics, continueReading, bookmarks }) => {
         if (publishers.length === 0) {
           this.sections.set([]);
           this.isLoading.set(false);
+          return;
+        }
+
+        this.publisherPageData = {
+          publishers,
+          continueReadingComics: continueReadingComics.items,
+          continueReading: continueReading.map(({ id, pageIndex, totalPages }) => ({ id, pageIndex, totalPages })),
+          continueReadingTotal: continueReadingComics.total,
+          bookmarkedComics: bookmarkedComics.items,
+          bookmarkedTotal: bookmarkedComics.total,
+          bookmarks: bookmarks.map(({ comicId }) => ({ comicId })),
+        };
+        this.loadPublisherPreview();
+      },
+      error: () => {
+        this.sections.set([]);
+        this.isLoading.set(false);
+      },
+    });
+  }
+
+  private loadPublisherPreview(): void {
+    const pageData = this.publisherPageData;
+    if (!pageData) {
+      return;
+    }
+
+    const perPublisher = this.isMobile() ? 6 : 20;
+    if (this.previewLimit === perPublisher) {
+      return;
+    }
+
+    this.previewRequest?.unsubscribe();
+    this.previewLimit = perPublisher;
+    this.previewRequest = this.publisherService.getPublisherPreviewComics(perPublisher).subscribe({
+      next: (comics) => {
+        if (this.previewLimit !== perPublisher) {
           return;
         }
 
@@ -122,28 +182,34 @@ export class PublisherComponent implements OnInit, AfterViewInit, OnDestroy {
             comicsByPublisher.set(comic.publisher, [comic]);
           }
         }
-        const comicGroups = publishers.map((publisher) => comicsByPublisher.get(publisher.name) ?? []);
+        const comicGroups = pageData.publishers.map((publisher) => comicsByPublisher.get(publisher.name) ?? []);
         const markedContinueReading = this.decorateComics(
-          [continueReadingComics.items],
-          continueReading,
-          bookmarks
+          [pageData.continueReadingComics],
+          pageData.continueReading,
+          pageData.bookmarks
         ).continueReading;
-        const markedBookmarks = this.decorateComics([bookmarkedComics.items], continueReading, bookmarks).bookmarks;
+        const markedBookmarks = this.decorateComics(
+          [pageData.bookmarkedComics],
+          pageData.continueReading,
+          pageData.bookmarks
+        ).bookmarks;
         this.updateSections(
-          publishers,
+          pageData.publishers,
           comicGroups,
-          continueReading,
-          bookmarks,
+          pageData.continueReading,
+          pageData.bookmarks,
           markedContinueReading,
-          continueReadingComics.total,
+          pageData.continueReadingTotal,
           markedBookmarks,
-          bookmarkedComics.total
+          pageData.bookmarkedTotal
         );
         this.isLoading.set(false);
       },
       error: () => {
-        this.sections.set([]);
-        this.isLoading.set(false);
+        if (this.previewLimit === perPublisher) {
+          this.sections.set([]);
+          this.isLoading.set(false);
+        }
       },
     });
   }
@@ -161,12 +227,7 @@ export class PublisherComponent implements OnInit, AfterViewInit, OnDestroy {
     const markedComics = this.decorateComics(comicGroups, continueReading, bookmarks);
     const specialSections = [
       this.createSpecialSection('Continue reading', 'continue-reading', continueReadingComics, continueReadingTotal),
-      this.createSpecialSection(
-        'Bookmarks',
-        'bookmarks',
-        bookmarkedComics,
-        bookmarkedTotal
-      ),
+      this.createSpecialSection('Bookmarks', 'bookmarks', bookmarkedComics, bookmarkedTotal),
     ].filter((section): section is PublisherSection => section !== undefined);
     this.sections.set([
       ...specialSections,
@@ -206,6 +267,10 @@ export class PublisherComponent implements OnInit, AfterViewInit, OnDestroy {
   isInitialViewportComic(sectionIndex: number, comicIndex: number, rows: number): boolean {
     if (sectionIndex !== 0) {
       return false;
+    }
+
+    if (this.isMobile()) {
+      return comicIndex < 4;
     }
 
     return comicIndex < Math.ceil(this.initialSlidesPerView) * rows;
@@ -249,7 +314,7 @@ export class PublisherComponent implements OnInit, AfterViewInit, OnDestroy {
       name: publisher.name,
       path: publisher.path,
       comics: availableComics.slice(0, 20),
-      total: availableComics.length,
+      total: publisher.comicCount ?? availableComics.length,
       rows: availableComics.length >= 10 ? 2 : 1,
     };
   }
@@ -344,9 +409,8 @@ export class PublisherComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  private getSectionSwiper(sectionPath: string): HTMLElement & { swiper?: unknown } | undefined {
-    return this.swiperElements
-      ?.find((element) => element.nativeElement.dataset['sectionPath'] === sectionPath)
+  private getSectionSwiper(sectionPath: string): (HTMLElement & { swiper?: unknown }) | undefined {
+    return this.swiperElements?.find((element) => element.nativeElement.dataset['sectionPath'] === sectionPath)
       ?.nativeElement as (HTMLElement & { swiper?: unknown }) | undefined;
   }
 
@@ -362,5 +426,18 @@ export class PublisherComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     });
+  }
+
+  private loadSwiperModules(): void {
+    this.swiperModulesLoad ??= Promise.all([import('swiper/element'), import('swiper/modules')])
+      .then(([element, modules]) => {
+        element.register();
+        this.swiperModules.set([modules.Grid, modules.Keyboard]);
+        this.initializeSwipers();
+      })
+      .catch((error: unknown) => {
+        this.swiperModulesLoad = undefined;
+        console.error('Unable to load publisher carousel', error);
+      });
   }
 }

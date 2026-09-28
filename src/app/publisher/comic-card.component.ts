@@ -16,8 +16,10 @@ import { ComicDetailsDialogComponent } from '../tools/comic-details-dialog.compo
 export class ComicCardComponent {
   readonly comic = input.required<ComicResolved>();
   readonly displayPublisher = input(false);
+  readonly publisherAlwaysVisible = input(false);
   readonly priority = input(false);
   readonly isInfoVisible = signal(false);
+  readonly publisherImageFailed = signal<string | undefined>(undefined);
 
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
@@ -58,6 +60,19 @@ export class ComicCardComponent {
     }
 
     this.navigateToReader(comic);
+  }
+
+  publisherImagePath(): string {
+    const publisher = this.comic()
+      .publisher.normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+    return `assets/${publisher}.jpg`;
+  }
+
+  onPublisherImageError(): void {
+    this.publisherImageFailed.set(this.comic().publisher);
   }
 
   private navigateToReader(comic: ComicResolved): void {

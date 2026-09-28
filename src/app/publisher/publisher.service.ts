@@ -135,8 +135,8 @@ export class PublisherService {
     return comics;
   }
 
-  getPublisherPreviewComics(): Observable<ComicResolved[]> {
-    return this.catalogService.readPublisherPreviewComics();
+  getPublisherPreviewComics(perPublisher = 20): Observable<ComicResolved[]> {
+    return this.catalogService.readPublisherPreviewComics(perPublisher);
   }
 
   getSearchOptions(comics: ComicResolved[]): ComicSearchOptions {

@@ -2,7 +2,11 @@
   <div class="comic-grid">
     @for (item of displayedComics(); track trackByComic($index, item)) {
     <div class="comic-item">
-      <app-comic-card [comic]="item" [displayPublisher]="displayPublisher()"></app-comic-card>
+      <app-comic-card
+        [comic]="item"
+        [displayPublisher]="displayPublisher()"
+        [publisherAlwaysVisible]="displayPublisher()"
+      ></app-comic-card>
     </div>
     }
   </div>

@@ -1,5 +1,10 @@
 <article class="comic-card">
-  <div class="cover-frame" [class.info-visible]="isInfoVisible()" (click)="openCard($event)">
+  <div
+    class="cover-frame"
+    [class.info-visible]="isInfoVisible()"
+    [class.publisher-always-visible]="publisherAlwaysVisible()"
+    (click)="openCard($event)"
+  >
     <img
       [class.missing]="comic().missing"
       [src]="comic().thumbnailPath"
@@ -14,9 +19,16 @@
       [attr.loading]="priority() ? 'eager' : 'lazy'"
       [attr.fetchpriority]="priority() ? 'high' : 'auto'"
     />
-    @if (displayPublisher()) {
+    @if (displayPublisher()) { @if (publisherImageFailed() !== comic().publisher) {
+    <img
+      class="comic-publisher-image"
+      [src]="publisherImagePath()"
+      [alt]="comic().publisher"
+      (error)="onPublisherImageError()"
+    />
+    } @else {
     <div class="comic-publisher">{{ comic().publisher }}</div>
-    } @if (comic().collection) {
+    } } @if (comic().collection) {
     <div class="comic-collection">{{ comic().collection }}</div>
     } @if (comic().readingProgress; as progress) {
     <div

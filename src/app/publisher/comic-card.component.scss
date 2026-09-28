@@ -48,19 +48,35 @@
   transition: opacity 0.16s ease, visibility 0.16s ease;
 }
 
+.cover-frame .comic-publisher-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 150px;
+  height: auto;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  object-fit: contain;
+  background: transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.16s ease, visibility 0.16s ease;
+}
+
 .comic-publisher {
-  bottom: 0;
+  top: 0;
   background: rgb(255 255 0 / 80%);
 }
 
 .comic-collection {
-  top: 0;
+  bottom: 0;
   background: rgb(128 255 0 / 80%);
 }
 
 .hero-container {
   position: absolute;
-  top: -5px;
+  top: 18px;
   left: 2px;
   display: flex;
   gap: 4px;
@@ -70,6 +86,7 @@
 }
 
 .cover-frame:hover .comic-publisher,
+.cover-frame:hover .comic-publisher-image,
 .cover-frame:hover .comic-collection,
 .cover-frame:hover .hero-container {
   opacity: 1;
@@ -220,6 +237,7 @@
   }
 
   .cover-frame.info-visible .comic-publisher,
+  .cover-frame.info-visible .comic-publisher-image,
   .cover-frame.info-visible .comic-collection,
   .cover-frame.info-visible .hero-container,
   .cover-frame.info-visible .tile-actions {
@@ -228,6 +246,7 @@
   }
 
   .cover-frame:not(.info-visible) .comic-publisher,
+  .cover-frame:not(.info-visible) .comic-publisher-image,
   .cover-frame:not(.info-visible) .comic-collection,
   .cover-frame:not(.info-visible) .hero-container,
   .cover-frame:not(.info-visible) .tile-actions {
@@ -238,12 +257,19 @@
 
 @media (hover: hover) {
   .cover-frame:focus-within .comic-publisher,
+  .cover-frame:focus-within .comic-publisher-image,
   .cover-frame:focus-within .comic-collection,
   .cover-frame:focus-within .hero-container,
   .cover-frame:focus-within .tile-actions {
     opacity: 1;
     visibility: visible;
   }
+}
+
+.cover-frame.publisher-always-visible .comic-publisher,
+.cover-frame.publisher-always-visible .comic-publisher-image {
+  opacity: 1;
+  visibility: visible;
 }
 
 .reader-button {
