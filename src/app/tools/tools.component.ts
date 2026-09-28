@@ -27,9 +27,9 @@ import { forkJoin, interval, startWith, switchMap, takeWhile } from 'rxjs';
 import { ComicDetailsDialogComponent } from '@app/@shared/components/comic-details-dialog/comic-details-dialog.component';
 
 @Component({
-  selector: 'app-parse-folders',
-  templateUrl: './parse-folders.component.html',
-  styleUrls: ['./parse-folders.component.scss'],
+  selector: 'app-tools',
+  templateUrl: './tools.component.html',
+  styleUrls: ['./tools.component.scss'],
   imports: [
     MatTable,
     MatSort,
@@ -51,7 +51,7 @@ import { ComicDetailsDialogComponent } from '@app/@shared/components/comic-detai
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ParseFoldersComponent implements OnInit, AfterViewInit {
+export class ToolsComponent implements OnInit, AfterViewInit {
   @ViewChild('empTbSort') empTbSort = new MatSort();
   @ViewChild('paginator') paginator!: MatPaginator;
 

@@ -2,24 +2,24 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { PublisherService } from '../publisher.service';
+import { ComicService } from '@app/@shared/services/comic.service';
 
-import { ComicComponent } from './comic.component';
+import { ComicCardGridComponent } from './comic-card-grid.component';
 
-describe('ComicComponent', () => {
-  let component: ComicComponent;
-  let fixture: ComponentFixture<ComicComponent>;
+describe('ComicCardGridComponent', () => {
+  let component: ComicCardGridComponent;
+  let fixture: ComponentFixture<ComicCardGridComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ComicComponent],
+      imports: [ComicCardGridComponent],
       providers: [
         {
           provide: ActivatedRoute,
           useValue: { snapshot: { params: {} } },
         },
         {
-          provide: PublisherService,
+          provide: ComicService,
           useValue: { getComics: () => [] },
         },
         {
@@ -29,7 +29,7 @@ describe('ComicComponent', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ComicComponent);
+    fixture = TestBed.createComponent(ComicCardGridComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

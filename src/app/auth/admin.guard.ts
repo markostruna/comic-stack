@@ -9,6 +9,6 @@ export class AdminGuard {
   private readonly router = inject(Router);
 
   canActivate(): boolean | UrlTree {
-    return this.credentialsService.credentials?.role === 'admin' ? true : this.router.parseUrl('/publisher');
+    return this.credentialsService.credentials?.role === 'admin' ? true : this.router.parseUrl('/home');
   }
 }

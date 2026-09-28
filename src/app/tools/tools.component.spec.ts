@@ -7,13 +7,13 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { CatalogService } from '../../@shared/catalog.service';
+import { CatalogService } from '../@shared/catalog.service';
 
-import { ParseFoldersComponent } from './parse-folders.component';
+import { ToolsComponent } from './tools.component';
 
-describe('ParseFoldersComponent', () => {
-  let component: ParseFoldersComponent;
-  let fixture: ComponentFixture<ParseFoldersComponent>;
+describe('ToolsComponent', () => {
+  let component: ToolsComponent;
+  let fixture: ComponentFixture<ToolsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -23,7 +23,7 @@ describe('ParseFoldersComponent', () => {
         MatSortModule,
         MatPaginatorModule,
         TranslateModule.forRoot(),
-        ParseFoldersComponent,
+        ToolsComponent,
       ],
       providers: [
         provideHttpClient(),
@@ -37,7 +37,7 @@ describe('ParseFoldersComponent', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ParseFoldersComponent);
+    fixture = TestBed.createComponent(ToolsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

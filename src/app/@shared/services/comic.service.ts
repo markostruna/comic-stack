@@ -51,7 +51,7 @@ export interface filenameMatchConfig {
 @Injectable({
   providedIn: 'root',
 })
-export class PublisherService {
+export class ComicService {
   private catalogService = inject(CatalogService);
   private helperService = inject(HelperService);
   private publishersCache?: Observable<PublisherResolved[]>;

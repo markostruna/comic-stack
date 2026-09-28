@@ -11,8 +11,8 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ComicResolved } from '@app/@shared/models';
-import { ComicCardComponent } from '../comic-card.component';
-import { PublisherService } from '../publisher.service';
+import { ComicCardComponent } from '@app/@shared/components/comic-card/comic-card.component';
+import { ComicService } from '@app/@shared/services/comic.service';
 
 @Component({
   selector: 'app-comic',
@@ -34,7 +34,7 @@ export class ComicComponent implements OnChanges, OnInit, OnDestroy {
   readonly publisher = signal('');
 
   private readonly route = inject(ActivatedRoute);
-  private readonly publisherService = inject(PublisherService);
+  private readonly publisherService = inject(ComicService);
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['comicsInput'] && !changes['comicsInput'].firstChange && this.comicsInput().length > 0) {

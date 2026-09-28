@@ -4,8 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CatalogService } from '../../@shared/catalog.service';
-import { UserStateService } from '../../@shared/user-state.service';
+import { CatalogService } from '../@shared/catalog.service';
+import { UserStateService } from '../@shared/user-state.service';
 import { ComicService } from '@app/@shared/services/comic.service';
 import { SearchComponent } from './search.component';
 

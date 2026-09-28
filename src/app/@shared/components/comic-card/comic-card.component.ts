@@ -1,0 +1,81 @@
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { MatButton } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
+import { Router } from '@angular/router';
+import { ComicResolved } from '@app/@shared/models';
+import { ComicDetailsDialogComponent } from '@app/@shared/components/comic-details-dialog/comic-details-dialog.component';
+
+@Component({
+  selector: 'app-comic-card',
+  templateUrl: './comic-card.component.html',
+  styleUrls: ['./comic-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatIcon, MatButton],
+})
+export class ComicCardComponent {
+  readonly comic = input.required<ComicResolved>();
+  readonly displayPublisher = input(false);
+  readonly publisherAlwaysVisible = input(false);
+  readonly priority = input(false);
+  readonly isInfoVisible = signal(false);
+  readonly publisherImageFailed = signal<string | undefined>(undefined);
+
+  private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
+
+  openCard(event: MouseEvent): void {
+    if (!window.matchMedia('(hover: none)').matches || this.comic().comicMissing === true) {
+      return;
+    }
+
+    event.preventDefault();
+    this.navigateToReader(this.comic());
+  }
+
+  toggleInfo(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isInfoVisible.update((visible) => !visible);
+  }
+
+  openDetails(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dialog.open(ComicDetailsDialogComponent, {
+      width: 'min(900px, 96vw)',
+      maxHeight: '90vh',
+      panelClass: 'comic-details-dialog-panel',
+      data: this.comic(),
+    });
+  }
+
+  openReader(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    const comic = this.comic();
+
+    if (comic.comicMissing === true) {
+      return;
+    }
+
+    this.navigateToReader(comic);
+  }
+
+  publisherImagePath(): string {
+    const publisher = this.comic()
+      .publisher.normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+    return `assets/${publisher}.jpg`;
+  }
+
+  onPublisherImageError(): void {
+    this.publisherImageFailed.set(this.comic().publisher);
+  }
+
+  private navigateToReader(comic: ComicResolved): void {
+    this.router.navigate(['/reader', (comic as ComicResolved & { id: number }).id]);
+  }
+}

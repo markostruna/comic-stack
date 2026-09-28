@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { ComicResolved } from '@app/@shared/models';
-import { ComicDetailsDialogComponent } from '../tools/comic-details-dialog.component';
+import { ComicDetailsDialogComponent } from '../../tools/comic-details-dialog.component';
 
 @Component({
   selector: 'app-comic-card',

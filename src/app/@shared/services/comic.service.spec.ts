@@ -3,17 +3,17 @@ import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { PublisherService } from './publisher.service';
+import { ComicService } from './comic.service';
 
-describe('PublisherService', () => {
-  let service: PublisherService;
+describe('ComicService', () => {
+  let service: ComicService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     });
-    service = TestBed.inject(PublisherService);
+    service = TestBed.inject(ComicService);
   });
 
   it('should be created', () => {

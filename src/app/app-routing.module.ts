@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdminGuard } from '@app/auth/admin.guard';
-import { PublisherComponent } from '@app/publisher/publisher/publisher.component';
+import { HomeComponent } from '@app/home/home.component';
 import { Shell } from '@app/shell/shell.service';
 import { marker } from '@biesbjerg/ngx-translate-extract-marker';
 
@@ -11,17 +11,22 @@ export const routes: Routes = [
     data: { title: marker('Login') },
   },
   Shell.childRoutes([
-    { path: '', redirectTo: '/publisher', pathMatch: 'full' },
-    { path: 'home', redirectTo: '/publisher', pathMatch: 'full' },
-    { path: 'publisher', component: PublisherComponent, data: { title: marker('Publishers') } },
+    { path: '', redirectTo: '/home', pathMatch: 'full' },
+    { path: 'home', component: HomeComponent, data: { title: marker('Publishers') } },
+    { path: 'publisher', redirectTo: '/home', pathMatch: 'full' },
     {
-      path: 'publisher/:publisher',
-      loadComponent: () => import('@app/publisher/comic/comic.component').then((module) => module.ComicComponent),
+      path: 'home/:publisher',
+      loadComponent: () =>
+        import('@app/@shared/components/comic-card-grid/comic-card-grid.component').then(
+          (module) => module.ComicCardGridComponent
+        ),
       data: { title: marker('Comics') },
     },
+    { path: 'publisher/:publisher', redirectTo: '/home/:publisher' },
     {
       path: 'reader/:comicId',
-      loadComponent: () => import('@app/publisher/reader/reader.component').then((module) => module.ReaderComponent),
+      loadComponent: () =>
+        import('@app/@shared/components/reader/reader.component').then((module) => module.ReaderComponent),
       data: { title: marker('Reader') },
     },
     {
@@ -31,13 +36,12 @@ export const routes: Routes = [
     },
     {
       path: 'search',
-      loadComponent: () => import('@app/search/search/search.component').then((module) => module.SearchComponent),
+      loadComponent: () => import('@app/search/search.component').then((module) => module.SearchComponent),
       data: { title: marker('Search') },
     },
     {
       path: 'tools',
-      loadComponent: () =>
-        import('@app/tools/parse-folders/parse-folders.component').then((module) => module.ParseFoldersComponent),
+      loadComponent: () => import('@app/tools/tools.component').then((module) => module.ToolsComponent),
       canActivate: [AdminGuard],
       data: { title: marker('Parse folders') },
     },
@@ -48,5 +52,5 @@ export const routes: Routes = [
     },
   ]),
   // Fallback when no prior route is matched
-  { path: '**', redirectTo: '/publisher', pathMatch: 'full' },
+  { path: '**', redirectTo: '/home', pathMatch: 'full' },
 ];

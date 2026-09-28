@@ -21,7 +21,7 @@ import { UserStateService } from '@app/@shared/user-state.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ComicCardComponent } from '../comic-card.component';
+import { ComicCardComponent } from '@app/@shared/components/comic-card/comic-card.component';
 import { AvailabilityFilter, ComicSearchFilters, PublisherService } from '../publisher.service';
 
 export interface PublisherSection {
